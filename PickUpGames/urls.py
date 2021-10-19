@@ -17,6 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('pickup/', include('pickup.urls')),
+    path('', include('pickup.urls')),
     path('admin/', admin.site.urls),
 ]
