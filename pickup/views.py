@@ -6,7 +6,7 @@ from .models import Profile
 
 
 def index(request):
-    return HttpResponse("Hello World. This is my test of creating a view")
+    return render(request, "index.html")
 
 
 def profile_list(request):
