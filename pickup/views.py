@@ -15,6 +15,22 @@ def register(request):
 # reached by an action from the register page
 def create_account(request):
 
+    # verify no fields are empty
+    if (request.POST["username"] == "" or request.POST["email"] == "" or
+        request.POST["password"] == "" or
+        request.POST["confirm_password"] == ""):
+
+        context = {"username": request.POST["username"],
+                   "email": request.POST["email"],
+                   "error": "Error: All fields are required.",}
+        return render(request, 'pickup/register.html', context)
+
+    # verify the '@' and '.' symbols appear in the email
+    if ('@' not in request.POST["email"] or '.' not in request.POST["email"]):
+        context = {"username": request.POST["username"],
+                   "error": "Error: Invalid email address.",}
+        return render(request, 'pickup/register.html', context)
+
     # verify passwords match
     if (request.POST["password"] != request.POST["confirm_password"]):
         context = {"username": request.POST["username"],
