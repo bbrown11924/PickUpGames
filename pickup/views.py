@@ -90,7 +90,6 @@ def profile_list(request):
                                                                      Height=q.get_height_cust())
     return HttpResponse(output)
 
-
 @login_required(login_url="login")
 def add_park(request):
     if request.method == 'POST':

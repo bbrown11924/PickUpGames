@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 class Player(User):
     pass
 
+class Player(User):
+    pass
 
 class Profile(models.Model):
     name = models.CharField(max_length=200)
@@ -33,7 +35,6 @@ class Courts(models.Model):
     # Overload the query print
     def __str__(self):
         return self.name
-
 
 # Create your models here.
 class Parks(models.Model):
