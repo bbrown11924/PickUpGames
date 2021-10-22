@@ -7,6 +7,10 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 
+# Create your views here.
+from django.http import HttpResponse, HttpResponseRedirect
+from .models import Profile
+from .forms import ParkForm
 from .models import Profile, Player
 from .forms import RegistrationForm
 
@@ -86,3 +90,16 @@ def profile_list(request):
                                                                      Height=q.get_height_cust())
     return HttpResponse(output)
 
+
+def add_park(request):
+    if request.method == 'POST':
+        form = ParkForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data['parkName'])
+
+            return HttpResponseRedirect('/thanks/')
+
+    else:
+        form = ParkForm()
+
+    return render(request, 'add_park.html', {'form': form})

@@ -1,7 +1,9 @@
+
 # File: forms.py
 #
 # This file contains the Django Form objects.
-
+from django.forms import ModelForm
+from .models import Parks
 from django import forms
 
 # form for the registration page
@@ -12,3 +14,12 @@ class RegistrationForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(), required=False)
     confirm_password = forms.CharField(widget=forms.PasswordInput(),
                                        required=False)
+
+
+from localflavor.us.forms import USStateSelect, USZipCodeField
+
+class ParkForm(ModelForm):
+    class Meta:
+        model = Parks
+        fields = ['name','street', 'city', 'state', 'zipcode']
+
