@@ -1,7 +1,10 @@
 from django.shortcuts import render
+from django.urls import reverse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.validators import validate_email
+from django.db.utils import IntegrityError
 
-from django.http import HttpResponse
-from .models import Profile
+from .models import Profile, Player
 
 
 def index(request):
@@ -9,11 +12,10 @@ def index(request):
 
 # view for page to register a new account
 def register(request):
-    return render(request, 'pickup/register.html', {})
 
-# view for creating an account
-# reached by an action from the register page
-def create_account(request):
+    # check for visiting for first time or submitting
+    if request.method != "POST":
+        return render(request, 'pickup/register.html', {})
 
     # verify no fields are empty
     if (request.POST["username"] == "" or request.POST["email"] == "" or
@@ -25,8 +27,10 @@ def create_account(request):
                    "error": "Error: All fields are required.",}
         return render(request, 'pickup/register.html', context)
 
-    # verify the '@' and '.' symbols appear in the email
-    if ('@' not in request.POST["email"] or '.' not in request.POST["email"]):
+    # verify the email address is properly formatted
+    try:
+        validate_email(request.POST["email"])
+    except:
         context = {"username": request.POST["username"],
                    "error": "Error: Invalid email address.",}
         return render(request, 'pickup/register.html', context)
@@ -38,7 +42,17 @@ def create_account(request):
                    "error": "Error: Passwords do not match.",}
         return render(request, 'pickup/register.html', context)
 
-    return HttpResponse("Success!")
+    # is valid: add the user to the Player database
+    try:
+        new_player = Player.objects.create_user(request.POST["username"],
+                                                request.POST["email"],
+                                                request.POST["password"])
+    except IntegrityError:
+        context = {"email": request.POST["email"],
+                   "error": "Error: User name unavailable.",}
+        return render(request, 'pickup/register.html', context)
+
+    return HttpResponseRedirect(reverse('index'))
 
 def profile_list(request):
     profileList = Profile.objects.all()

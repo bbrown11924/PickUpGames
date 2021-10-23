@@ -11,7 +11,7 @@
 
     <p>Please complete the following fields:</p>
 
-    <form action="{% url 'create_account' %}" method="post">
+    <form action="{% url 'register' %}" method="post">
         {% csrf_token %}
         <p>User name: <input type="text" id="username" name="username"
                              value = "{{ username }}" /></p>
