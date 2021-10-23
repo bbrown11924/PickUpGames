@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pickup Games | Login</title>
+</head>
+<body>
+
+    <h1>Pickup Games: Login</h1>
+
+    {% if form.errors %}
+        <p id="error">Error: Invalid login credentials.</p>
+    {% endif %}
+
+    <p>Please enter your user name and password:</p>
+
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <p>User name: <input type="text" id="username" name="username"
+                             value = "{{ username }}" /></p>
+        <p>Password: <input type="password" id="password" name="password" /></p>
+        <input type="submit" value="Login" />
+    </form>
+</body>
+</html>
