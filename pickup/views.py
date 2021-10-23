@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.validators import validate_email
 from django.db.utils import IntegrityError
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 
@@ -63,6 +63,10 @@ def register(request):
 class Login(LoginView):
     template_name = "pickup/login.html"
     next = "profile"
+
+# view for logging out
+class Logout(LogoutView):
+    next_page = "login"
 
 # view for page to view a profile (must be logged in)
 @login_required(login_url="login")

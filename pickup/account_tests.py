@@ -176,7 +176,7 @@ class LoginTests(TestCase):
         player = Player.objects.create_user("npelosi", "speaker@house.gov",
                                             "HouseDems")
         player.save()
-        
+
         fields = {"username": "npelosi", "password": "HouseDems"}
         response = self.client.post(reverse("login"), fields)
 
@@ -217,3 +217,24 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Login")
         self.assertContains(response, "Error: Invalid login credentials.")
+
+    # test logging in then logging out
+    def test_login_then_logout(self):
+        player = Player.objects.create_user("BenJohnson",
+                                            "ben.johnson@umbc.edu",
+                                            "Cats4ever")
+        player.save()
+
+        # log in
+        fields = {"username": "BenJohnson", "password": "Cats4ever"}
+        response = self.client.post(reverse("login"), fields)
+        self.assertRedirects(response, reverse("view_profile"))
+
+        # log out
+        response = self.client.get(reverse("logout"))
+        self.assertRedirects(response, reverse("login"))
+
+        # ensure we are logged out
+        response = self.client.get(reverse("view_profile"))
+        self.assertRedirects(response, reverse("login") + "?next=" +
+                                       reverse("view_profile"))
