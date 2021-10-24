@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 
 from .models import Profile, Player
+from .forms import RegistrationForm
 
 
 def index(request):
@@ -20,38 +21,42 @@ def register(request):
     if request.method != "POST":
         return render(request, 'pickup/register.html', {})
 
-    # verify no fields are empty
-    if (request.POST["username"] == "" or request.POST["email"] == "" or
-        request.POST["password"] == "" or
-        request.POST["confirm_password"] == ""):
+    # get validated data
+    input_form = RegistrationForm(request.POST)
+    input_form.is_valid()
+    input_data = input_form.cleaned_data
 
-        context = {"username": request.POST["username"],
-                   "email": request.POST["email"],
+    # verify no fields are empty
+    if (input_data["username"] == "" or input_data["email"] == "" or
+        input_data["password"] == "" or input_data["confirm_password"] == ""):
+
+        context = {"username": input_data["username"],
+                   "email": input_data["email"],
                    "error": "Error: All fields are required.",}
         return render(request, 'pickup/register.html', context)
 
     # verify the email address is properly formatted
     try:
-        validate_email(request.POST["email"])
+        validate_email(input_data["email"])
     except:
-        context = {"username": request.POST["username"],
+        context = {"username": input_data["username"],
                    "error": "Error: Invalid email address.",}
         return render(request, 'pickup/register.html', context)
 
     # verify passwords match
-    if (request.POST["password"] != request.POST["confirm_password"]):
-        context = {"username": request.POST["username"],
-                   "email": request.POST["email"],
+    if (input_data["password"] != input_data["confirm_password"]):
+        context = {"username": input_data["username"],
+                   "email": input_data["email"],
                    "error": "Error: Passwords do not match.",}
         return render(request, 'pickup/register.html', context)
 
     # is valid: add the user to the Player database
     try:
-        new_player = Player.objects.create_user(request.POST["username"],
-                                                request.POST["email"],
-                                                request.POST["password"])
+        new_player = Player.objects.create_user(input_data["username"],
+                                                input_data["email"],
+                                                input_data["password"])
     except IntegrityError:
-        context = {"email": request.POST["email"],
+        context = {"email": input_data["email"],
                    "error": "Error: User name unavailable.",}
         return render(request, 'pickup/register.html', context)
 
