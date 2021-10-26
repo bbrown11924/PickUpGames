@@ -15,11 +15,9 @@ class RegistrationForm(forms.Form):
     confirm_password = forms.CharField(widget=forms.PasswordInput(),
                                        required=False)
 
-
-from localflavor.us.forms import USStateSelect, USZipCodeField
-
+#Creating the park form from the park model
 class ParkForm(ModelForm):
     class Meta:
         model = Parks
-        fields = ['name','street', 'city', 'state', 'zipcode']
+        fields = ['name', 'street', 'city', 'state', 'zipcode']
 
