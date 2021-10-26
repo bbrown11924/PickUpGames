@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pickup Games | Register</title>
+</head>
+<body>
+
+    <h1>Pickup Games: Register Account</h1>
+
+    {% if error %}<p id="error">{{ error }}</p> {% endif %}
+
+    <p>Please complete the following fields:</p>
+
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <p>User name: <input type="text" id="username" name="username"
+                             value = "{{ username }}" /></p>
+        <p>Email: <input type="text" id="email" name="email"
+                         value = "{{ email }}"/></p>
+        <p>Password: <input type="password" id="password" name="password" /></p>
+        <p>Confirm Password: <input type="password" id="confirm_password"
+            name="confirm_password" /></p>
+        <input type="submit" value="Register" />
+    </form>
+</body>
+</html>
