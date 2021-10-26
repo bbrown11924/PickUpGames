@@ -52,6 +52,8 @@ class Parks(models.Model):
     state = USStateField(choices=STATE_CHOICES)
     zipcode = USZipCodeField()
 
+    objects = models.Manager()
+
     # Overload the query print
     def __str__(self):
         return self.name

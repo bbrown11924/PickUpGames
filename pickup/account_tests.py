@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.db.utils import IntegrityError
 
-from .models import Player
+from pickup.models import Player
 
 # tests for account registration
 class RegistrationTests(TestCase):
