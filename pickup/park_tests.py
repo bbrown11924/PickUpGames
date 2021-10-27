@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
-from pickup.models import Parks
+from pickup.models import Parks, Player
 
 # tests for the Player model, independent of any view
 class ParkModelTests(TestCase):
@@ -42,7 +42,19 @@ class ParkModelTests(TestCase):
 class ParkViewTests(TestCase):
 
     def test_add_park_page_exists(self):
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
         response = self.client.get(reverse('Add Park'))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Add New Park")
+
+    # test accessing the add park page without logging in
+    def test_access_profile_without_login(self):
+        response = self.client.get(reverse("view_profile"))
+        self.assertRedirects(response, reverse("login") + "?next=" +
+                             reverse("view_profile"))
