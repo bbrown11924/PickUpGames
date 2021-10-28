@@ -3,10 +3,11 @@ from django.shortcuts import render
 # Create your views here.
 from django.http import HttpResponse
 from .models import Profile
+from django.shortcuts import render
 
 
 def index(request):
-    return HttpResponse("Hello World. This is my test of creating a view")
+    return render(request, 'pickup/index.html', {})
 
 
 def profile_list(request):
