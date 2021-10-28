@@ -2,48 +2,63 @@
     In no way an actual css design,
     just wanted to make sure it worked properly
  */
-header{
-    color: darkorange;
-    text-align: center;
-}
 
 body{
     background-color: slategray;
     width: 80%;
-    margin: auto;
+    margin: auto ;
 }
 
+header{
+    color: darkorange;
+    background-color: navy;
+    display: inline-block;
+    border-bottom: .2em solid darkorange;
+    width: 100%;
+}
+
+header h1{
+    float: left;
+    padding-left: 1em;
+}
 
 #LoginSignUp{
-    background-color: darkorange;
+
     float: right;
-    width: 100%;
-    border-bottom: .2em solid navy;
 }
 
 #LoginSignUp a{
     text-decoration: none;
-    display: inline-block;
     float: right;
     padding: .75em;
+    margin: .5em .25em 0em .25em;
     font-size: 1.25em;
     font-weight: bold;
+}
+#login{
+    border: .1em solid darkorange;
+    background-color: darkorange;
     color: navy;
+    border-radius: 1em;
+}
+#signup{
+    color: darkorange;
 }
 
-#LoginSignUp a:hover{
-    background-color: navy;
-    color: darkorange;
+#login:hover{
+    background-color: orange;
+    color: navy;
     transition: 500ms;
 }
 
-#LoginSignUp a href{
-    text-decoration: none;
+#signup:hover{
+    color: orange;
 }
 
 main{
-    padding: 4em 2em 2em;
+    padding: 1em 3em 2em 3em;
     background-color: #afafaf;
+    margin: 0;
 
 }
 

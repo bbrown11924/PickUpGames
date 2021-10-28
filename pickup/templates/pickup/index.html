@@ -18,16 +18,11 @@
 
 <header>
     <h1>Welcome to PickUpGames!</h1>
+    <div id="LoginSignUp">
+        <a id="login" href={% url 'login' %}>Login</a>
+        <a id="signup" href="{% url 'register' %}">Sign Up</a>
+    </div>
 </header>
-
-<nav>
-    <!-- Working on unified Nav bar, wont need anything here -->
-</nav>
-
-<div id="LoginSignUp">
-        <a href={% url 'login' %}>Login</a>
-        <a href="{% url 'register' %}">Sign Up</a>
-</div>
 
 <main>
     <h2>Who Are We?</h2>
@@ -54,5 +49,6 @@
 <footer>
     <!-- Working on unified footer, wont need anything here -->
 </footer>
+
 </body>
 </html>
