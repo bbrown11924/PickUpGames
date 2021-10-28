@@ -12,7 +12,7 @@ from .forms import RegistrationForm
 
 
 def index(request):
-    return HttpResponse("Hello World. This is my test of creating a view")
+    return render(request, "index.html")
 
 # view for page to register a new account
 def register(request):
