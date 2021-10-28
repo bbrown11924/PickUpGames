@@ -3,26 +3,38 @@
     just wanted to make sure it worked properly
  */
 header{
-    color: orange;
+    color: darkorange;
+    text-align: center;
 }
 
 body{
-    background-color: dimgray;
+    background-color: slategray;
+    width: 80%;
+    margin: auto;
 }
 
+
 #LoginSignUp{
-    background-color: black;
+    background-color: darkorange;
     float: right;
     width: 100%;
+    border-bottom: .2em solid navy;
 }
 
 #LoginSignUp a{
     text-decoration: none;
     display: inline-block;
     float: right;
-    padding: 1em;
-    font-size: large;
-    background-color: white;
+    padding: .75em;
+    font-size: 1.25em;
+    font-weight: bold;
+    color: navy;
+}
+
+#LoginSignUp a:hover{
+    background-color: navy;
+    color: darkorange;
+    transition: 500ms;
 }
 
 #LoginSignUp a href{
@@ -30,6 +42,11 @@ body{
 }
 
 main{
-    background-color: darkgray;
+    padding: 4em 2em 2em;
+    background-color: #afafaf;
 
+}
+
+h2{
+    color: navy;
 }
