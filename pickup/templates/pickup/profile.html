@@ -5,8 +5,15 @@
 </head>
 <body>
 
-    <h1>Pickup Games: Your Profile</h1>
+    <h1>Pickup Games</h1>
+    <h2>Your Profile: {{ username }}</h2>
 
-    <p>Will be added later.</p>
+    <p>Actual name: {{ full_name }}</p>
+    <p>Age: {{ age }}</p>
+    <p>Gender: {{ gender }}</p>
+    <p>Height: {{ height }}</p>
+    <p>Weight: {{ weight }}</p>
+
+    <a href="{% url 'edit_profile' %}">Edit</a>
 </body>
 </html>

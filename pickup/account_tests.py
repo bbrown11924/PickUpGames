@@ -5,9 +5,12 @@
 # registering for a new account, logging into an existing account, and
 # modifying profile information
 
+import datetime
+
 from django.test import TestCase
 from django.urls import reverse
 from django.db.utils import IntegrityError
+from django.utils import timezone
 
 from .models import Player
 
@@ -166,6 +169,37 @@ class PlayerModelTests(TestCase):
         except IntegrityError:
             return
         self.assertEqual(0, 1)
+
+    # test getting a player's age using the get_age() function
+    def test_get_age(self):
+        player = Player.objects.create_user("Albert", "einstein@umbc.edu",
+                                            "RelativisticAge")
+        player.save()
+        bday = timezone.now()
+
+        # loop over last 80 years in increments of 5
+        for i in range(0, 85, 5):
+            player.date_of_birth = bday - datetime.timedelta(days=366*i)
+            player.save()
+            self.assertEqual(player.get_age(), i)
+
+    # test getting a player's age using the get_age() function when no date of
+    # birth is given
+    def test_get_age_without_date_of_birth(self):
+        player = Player.objects.create_user("God", "him@heaven.org",
+                                            "0ldAsTime")
+        player.save()
+        self.assertEqual(player.get_age(), None)
+
+    # test getting the string for a user's gender
+    def test_get_gender(self):
+        player = Player.objects.create_user("AOC", "ocasiocortez@house.gov",
+                                            "%TaxTheRich%")
+        player.gender = Player.FEMALE
+        player.save()
+        
+        read_player = Player.objects.get(username="AOC")
+        self.assertEqual(read_player.get_gender_display(), "Female")
 
 
 # tests for account login

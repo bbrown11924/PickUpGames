@@ -73,16 +73,54 @@ class Login(LoginView):
 class Logout(LogoutView):
     next_page = "login"
 
-# view for page to view a profile (must be logged in)
+# view for page to view one's own profile (must be logged in)
 @login_required(login_url="login")
 def view_profile(request):
-    return render(request, 'pickup/profile.html', {})
 
-def profile_list(request):
-    profileList = Profile.objects.all()
-    output = 'Name \t Weight \t Height \n'
-    for q in profileList:
-        output = output + '{Name} \t {Weight} \t {Height} \n'.format(Name=q.name, Weight=q.weight,
-                                                                     Height=q.get_height_cust())
-    return HttpResponse(output)
+    # get the user's username
+    username = request.user.username
+    user = Player.objects.get(username=username)
 
+    # get the user's actual full name
+    if user.first_name != "" and user.last_name != "":
+        full_name = user.first_name + " " + user.last_name
+    elif user.first_name != "" or user.last_name != "":
+        full_name = user.first_name + user.last_name
+    else:
+        full_name = "Not provided"
+
+    # get the user's age
+    age = user.get_age()
+    if age == None:
+        age = "Not provided"
+
+    # get the user's gender
+    if user.gender != None:
+        gender = user.gender
+    else:
+        gender = "Not provided"
+
+    # get the user's height
+    if user.height != None:
+        height = user.height
+    else:
+        height = "Not provided"
+
+    # get the user's weight
+    if user.weight != None:
+        weight = user.weight
+    else:
+        weight = "Not provided"
+
+    context = {"username": username,
+               "full_name": full_name,
+               "age": age,
+               "gender": gender,
+               "height": height,
+               "weight": weight,}
+    return render(request, 'pickup/profile.html', context)
+
+# view for page to view to edit one's profile (must be logged in)
+@login_required(login_url="login")
+def edit_profile(request):
+    return HttpResponse("Edit...")
