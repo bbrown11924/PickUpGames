@@ -62,12 +62,11 @@ def register(request):
 
     # log the user in and send them to the profile page
     login(request, new_player)
-    return HttpResponseRedirect(reverse('view_profile'))
+    return HttpResponseRedirect(reverse('edit_profile'))
 
 # view for page to login to an existing account
 class Login(LoginView):
     template_name = "pickup/login.html"
-    next = "profile"
 
 # view for logging out
 class Logout(LogoutView):

@@ -123,7 +123,7 @@ class RegistrationTests(TestCase):
         response = self.client.post(reverse("register"), fields)
 
         # check for success
-        self.assertRedirects(response, reverse("view_profile"))
+        self.assertRedirects(response, reverse("edit_profile"))
         prof = Player.objects.get(username="ProfJ")
         self.assertEqual(prof.email, "ben.johnson@umbc.edu")
 
@@ -273,6 +273,19 @@ class LoginTests(TestCase):
         response = self.client.get(reverse("view_profile"))
         self.assertRedirects(response, reverse("login") + "?next=" +
                                        reverse("view_profile"))
+
+    # test logging in and redirecting to the edit profile page
+    def test_login_the_redirect_to_edit_profile(self):
+        player = Player.objects.create_user("BenJohnson",
+                                            "ben.johnson@umbc.edu",
+                                            "Cats4ever")
+        player.save()
+
+        # log in
+        fields = {"username": "BenJohnson", "password": "Cats4ever"}
+        response = self.client.post(reverse("login") + "?next=" +
+                                    reverse("edit_profile"), fields)
+        self.assertRedirects(response, reverse("edit_profile"))
 
 
 # tests for viewing and editing the profile page
