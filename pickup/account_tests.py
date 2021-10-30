@@ -300,7 +300,67 @@ class ProfileTests(TestCase):
         self.assertContains(response, "44")
         self.assertContains(response, "Barack Obama")
         age = player.get_age()
-        self.assertContains(response, 60)
+        self.assertContains(response, age)
         self.assertContains(response, "Male")
         self.assertContains(response, "74 in")
         self.assertContains(response, "175 lbs")
+
+    # test that the edit profile page contains information already filled in
+    def test_edit_profile_autofill(self):
+        player = Player.objects.create_user("44", "barack@obama.org",
+                                            "YesWeCan!")
+        player.first_name = "Barack"
+        player.last_name = "Obama"
+        player.date_of_birth = datetime.date(1961, 8, 4)
+        player.gender = Player.MALE
+        player.height = 74
+        player.weight = 175
+        player.save()
+
+        # log in
+        fields = {"username": "44", "password": "YesWeCan!"}
+        response = self.client.post(reverse("login"), fields)
+
+        # get the edit profile page and check for correct information
+        response = self.client.get(reverse("edit_profile"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "44")
+        self.assertContains(response, "Barack")
+        self.assertContains(response, "Obama")
+        self.assertContains(response, "1961-08-04")
+        self.assertContains(response, "Male")
+        self.assertContains(response, "74")
+        self.assertContains(response, "175")
+
+    # test filling out the edit page and viewing the profile page afterwards
+    def test_edit_then_view_profile(self):
+        player = Player.objects.create_user("RBG", "ginsburg@supremecourt.gov",
+                                            "FightingFor=")
+        player.save()
+
+        # log in
+        fields = {"username": "RBG", "password": "FightingFor="}
+        response = self.client.post(reverse("login"), fields)
+
+        # go to the edit profile page and fill in info
+        response = self.client.get(reverse("edit_profile"))
+        fields = {"first_name": "Ruth",
+                  "last_name": "Bader Ginsburg",
+                  "date_of_birth": "1933-03-15",
+                  "gender": Player.FEMALE,
+                  "height": "61",
+                  "weight": "110"}
+        response = self.client.post(reverse("edit_profile"), fields)
+        self.assertRedirects(response, reverse("view_profile"))
+
+        # get the profile page results
+        response = self.client.get(reverse("view_profile"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "RBG")
+        self.assertContains(response, "Ruth Bader Ginsburg")
+        age = relativedelta(datetime.date.today(),
+                            datetime.date(1933, 3, 15)).years
+        self.assertContains(response, age)
+        self.assertContains(response, "Female")
+        self.assertContains(response, "61 in")
+        self.assertContains(response, "110 lbs")
