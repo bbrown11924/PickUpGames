@@ -96,19 +96,19 @@ def view_profile(request):
 
     # get the user's gender
     if user.gender != None:
-        gender = user.gender
+        gender = Player.genders[user.gender]
     else:
         gender = "Not provided"
 
     # get the user's height
     if user.height != None:
-        height = user.height
+        height = str(user.height) + " in"
     else:
         height = "Not provided"
 
     # get the user's weight
     if user.weight != None:
-        weight = user.weight
+        weight = str(user.weight) + " lbs"
     else:
         weight = "Not provided"
 

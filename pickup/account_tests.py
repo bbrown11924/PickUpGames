@@ -6,6 +6,7 @@
 # modifying profile information
 
 import datetime
+from dateutil.relativedelta import relativedelta
 
 from django.test import TestCase
 from django.urls import reverse
@@ -175,7 +176,7 @@ class PlayerModelTests(TestCase):
         player = Player.objects.create_user("Albert", "einstein@umbc.edu",
                                             "RelativisticAge")
         player.save()
-        bday = timezone.now()
+        bday = datetime.datetime.now()
 
         # loop over last 80 years in increments of 5
         for i in range(0, 85, 5):
@@ -197,7 +198,7 @@ class PlayerModelTests(TestCase):
                                             "%TaxTheRich%")
         player.gender = Player.FEMALE
         player.save()
-        
+
         read_player = Player.objects.get(username="AOC")
         self.assertEqual(read_player.get_gender_display(), "Female")
 
@@ -272,3 +273,34 @@ class LoginTests(TestCase):
         response = self.client.get(reverse("view_profile"))
         self.assertRedirects(response, reverse("login") + "?next=" +
                                        reverse("view_profile"))
+
+
+# tests for viewing and editing the profile page
+class ProfileTests(TestCase):
+
+    # test viewing a profile
+    def test_view_profile(self):
+        player = Player.objects.create_user("44", "barack@obama.org",
+                                            "YesWeCan!")
+        player.first_name = "Barack"
+        player.last_name = "Obama"
+        player.date_of_birth = datetime.date(1961, 8, 4)
+        player.gender = Player.MALE
+        player.height = 74
+        player.weight = 175
+        player.save()
+
+        # log in and go to profile page
+        fields = {"username": "44", "password": "YesWeCan!"}
+        response = self.client.post(reverse("login"), fields)
+        self.assertRedirects(response, reverse("view_profile"))
+        response = self.client.get(reverse("view_profile"))
+
+        # check for correct information
+        self.assertContains(response, "44")
+        self.assertContains(response, "Barack Obama")
+        age = player.get_age()
+        self.assertContains(response, 60)
+        self.assertContains(response, "Male")
+        self.assertContains(response, "74 in")
+        self.assertContains(response, "175 lbs")
