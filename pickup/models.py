@@ -4,6 +4,12 @@ from django.contrib.auth.models import User
 class Player(User):
     pass
 
+class Messages(models.Model):
+    sender = models.ForeignKey(User, related_name = "sender", on_delete=models.RESTRICT)
+    reciever = models.ForeignKey(User, related_name="reciever", on_delete=models.RESTRICT)
+    message = models.CharField(max_length= 1000)
+
+
 class Profile(models.Model):
     name = models.CharField(max_length=200)
     weight = models.IntegerField()
