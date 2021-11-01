@@ -1,4 +1,6 @@
 from .models import Profile
+from .account_tests import *
+from .messages_tests import *
 from pickup.account_tests import *
 from pickup.park_tests import *
 
