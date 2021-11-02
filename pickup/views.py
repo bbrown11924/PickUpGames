@@ -10,6 +10,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 # Import models and forms
 from .forms import ParkForm, RegistrationForm
 from .models import Profile, Player, Parks
+from .models import Profile, Player
+from .forms import RegistrationForm, ProfileForm
 
 
 def index(request):
@@ -62,25 +64,66 @@ def register(request):
 
     # log the user in and send them to the profile page
     login(request, new_player)
-    return HttpResponseRedirect(reverse('view_profile'))
+    return HttpResponseRedirect(reverse('edit_profile'))
 
 
 # view for page to login to an existing account
 class Login(LoginView):
     template_name = "pickup/login.html"
-    next = "profile"
 
 
 # view for logging out
 class Logout(LogoutView):
     next_page = "login"
 
+# view for page to view one's own profile (must be logged in)
 
 # view for page to view a profile (must be logged in)
 @login_required(login_url="login")
 def view_profile(request):
-    return render(request, 'pickup/profile.html', {})
 
+    # get the user's username
+    username = request.user.username
+    user = Player.objects.get(username=username)
+
+    # get the user's actual full name
+    if user.first_name != "" and user.last_name != "":
+        full_name = user.first_name + " " + user.last_name
+    elif user.first_name != "" or user.last_name != "":
+        full_name = user.first_name + user.last_name
+    else:
+        full_name = "Not provided"
+
+    # get the user's age
+    age = user.get_age()
+    if age == None:
+        age = "Not provided"
+
+    # get the user's gender
+    if user.gender != None:
+        gender = Player.genders[user.gender][1]
+    else:
+        gender = "Not provided"
+
+    # get the user's height
+    if user.height != None:
+        height = str(user.height) + " in"
+    else:
+        height = "Not provided"
+
+    # get the user's weight
+    if user.weight != None:
+        weight = str(user.weight) + " lbs"
+    else:
+        weight = "Not provided"
+
+    context = {"username": username,
+               "full_name": full_name,
+               "age": age,
+               "gender": gender,
+               "height": height,
+               "weight": weight,}
+    return render(request, 'pickup/profile.html', context)
 
 def profile_list(request):
     profileList = Profile.objects.all()
@@ -89,6 +132,70 @@ def profile_list(request):
         output = output + '{Name} \t {Weight} \t {Height} \n'.format(Name=q.name, Weight=q.weight,
                                                                      Height=q.get_height_cust())
     return HttpResponse(output)
+
+# view for page to view to edit one's profile (must be logged in)
+@login_required(login_url="login")
+def edit_profile(request):
+
+    # get the user's information to prefill
+    username = request.user.username
+    user = Player.objects.get(username=username)
+
+    # get gender options
+    genders = [("", "<Select>")] + Player.genders
+
+    # check for visiting for first time or submitting
+    if request.method != "POST":
+
+        # get date of birth if it already exists
+        date_of_birth = ""
+        if user.date_of_birth != None:
+            date_of_birth = user.date_of_birth.strftime("%Y-%m-%d")
+
+        context = {"genders": genders,
+                   "username": username,
+                   "first_name": user.first_name,
+                   "last_name": user.last_name,
+                   "date_of_birth": date_of_birth,
+                   "gender": user.gender,
+                   "height": user.height,
+                   "weight": user.weight,}
+        return render(request, 'pickup/edit_profile.html', context)
+
+    # get validated data
+    input_form = ProfileForm(request.POST)
+
+    if not input_form.is_valid():
+        context = {"error": input_form.errors,
+                   "genders": genders,
+                   "username": username,
+                   "first_name": request.POST["first_name"],
+                   "last_name": request.POST["last_name"],
+                   "date_of_birth": request.POST["date_of_birth"],
+                   "gender": request.POST["gender"],
+                   "height": request.POST["height"],
+                   "weight": request.POST["weight"],}
+        return render(request, 'pickup/edit_profile.html', context)
+
+    input_data = input_form.cleaned_data
+
+    # update the user's info
+    user.first_name = input_data["first_name"]
+    user.last_name = input_data["last_name"]
+    user.date_of_birth = input_data["date_of_birth"]
+    user.height = input_data["height"]
+    user.weight = input_data["weight"]
+
+    # update gender
+    if input_data["gender"] == "":
+        user.gender = None
+    else:
+        user.gender = int(input_data["gender"])
+
+    user.save()
+
+    # redirect back to the profile page
+    return HttpResponseRedirect(reverse('view_profile'))
 
 @login_required(login_url="login")
 def add_park(request):

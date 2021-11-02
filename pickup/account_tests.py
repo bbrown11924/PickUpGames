@@ -5,9 +5,13 @@
 # registering for a new account, logging into an existing account, and
 # modifying profile information
 
+import datetime
+from dateutil.relativedelta import relativedelta
+
 from django.test import TestCase
 from django.urls import reverse
 from django.db.utils import IntegrityError
+from django.utils import timezone
 
 from pickup.models import Player
 
@@ -119,7 +123,7 @@ class RegistrationTests(TestCase):
         response = self.client.post(reverse("register"), fields)
 
         # check for success
-        self.assertRedirects(response, reverse("view_profile"))
+        self.assertRedirects(response, reverse("edit_profile"))
         prof = Player.objects.get(username="ProfJ")
         self.assertEqual(prof.email, "ben.johnson@umbc.edu")
 
@@ -166,6 +170,37 @@ class PlayerModelTests(TestCase):
         except IntegrityError:
             return
         self.assertEqual(0, 1)
+
+    # test getting a player's age using the get_age() function
+    def test_get_age(self):
+        player = Player.objects.create_user("Albert", "einstein@umbc.edu",
+                                            "RelativisticAge")
+        player.save()
+        bday = datetime.datetime.now()
+
+        # loop over last 80 years in increments of 5
+        for i in range(0, 85, 5):
+            player.date_of_birth = bday - datetime.timedelta(days=366*i)
+            player.save()
+            self.assertEqual(player.get_age(), i)
+
+    # test getting a player's age using the get_age() function when no date of
+    # birth is given
+    def test_get_age_without_date_of_birth(self):
+        player = Player.objects.create_user("God", "him@heaven.org",
+                                            "0ldAsTime")
+        player.save()
+        self.assertEqual(player.get_age(), None)
+
+    # test getting the string for a user's gender
+    def test_get_gender(self):
+        player = Player.objects.create_user("AOC", "ocasiocortez@house.gov",
+                                            "%TaxTheRich%")
+        player.gender = Player.FEMALE
+        player.save()
+
+        read_player = Player.objects.get(username="AOC")
+        self.assertEqual(read_player.get_gender_display(), "Female")
 
 
 # tests for account login
@@ -238,3 +273,107 @@ class LoginTests(TestCase):
         response = self.client.get(reverse("view_profile"))
         self.assertRedirects(response, reverse("login") + "?next=" +
                                        reverse("view_profile"))
+
+    # test logging in and redirecting to the edit profile page
+    def test_login_the_redirect_to_edit_profile(self):
+        player = Player.objects.create_user("BenJohnson",
+                                            "ben.johnson@umbc.edu",
+                                            "Cats4ever")
+        player.save()
+
+        # log in
+        fields = {"username": "BenJohnson", "password": "Cats4ever"}
+        response = self.client.post(reverse("login") + "?next=" +
+                                    reverse("edit_profile"), fields)
+        self.assertRedirects(response, reverse("edit_profile"))
+
+
+# tests for viewing and editing the profile page
+class ProfileTests(TestCase):
+
+    # test viewing a profile
+    def test_view_profile(self):
+        player = Player.objects.create_user("44", "barack@obama.org",
+                                            "YesWeCan!")
+        player.first_name = "Barack"
+        player.last_name = "Obama"
+        player.date_of_birth = datetime.date(1961, 8, 4)
+        player.gender = Player.MALE
+        player.height = 74
+        player.weight = 175
+        player.save()
+
+        # log in and go to profile page
+        fields = {"username": "44", "password": "YesWeCan!"}
+        response = self.client.post(reverse("login"), fields)
+        self.assertRedirects(response, reverse("view_profile"))
+        response = self.client.get(reverse("view_profile"))
+
+        # check for correct information
+        self.assertContains(response, "44")
+        self.assertContains(response, "Barack Obama")
+        age = player.get_age()
+        self.assertContains(response, age)
+        self.assertContains(response, "Male")
+        self.assertContains(response, "74 in")
+        self.assertContains(response, "175 lbs")
+
+    # test that the edit profile page contains information already filled in
+    def test_edit_profile_autofill(self):
+        player = Player.objects.create_user("44", "barack@obama.org",
+                                            "YesWeCan!")
+        player.first_name = "Barack"
+        player.last_name = "Obama"
+        player.date_of_birth = datetime.date(1961, 8, 4)
+        player.gender = Player.MALE
+        player.height = 74
+        player.weight = 175
+        player.save()
+
+        # log in
+        fields = {"username": "44", "password": "YesWeCan!"}
+        response = self.client.post(reverse("login"), fields)
+
+        # get the edit profile page and check for correct information
+        response = self.client.get(reverse("edit_profile"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "44")
+        self.assertContains(response, "Barack")
+        self.assertContains(response, "Obama")
+        self.assertContains(response, "1961-08-04")
+        self.assertContains(response, "Male")
+        self.assertContains(response, "74")
+        self.assertContains(response, "175")
+
+    # test filling out the edit page and viewing the profile page afterwards
+    def test_edit_then_view_profile(self):
+        player = Player.objects.create_user("RBG", "ginsburg@supremecourt.gov",
+                                            "FightingFor=")
+        player.save()
+
+        # log in
+        fields = {"username": "RBG", "password": "FightingFor="}
+        response = self.client.post(reverse("login"), fields)
+
+        # go to the edit profile page and fill in info
+        response = self.client.get(reverse("edit_profile"))
+        fields = {"first_name": "Ruth",
+                  "last_name": "Bader Ginsburg",
+                  "date_of_birth": "1933-03-15",
+                  "gender": Player.FEMALE,
+                  "height": "61",
+                  "weight": "110"}
+        response = self.client.post(reverse("edit_profile"), fields)
+        self.assertRedirects(response, reverse("view_profile"))
+
+        # get the profile page results
+        response = self.client.get(reverse("view_profile"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "RBG")
+        self.assertContains(response, "Ruth Bader Ginsburg")
+        age = relativedelta(datetime.date.today(),
+                            datetime.date(1933, 3, 15)).years
+        self.assertContains(response, age)
+        self.assertContains(response, "Female")
+        self.assertContains(response, "61 in")
+        self.assertContains(response, "110 lbs")
