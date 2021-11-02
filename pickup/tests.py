@@ -14,6 +14,12 @@ class PageExistenceTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
+class IndexPageTests(TestCase):
+    def test_index_page_exists(self):
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+
+
 class DatabaseTests(TestCase):
 
     def test_height_string_functionality(self):

@@ -12,8 +12,7 @@ from .forms import ParkForm, RegistrationForm, ProfileForm
 from .models import Profile, Player, Parks
 
 def index(request):
-    return HttpResponse("Hello World. This is my test of creating a view")
-
+    return render(request, "pickup/index.html")
 
 # view for page to register a new account
 def register(request):

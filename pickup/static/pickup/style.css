@@ -1,0 +1,67 @@
+/*
+    In no way an actual css design,
+    just wanted to make sure it worked properly
+ */
+
+body{
+    background-color: slategray;
+    width: 80%;
+    margin: auto ;
+}
+
+header{
+    color: darkorange;
+    background-color: navy;
+    display: inline-block;
+    border-bottom: .2em solid darkorange;
+    width: 100%;
+}
+
+header h1{
+    float: left;
+    padding-left: 1em;
+}
+
+#LoginSignUp{
+
+    float: right;
+}
+
+#LoginSignUp a{
+    text-decoration: none;
+    float: right;
+    padding: .75em;
+    margin: .5em .25em 0em .25em;
+    font-size: 1.25em;
+    font-weight: bold;
+}
+#login{
+    border: .1em solid darkorange;
+    background-color: darkorange;
+    color: navy;
+    border-radius: 1em;
+}
+#signup{
+    color: darkorange;
+}
+
+#login:hover{
+    background-color: orange;
+    color: navy;
+    transition: 500ms;
+}
+
+#signup:hover{
+    color: orange;
+}
+
+main{
+    padding: 1em 3em 2em 3em;
+    background-color: #afafaf;
+    margin: 0;
+
+}
+
+h2{
+    color: navy;
+}
