@@ -14,7 +14,6 @@ from .models import Profile, Player, Parks
 def index(request):
     return render(request, "pickup/index.html")
 
-
 # view for page to register a new account
 def register(request):
     # check for visiting for first time or submitting
