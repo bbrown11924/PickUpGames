@@ -1,3 +1,4 @@
+import django_tables2
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.validators import validate_email
@@ -217,4 +218,20 @@ def add_park(request):
     else:
         form = ParkForm()
 
-    return render(request, 'add_park.html', {'form': form})
+    return render(request, 'pickup/add_park.html', {'form': form})
+
+@login_required(login_url="login")
+def view_park(request):
+
+    parks = Parks.objects.all()
+
+    return render(request, 'pickup/parks_list.html', {'parks': parks})
+
+@login_required(login_url="login")
+def park_signup(request, parkid):
+    park = Parks.objects.get(id=parkid)
+    if park:
+        return HttpResponse(park.name)
+    else:
+        return HttpResponse("No park found")
+
