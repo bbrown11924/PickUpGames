@@ -1,6 +1,6 @@
-from django.test import TestCase
 from .models import Profile
-from .account_tests import *
+from pickup.account_tests import *
+from pickup.park_tests import *
 
 
 # Test cases to make sure that pages exist

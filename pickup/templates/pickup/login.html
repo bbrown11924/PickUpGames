@@ -16,7 +16,7 @@
 
     <p>Please enter your user name and password:</p>
 
-    <form action="{% url 'login' %}" method="post">
+    <form action="{% url 'login' %}?next={{ next }}" method="post">
         {% csrf_token %}
         <p>User name: <input type="text" id="username" name="username"
                              value = "{{ username }}" /></p>
