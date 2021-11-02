@@ -218,4 +218,4 @@ def add_park(request):
     else:
         form = ParkForm()
 
-    return render(request, reverse('Add Park'), {'form': form})
+    return render(request, 'add_park.html', {'form': form})
