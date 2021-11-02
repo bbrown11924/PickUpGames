@@ -2,7 +2,10 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 from django.db import models
+from localflavor.us.models import USStateField, USZipCodeField
+from localflavor.us.us_states import STATE_CHOICES
 from django.contrib.auth.models import User
+
 
 # model for a player, containing their user/login data as well as information
 # in their profile
@@ -40,3 +43,37 @@ class Profile(models.Model):
         return "{feet}\'{inches}\"".format(feet=feet, inches=inches)
 
 
+# Create your models here.
+class Courts(models.Model):
+    name = models.CharField(max_length=200)
+    # Will be obtained with the google maps api
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    park = models.ForeignKey('pickup.Parks', on_delete=models.CASCADE)
+
+    # Overload the query print
+    def __str__(self):
+        return self.name
+
+# Create your models here.
+class Parks(models.Model):
+    class Meta:
+        # Prevent the same park from being entered twice
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'street', 'city', 'state', 'zipcode'], name="%(app_label)s_%("
+                                                                                                "class)s_unique")
+        ]
+
+    player = models.ForeignKey(User, default="", on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    # address will be inserted after formatting with the googlemaps package
+    street = models.CharField(max_length=400)
+    city = models.CharField(max_length=400)
+    state = USStateField(choices=STATE_CHOICES)
+    zipcode = USZipCodeField()
+
+    objects = models.Manager()
+
+    # Overload the query print
+    def __str__(self):
+        return self.name

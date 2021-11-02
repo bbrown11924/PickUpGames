@@ -1,10 +1,9 @@
 # File: forms.py
 #
 # This file contains the Django Form objects.
-
+from django.forms import ModelForm
+from .models import Parks, Player
 from django import forms
-
-from .models import Player
 
 # form for the registration page
 # fields are labeled as optional so that validation can be handled by the view
@@ -23,3 +22,10 @@ class ProfileForm(forms.Form):
     gender = forms.ChoiceField(choices=Player.genders, required=False)
     height = forms.IntegerField(required=False)
     weight = forms.IntegerField(required=False)
+
+#Creating the park form from the park model
+class ParkForm(ModelForm):
+    class Meta:
+        model = Parks
+        fields = ['name', 'street', 'city', 'state', 'zipcode']
+
