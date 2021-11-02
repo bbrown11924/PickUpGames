@@ -4,7 +4,7 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 from pickup.models import Parks, Player
 
-# tests for the Player model, independent of any view
+# tests for the Park model, independent of any view
 class ParkModelTests(TestCase):
 
     # test adding a new Park
@@ -38,6 +38,7 @@ class ParkModelTests(TestCase):
             return
         self.assertEqual(0, 1)
 
+
 #Park has been added!
 class ParkViewTests(TestCase):
 
@@ -58,3 +59,63 @@ class ParkViewTests(TestCase):
         response = self.client.get(reverse("view_profile"))
         self.assertRedirects(response, reverse("login") + "?next=" +
                              reverse("view_profile"))
+
+    def test_add_park_invalid_zip(self):
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Parky', 'street':'Parkstreet', 'city':'Parkville',
+                             'state':'AZ', 'zipcode':'123456'}
+        response = self.client.post(reverse('Add Park'), fields)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Enter a zip code in the format")
+        self.assertNotContains(response, "Park has been added!")
+
+    def test_add_park_missing_info(self):
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Parky', 'street':'Parkstreet', 'city':'',
+                             'state':'AZ', 'zipcode':'12345'}
+        response = self.client.post(reverse('Add Park'), fields)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Park has been added!")
+
+    def test_add_park_bad_state(self):
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Parky', 'street':'Parkstreet', 'city':'Parkville',
+                             'state':'BS', 'zipcode':'12345'}
+        response = self.client.post(reverse('Add Park'), fields)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Park has been added!")
+
+    def test_add_park_good(self):
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Good Park', 'street':'Parkstreet', 'city':'Parkville',
+                             'state':'MD', 'zipcode':'12345'}
+        response = self.client.post(reverse('Add Park'), fields)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Park has been added!")
+
+        park = Parks.objects.get(name="Good Park")
+        self.assertEqual(park.name, 'Good Park')
