@@ -8,11 +8,8 @@ from django.contrib.auth import login
 from django.http import HttpResponse, HttpResponseRedirect
 
 # Import models and forms
-from .forms import ParkForm, RegistrationForm
+from .forms import ParkForm, RegistrationForm, ProfileForm
 from .models import Profile, Player, Parks
-from .models import Profile, Player
-from .forms import RegistrationForm, ProfileForm
-
 
 def index(request):
     return HttpResponse("Hello World. This is my test of creating a view")
@@ -214,7 +211,7 @@ def add_park(request):
 
             except IntegrityError:
 
-                return render(request, 'pickup/add_park.html')
+                return render(request, reverse('Add Park'))
 
             return HttpResponse("Park has been added!")
 

@@ -7,9 +7,6 @@ from localflavor.us.us_states import STATE_CHOICES
 from django.contrib.auth.models import User
 
 
-class Player(User):
-    pass
-
 # model for a player, containing their user/login data as well as information
 # in their profile
 class Player(User):
