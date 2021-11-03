@@ -13,3 +13,4 @@ class messaging_tests(TestCase):
         user_message = Messages.objects.create(sender= player1, reciever= player2, message= "Dont forget to commit when theres no errors!")
         user_message.save()
         self.assertEqual(Messages.objects.get(sender=player1), user_message)
+
