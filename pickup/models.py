@@ -30,8 +30,8 @@ class Player(User):
         return relativedelta(datetime.date.today(), self.date_of_birth).years
 
 class Messages(models.Model):
-    sender = models.ForeignKey(User, related_name = "sender", on_delete=models.RESTRICT)
-    reciever = models.ForeignKey(User, related_name="reciever", on_delete=models.RESTRICT)
+    sender = models.ForeignKey(Player, related_name = "sender", on_delete=models.RESTRICT)
+    reciever = models.ForeignKey(Player, related_name="reciever", on_delete=models.RESTRICT)
     message = models.CharField(max_length= 1000)
 
 
