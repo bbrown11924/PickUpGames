@@ -1,0 +1,22 @@
+<h1> Schedule Time for {{ park.name}} </h1>
+Schedule New Match:
+<form action= "{% url 'park_signup' park.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit">
+</form>
+{% if matches %}
+Existing Matches:
+<table>
+    <tr>
+        <th>Time</th>
+        <th>Players</th>
+    </tr>
+    {% for match in matches %}
+    <tr>
+        <td> {{ match.get_time_display}}</td>
+        <td> {{ match.player }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}

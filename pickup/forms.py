@@ -2,7 +2,7 @@
 #
 # This file contains the Django Form objects.
 from django.forms import ModelForm
-from .models import Parks, Player
+from .models import Parks, Player, Schedule
 from django import forms
 
 # form for the registration page
@@ -29,3 +29,8 @@ class ParkForm(ModelForm):
         model = Parks
         fields = ['name', 'street', 'city', 'state', 'zipcode']
 
+#Creating the park form from the park model
+class ScheduleForm(ModelForm):
+    class Meta:
+        model = Schedule
+        fields = ['time']

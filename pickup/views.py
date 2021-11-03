@@ -9,8 +9,8 @@ from django.contrib.auth import login
 from django.http import HttpResponse, HttpResponseRedirect
 
 # Import models and forms
-from .forms import ParkForm, RegistrationForm, ProfileForm
-from .models import Profile, Player, Parks
+from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm
+from .models import Profile, Player, Parks, Schedule
 
 def index(request):
     return render(request, "pickup/index.html")
@@ -231,7 +231,32 @@ def view_park(request):
 def park_signup(request, parkid):
     park = Parks.objects.get(id=parkid)
     if park:
-        return HttpResponse(park.name)
+        if request.method == 'POST':
+            form = ScheduleForm(request.POST)
+            if form.is_valid():
+                input_data = form.cleaned_data
+                try:
+                    current_player = request.user
+
+                    new_match = Schedule(player=current_player, park=park,time=input_data['time'])
+                    new_match.save()
+
+                except IntegrityError:
+
+                    return HttpResponse("Error, Park could not be added")
+
+                return HttpResponseRedirect(reverse(park_signup, args=(parkid,)))
+
+        else:
+            form = ScheduleForm()
+
+            try:
+                matches = Schedule.objects.filter(park=parkid)
+            except Schedule.DoesNotExist:
+                matches = None
+
+        return render(request, 'pickup/schedule_time.html', {'form': form, 'park': park, 'matches':matches})
+
     else:
         return HttpResponse("No park found")
 
