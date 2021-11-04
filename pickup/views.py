@@ -6,8 +6,8 @@ from .models import Profile
 from django.shortcuts import render
 
 
-def index(request):
-    return render(request, 'pickup/index.html', {})
+def home(request):
+    return render(request, 'pickup/home.html', {})
 
 
 def profile_list(request):
