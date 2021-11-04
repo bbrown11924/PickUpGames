@@ -7,13 +7,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.http import HttpResponse, HttpResponseRedirect
 
+
+
+
+
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm
 from .models import Profile, Player, Parks, Schedule
 
 def index(request):
     return render(request, "pickup/index.html")
-
+  
+def home(request):
+    return render(request, 'pickup/home.html', {})
 # view for page to register a new account
 def register(request):
     # check for visiting for first time or submitting

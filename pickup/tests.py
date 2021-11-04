@@ -1,8 +1,12 @@
 from .models import Profile
+
+from pickup.navbar_tests import *
+
 from pickup.account_tests import *
 from pickup.park_tests import *
 from pickup.messages_tests import *
 from pickup.schedule_test import *
+
 
 # Test cases to make sure that pages exist
 class PageExistenceTests(TestCase):
