@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'pickup/style.css' %}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'pickup/PickUpGamesTabImg.ico' %}" />
+    <title>PickUpGames - Home</title>
+</head>
+
+<body>
+
+<header>
+    <h1>Welcome to PickUpGames!</h1>
+    <div id="LoginSignUp">
+        <a id="login" href={% url 'login' %}>Login</a>
+        <a id="signup" href="{% url 'register' %}">Sign Up</a>
+    </div>
+</header>
+
+<main>
+    <h2>Who Are We?</h2>
+    <p>
+        We are a way for you to sign up to play pickup basketball with locals and friends, across all skill levels.
+        No need to try to take it upon yourself to organize games with friends, just sign up for a day and time
+        and be ready to play!
+    </p>
+
+    <h2>How Do I Get Started?</h2>
+    <p>
+        Getting started is as easy as making an <a href="{% url 'register' %}">Account</a>!
+        After that, you can register for games around you.
+    </p>
+
+    <h2>Why PickUpGames</h2>
+    <p>
+        Why not? It's free to use and you get to play with a new community of people.
+        Bring your friends and make more!
+    </p>
+
+</main>
+
+<footer>
+    <!-- Working on unified footer, wont need anything here -->
+</footer>
+
+</body>
+</html>
