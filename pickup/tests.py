@@ -1,6 +1,7 @@
 from django.test import TestCase
 from .models import Profile
 
+from pickup.navbar_tests import *
 
 # Test cases to make sure that pages exist
 class PageExistenceTests(TestCase):
