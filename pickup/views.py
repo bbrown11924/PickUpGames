@@ -271,3 +271,7 @@ def park_signup(request, parkid):
     else:
         return HttpResponse("No park found")
 
+
+@login_required(login_url="login")
+def message_user(request):
+    return render(request, 'pickup/messages.html')
