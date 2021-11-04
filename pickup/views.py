@@ -6,6 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.http import HttpResponse, HttpResponseRedirect
+import os
 
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm
@@ -222,4 +223,6 @@ def add_park(request):
 
 
 def open_maps(request):
-    return render(request, 'maps.html')
+    return render(request, 'maps.html', context={
+        'apiKey': os.environ.get('apiKey')
+    })
