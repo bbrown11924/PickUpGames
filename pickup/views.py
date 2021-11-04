@@ -229,6 +229,7 @@ def view_park(request):
 @login_required(login_url="login")
 def park_signup(request, parkid):
     park = Parks.objects.get(id=parkid)
+    error = None
     #Get the list of matches specific to this park
     try:
         matches = Schedule.objects.filter(park=parkid).order_by('date')
@@ -253,14 +254,18 @@ def park_signup(request, parkid):
 
         input_data = form.cleaned_data
 
-        #Save the new schedule entry and reload the page
+        #Save the new schedule
         current_player = request.user
         new_match = Schedule(player=current_player, park=park,time=input_data['time'], date=input_data['date'])
-        new_match.save()
+        try:
+            new_match.save()
+        except IntegrityError:
+            error = "Error: Already signed up for this slot"
 
         context = {'form': form,
                    'park': park,
-                   'matches': matches}
+                   'matches': matches,
+                   'error': error}
         return render(request, 'pickup/schedule_time.html', context)
 
     else:

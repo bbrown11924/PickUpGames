@@ -1,5 +1,6 @@
 <h1> Schedule Time for {{ park.name}} </h1>
 Schedule New Match:
+{% if error %}<p id="error">{{ error }}</p> {% endif %}
 <form action= "{% url 'park_signup' park.id %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}

@@ -82,7 +82,7 @@ class Schedule(models.Model):
     class Meta:
         # Prevent the same park from being entered twice
         constraints = [
-            models.UniqueConstraint(fields=['player', 'park', 'time'], name="%(app_label)s_%(class)s_unique")]
+            models.UniqueConstraint(fields=['player', 'park', 'time', 'date'], name="%(app_label)s_%(class)s_unique")]
 
     times = []
     for i in range(0, 24 * 4):
