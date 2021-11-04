@@ -9,11 +9,13 @@ Schedule New Match:
 Existing Matches:
 <table>
     <tr>
+        <th>Date</th>
         <th>Time</th>
         <th>Players</th>
     </tr>
     {% for match in matches %}
     <tr>
+        <td> {{ match.date}}</td>
         <td> {{ match.get_time_display}}</td>
         <td> {{ match.player }}</td>
     </tr>

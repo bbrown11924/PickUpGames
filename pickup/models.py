@@ -92,6 +92,8 @@ class Schedule(models.Model):
 
     player = models.ForeignKey(User, default="", on_delete=models.CASCADE)
     park = models.ForeignKey(Parks, default="", on_delete=models.CASCADE)
+    date = models.DateField(null=True, blank=True)
     time = models.IntegerField(choices=times)
 
     objects = models.Manager()
+

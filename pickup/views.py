@@ -230,32 +230,39 @@ def view_park(request):
 @login_required(login_url="login")
 def park_signup(request, parkid):
     park = Parks.objects.get(id=parkid)
+    #Get the list of matches specific to this park
+    try:
+        matches = Schedule.objects.filter(park=parkid).order_by('date')
+    except Schedule.DoesNotExist:
+        matches = None
+
     if park:
-        if request.method == 'POST':
-            form = ScheduleForm(request.POST)
-            if form.is_valid():
-                input_data = form.cleaned_data
-                try:
-                    current_player = request.user
+        if request.method != 'POST':
 
-                    new_match = Schedule(player=current_player, park=park,time=input_data['time'])
-                    new_match.save()
-
-                except IntegrityError:
-
-                    return HttpResponse("Error, Park could not be added")
-
-                return HttpResponseRedirect(reverse(park_signup, args=(parkid,)))
-
-        else:
             form = ScheduleForm()
 
-            try:
-                matches = Schedule.objects.filter(park=parkid)
-            except Schedule.DoesNotExist:
-                matches = None
+            return render(request, 'pickup/schedule_time.html', {'form': form, 'park': park, 'matches': matches})
 
-        return render(request, 'pickup/schedule_time.html', {'form': form, 'park': park, 'matches':matches})
+        form = ScheduleForm(request.POST)
+
+        if not form.is_valid():
+            context = {'form': form,
+                       'park': park,
+                       'error': form.errors,
+                       'matches': matches}
+            return render(request, 'pickup/schedule_time.html',context)
+
+        input_data = form.cleaned_data
+
+        #Save the new schedule entry and reload the page
+        current_player = request.user
+        new_match = Schedule(player=current_player, park=park,time=input_data['time'], date=input_data['date'])
+        new_match.save()
+
+        context = {'form': form,
+                   'park': park,
+                   'matches': matches}
+        return render(request, 'pickup/schedule_time.html', context)
 
     else:
         return HttpResponse("No park found")

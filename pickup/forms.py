@@ -1,5 +1,7 @@
 # File: forms.py
 #
+import datetime
+
 # This file contains the Django Form objects.
 from django.forms import ModelForm
 from .models import Parks, Player, Schedule
@@ -29,8 +31,20 @@ class ParkForm(ModelForm):
         model = Parks
         fields = ['name', 'street', 'city', 'state', 'zipcode']
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
 #Creating the park form from the park model
 class ScheduleForm(ModelForm):
     class Meta:
         model = Schedule
-        fields = ['time']
+        fields = ['date', 'time']
+        widgets = {
+            'date': DateInput()
+        }
+
+    def clean_date(self):
+        date = self.cleaned_data['date']
+        if date < datetime.date.today():
+            raise forms.ValidationError("The date cannot be in the past!")
+        return date
