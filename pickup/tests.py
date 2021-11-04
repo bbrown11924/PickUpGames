@@ -1,7 +1,7 @@
 from .models import Profile
 from pickup.account_tests import *
 from pickup.park_tests import *
-
+from pickup.maps_test import *
 
 # Test cases to make sure that pages exist
 class PageExistenceTests(TestCase):

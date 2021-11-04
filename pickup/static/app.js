@@ -1,3 +1,12 @@
+/*
+ File: app.js
+ Author: Mansoor Shehzad
+ This file contains the code pertaining to the use and customiztion of the google
+ maps api. This code displays the map and acesses the Distances API to find
+ the closest store
+ 
+ */
+
 const mapStyle = [{
     'featureType': 'administrative',
     'elementType': 'all',
