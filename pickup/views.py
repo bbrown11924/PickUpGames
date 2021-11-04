@@ -1,4 +1,3 @@
-import django_tables2
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.validators import validate_email
