@@ -135,3 +135,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # URL to redirect to after login
 LOGIN_REDIRECT_URL = "/profile/"
+
+#for API key
+apiKey = os.environ.get('apiKey')

@@ -219,3 +219,7 @@ def add_park(request):
         form = ParkForm()
 
     return render(request, 'add_park.html', {'form': form})
+
+
+def open_maps(request):
+    return render(request, 'maps.html')
