@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>List of Parks</title>
+    </head>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zipcode</th>
+        </tr>
+        {% for park in parks %}
+        <tr>
+            <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
+            <td> {{ park.city}}</td>
+            <td> {{ park.state }}</td>
+            <td> {{ park.zipcode }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</html>

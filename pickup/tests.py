@@ -1,7 +1,15 @@
 from .models import Profile
+
+from pickup.navbar_tests import *
+
 from pickup.account_tests import *
 from pickup.park_tests import *
+
 from pickup.maps_test import *
+from pickup.messages_tests import *
+from pickup.schedule_test import *
+
+
 
 # Test cases to make sure that pages exist
 class PageExistenceTests(TestCase):
@@ -12,6 +20,12 @@ class PageExistenceTests(TestCase):
         """
         response = self.client.get('/admin/')
         self.assertEqual(response.status_code, 302)
+
+
+class IndexPageTests(TestCase):
+    def test_index_page_exists(self):
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
 
 
 class DatabaseTests(TestCase):

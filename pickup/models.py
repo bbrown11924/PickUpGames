@@ -29,6 +29,12 @@ class Player(User):
             return None
         return relativedelta(datetime.date.today(), self.date_of_birth).years
 
+class Messages(models.Model):
+    sender = models.ForeignKey(Player, related_name="sender", on_delete=models.RESTRICT)
+    receiver = models.ForeignKey(Player, related_name="receiver", on_delete=models.RESTRICT)
+    message = models.CharField(max_length=1000)
+
+
 class Profile(models.Model):
     name = models.CharField(max_length=200)
     weight = models.IntegerField()
@@ -77,3 +83,23 @@ class Parks(models.Model):
     # Overload the query print
     def __str__(self):
         return self.name
+
+class Schedule(models.Model):
+    class Meta:
+        # Prevent the same park from being entered twice
+        constraints = [
+            models.UniqueConstraint(fields=['player', 'park', 'time', 'date'], name="%(app_label)s_%(class)s_unique")]
+
+    times = []
+    for i in range(0, 24 * 4):
+        time = datetime.datetime(1900, 1, 1, 0, 0) + datetime.timedelta(minutes=15 * i)
+        datetext = time.strftime("%I:%M %p")
+        times.append((i, datetext))
+
+    player = models.ForeignKey(User, default="", on_delete=models.CASCADE)
+    park = models.ForeignKey(Parks, default="", on_delete=models.CASCADE)
+    date = models.DateField(null=True, blank=True)
+    time = models.IntegerField(choices=times)
+
+    objects = models.Manager()
+
