@@ -8,8 +8,8 @@ from django.contrib.auth import login
 from django.http import HttpResponse, HttpResponseRedirect
 
 # Import models and forms
-from .forms import ParkForm, RegistrationForm, ProfileForm
-from .models import Profile, Player, Parks
+from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm
+from .models import Profile, Player, Parks, Schedule
 
 def index(request):
     return render(request, "pickup/index.html")
@@ -217,4 +217,57 @@ def add_park(request):
     else:
         form = ParkForm()
 
-    return render(request, 'add_park.html', {'form': form})
+    return render(request, 'pickup/add_park.html', {'form': form})
+
+@login_required(login_url="login")
+def view_park(request):
+
+    parks = Parks.objects.all()
+
+    return render(request, 'pickup/parks_list.html', {'parks': parks})
+
+@login_required(login_url="login")
+def park_signup(request, parkid):
+    park = Parks.objects.get(id=parkid)
+    error = None
+    #Get the list of matches specific to this park
+    try:
+        matches = Schedule.objects.filter(park=parkid).order_by('date')
+    except Schedule.DoesNotExist:
+        matches = None
+
+    if park:
+        if request.method != 'POST':
+
+            form = ScheduleForm()
+
+            return render(request, 'pickup/schedule_time.html', {'form': form, 'park': park, 'matches': matches})
+
+        form = ScheduleForm(request.POST)
+
+        if not form.is_valid():
+            context = {'form': form,
+                       'park': park,
+                       'error': form.errors,
+                       'matches': matches}
+            return render(request, 'pickup/schedule_time.html',context)
+
+        input_data = form.cleaned_data
+
+        #Save the new schedule
+        current_player = request.user
+        new_match = Schedule(player=current_player, park=park,time=input_data['time'], date=input_data['date'])
+        try:
+            new_match.save()
+        except IntegrityError:
+            error = "Error: Already signed up for this slot"
+
+        context = {'form': form,
+                   'park': park,
+                   'matches': matches,
+                   'error': error}
+        return render(request, 'pickup/schedule_time.html', context)
+
+    else:
+        return HttpResponse("No park found")
+
