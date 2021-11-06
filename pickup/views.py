@@ -4,7 +4,7 @@ from django.core.validators import validate_email
 from django.db.utils import IntegrityError
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.http import HttpResponse, HttpResponseRedirect
 
 
@@ -12,7 +12,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 
 # Import models and forms
-from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm
+from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
+    ChangePasswordForm
 from .models import Profile, Player, Parks, Schedule
 
 def index(request):
@@ -78,9 +79,40 @@ class Login(LoginView):
 class Logout(LogoutView):
     next_page = "login"
 
-# view for page to view one's own profile (must be logged in)
 
-# view for page to view a profile (must be logged in)
+# view for changing one's password (must be logged in)
+@login_required(login_url="login")
+def change_password(request):
+    # check for visiting for first time or submitting
+    if request.method != "POST":
+        return render(request, 'pickup/change_password.html', {})
+
+    # get validated data
+    input_form = ChangePasswordForm(request.POST)
+    if not input_form.is_valid():
+        return render(request, 'pickup/change_password.html',
+                      {"error": "Error: Input is invalid."})
+
+    input_data = input_form.cleaned_data
+
+    # validate old password
+    if authenticate(username=request.user.username,
+                    password=input_data["old_password"]) == None:
+        return render(request, 'pickup/change_password.html',
+                      {"error": "Error: Incorrect old password."})
+
+    # verify both passwords match
+    if input_data["new_password"] != input_data["confirm_password"]:
+        context = {"error":
+                   "Error: New password does not match confirmed password."}
+        return render(request, 'pickup/change_password.html', context)
+
+    request.user.set_password(input_data["new_password"])
+    request.user.save()
+    return HttpResponseRedirect(reverse('view_profile'))
+
+
+# view for page to view one's own profile (must be logged in)
 @login_required(login_url="login")
 def view_profile(request):
 
