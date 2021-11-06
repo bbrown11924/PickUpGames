@@ -107,8 +107,10 @@ def change_password(request):
                    "Error: New password does not match confirmed password."}
         return render(request, 'pickup/change_password.html', context)
 
+    # update the user's password
     request.user.set_password(input_data["new_password"])
     request.user.save()
+    login(request, request.user)
     return HttpResponseRedirect(reverse('view_profile'))
 
 
