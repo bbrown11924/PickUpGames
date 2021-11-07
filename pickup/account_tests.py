@@ -437,7 +437,7 @@ class ChangePasswordTests(TestCase):
 
         # try changing the user's password
         fields = {"old_password": "Trump2016",
-                  "new_password": "Trump2016",
+                  "new_password": "Trump2020",
                   "confirm_password": "Trump2020",}
         response = self.client.post(reverse("change_password"), fields)
         self.assertEqual(response.status_code, 200)
