@@ -124,6 +124,9 @@ def view_profile(request):
 @login_required(login_url="login")
 def view_player(request, username):
 
+    # check for viewing own profile
+    is_self = request.user.username == username
+
     # get the user's information
     user = Player.objects.get(username=username)
 
@@ -163,7 +166,8 @@ def view_player(request, username):
                "age": age,
                "gender": gender,
                "height": height,
-               "weight": weight,}
+               "weight": weight,
+               "is_self": is_self,}
     return render(request, 'pickup/profile.html', context)
 
 def profile_list(request):
