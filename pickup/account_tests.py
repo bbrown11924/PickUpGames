@@ -377,3 +377,89 @@ class ProfileTests(TestCase):
         self.assertContains(response, "Female")
         self.assertContains(response, "61 in")
         self.assertContains(response, "110 lbs")
+
+
+# tests for changing a user's password
+class ChangePasswordTests(TestCase):
+
+    # try to access the change password page without logging in
+    def get_change_password_page_without_login(self):
+        response = self.client.get(reverse("change_password"))
+        self.assertRedirects(response, reverse("login"))
+
+    # test filling out the filling out the change password page, logging out,
+    # and logging back in with both the old and new passwords
+    def test_change_password(self):
+        player = Player.objects.create_user("Ted", "cruz@senate.gov",
+                                            "ObamaIsTheWorst!")
+        player.save()
+
+        # log in
+        fields = {"username": "Ted", "password": "ObamaIsTheWorst!"}
+        response = self.client.post(reverse("login"), fields)
+
+        # go to the change password page
+        response = self.client.get(reverse("change_password"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Change Password")
+
+        # change the user's password
+        fields = {"old_password": "ObamaIsTheWorst!",
+                  "new_password": "BidenIsTheWorst!",
+                  "confirm_password": "BidenIsTheWorst!",}
+        response = self.client.post(reverse("change_password"), fields)
+        self.assertRedirects(response, reverse("view_profile"))
+
+        # log out
+        response = self.client.get(reverse("logout"))
+        self.assertRedirects(response, reverse("login"))
+
+        # try logging in with the old password
+        fields = {"username": "Ted", "password": "ObamaIsTheWorst!"}
+        response = self.client.post(reverse("login"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Error: Invalid login credentials.")
+
+        # try logging in with the new password
+        fields = {"username": "Ted", "password": "BidenIsTheWorst!"}
+        response = self.client.post(reverse("login"), fields)
+        self.assertEqual(response.status_code, 302)
+
+    # test trying to change the user's password with the wrong old password
+    def test_change_password_with_wrong_old_password(self):
+        player = Player.objects.create_user("Mitch", "GopLeader@senate.gov",
+                                            "NotTrump2016")
+        player.save()
+
+        # log in
+        fields = {"username": "Mitch", "password": "NotTrump2016"}
+        response = self.client.post(reverse("login"), fields)
+
+        # try changing the user's password
+        fields = {"old_password": "Trump2016",
+                  "new_password": "Trump2020",
+                  "confirm_password": "Trump2020",}
+        response = self.client.post(reverse("change_password"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Error: Incorrect old password.")
+
+    # test trying to change the user's password with a different new password
+    # and confirmed password
+    def test_change_password_with_mismatched_passwords(self):
+        player = Player.objects.create_user("Mitch", "GopLeader@senate.gov",
+                                            "LowerTaxes!")
+        player.save()
+
+        # log in
+        fields = {"username": "Mitch", "password": "LowerTaxes!"}
+        response = self.client.post(reverse("login"), fields)
+
+        # try changing the user's password
+        fields = {"old_password": "LowerTaxes!",
+                  "new_password": "LowerSpending!",
+                  "confirm_password": "LowerDemocraticSpending!",}
+        response = self.client.post(reverse("change_password"), fields)
+
+        self.assertEqual(response.status_code, 200)
+        error_string = "Error: New password does not match confirmed password."
+        self.assertContains(response, error_string)

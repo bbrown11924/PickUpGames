@@ -25,6 +25,14 @@ class ProfileForm(forms.Form):
     height = forms.IntegerField(required=False)
     weight = forms.IntegerField(required=False)
 
+# form for the change password page
+# fields are labeled as optional so that validation can be handled by the view
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput(), required=False)
+    new_password = forms.CharField(widget=forms.PasswordInput(), required=False)
+    confirm_password = forms.CharField(widget=forms.PasswordInput(),
+                                       required=False)
+
 #Creating the park form from the park model
 class ParkForm(ModelForm):
     class Meta:
