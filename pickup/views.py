@@ -117,9 +117,14 @@ def change_password(request):
 # view for page to view one's own profile (must be logged in)
 @login_required(login_url="login")
 def view_profile(request):
+    return view_player(request, request.user.username)
 
-    # get the user's username
-    username = request.user.username
+
+# view for page to view any player's profile
+@login_required(login_url="login")
+def view_player(request, username):
+
+    # get the user's information
     user = Player.objects.get(username=username)
 
     # get the user's actual full name

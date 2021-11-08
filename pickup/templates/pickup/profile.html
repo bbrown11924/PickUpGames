@@ -1,24 +1,17 @@
-<!DOCTYPE html>
-<html>
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'pickup/style.css' %}">
-<head>
-    <link rel="shortcut icon" type="image/x-icon" href="{% static 'pickup/PickUpGamesTabImg.ico' %}" />
-    <title>Pickup Games | Profile</title>
-</head>
-<body>
+{% extends 'pickup/base.html' %}
 
-    <h1>Pickup Games</h1>
-    <h2>Your Profile: {{ username }}</h2>
+{% block content %}
 
-    <p>Actual name: {{ full_name }}</p>
-    <p>Age: {{ age }}</p>
-    <p>Gender: {{ gender }}</p>
-    <p>Height: {{ height }}</p>
-    <p>Weight: {{ weight }}</p>
+<h1>Pickup Games</h1>
+<h2>Your Profile: {{ username }}</h2>
 
-    <p><a href="{% url 'edit_profile' %}">Edit Profile</a></p>
-    <p><a href="{% url 'change_password' %}">Change Password</a></p>
+<p>Actual name: {{ full_name }}</p>
+<p>Age: {{ age }}</p>
+<p>Gender: {{ gender }}</p>
+<p>Height: {{ height }}</p>
+<p>Weight: {{ weight }}</p>
 
-</body>
-</html>
+<p><a href="{% url 'edit_profile' %}">Edit Profile</a></p>
+<p><a href="{% url 'change_password' %}">Change Password</a></p>
+
+{% endblock %}
