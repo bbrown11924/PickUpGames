@@ -467,6 +467,7 @@ class ChangePasswordTests(TestCase):
         error_string = "Error: New password does not match confirmed password."
         self.assertContains(response, error_string)
 
+
 # tests for viewing any player's profile
 class ViewPlayerTests(TestCase):
 

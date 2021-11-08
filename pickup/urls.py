@@ -10,6 +10,7 @@ urlpatterns = [
     path('logout/', views.Logout.as_view(), name='logout'),
     path('profile/', views.view_profile, name='view_profile'),
     path('player/<str:username>/', views.view_player, name='view_player'),
+    path('searchplayers/', views.search_players, name='search_players'),
     path('changepassword/', views.change_password, name='change_password'),
     path('add_park/', views.add_park, name='Add Park'),
     path('profile/edit', views.edit_profile, name='edit_profile'),

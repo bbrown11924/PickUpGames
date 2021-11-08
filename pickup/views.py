@@ -13,7 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
-    ChangePasswordForm
+    ChangePasswordForm, SearchForm
 from .models import Profile, Player, Parks, Schedule
 
 def index(request):
@@ -169,6 +169,27 @@ def view_player(request, username):
                "weight": weight,
                "is_self": is_self,}
     return render(request, 'pickup/profile.html', context)
+
+
+# view for page to search for player profiles
+@login_required(login_url="login")
+def search_players(request):
+
+    # check for visiting for first time or submitting
+    if request.method != "POST":
+        return render(request, 'pickup/search_players.html', {})
+
+    # get validated data
+    input_form = SearchForm(request.POST)
+    input_form.is_valid()
+    search_text = input_form.cleaned_data["search_text"]
+
+    # get the list of players
+    players = Player.objects.filter(username__contains=search_text)
+    context = {"players": players,
+               "search_input": search_text,}
+    return render(request, 'pickup/search_players.html', context)
+
 
 def profile_list(request):
     profileList = Profile.objects.all()
