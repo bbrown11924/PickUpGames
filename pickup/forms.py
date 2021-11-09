@@ -56,3 +56,7 @@ class ScheduleForm(ModelForm):
         if date < datetime.date.today():
             raise forms.ValidationError("The date cannot be in the past!")
         return date
+
+# form for searching something
+class SearchForm(forms.Form):
+    search_text = forms.CharField(required=False)

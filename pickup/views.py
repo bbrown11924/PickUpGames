@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
-    ChangePasswordForm
+    ChangePasswordForm, SearchForm
 from .models import Profile, Player, Parks, Schedule, FavoriteParks
 
 def index(request):
@@ -258,13 +258,24 @@ def add_park(request):
 
 @login_required(login_url="login")
 def view_park(request):
-
+    # check for visiting for first time or submitting
     favorites = FavoriteParks.objects.filter(player=request.user).values("park_id")
     favoriteParks = Parks.objects.filter(id__in=favorites)
-    print(favoriteParks)
-    otherParks = Parks.objects.exclude(id__in=favorites)
-    print(otherParks)
-    return render(request, 'pickup/parks_list.html', {'favparks': favoriteParks, 'otherparks':otherParks})
+
+    if request.method != "GET":
+
+        return render(request, 'pickup/parks_list.html', {'favparks': favoriteParks})
+
+    # get validated data
+    input_form = SearchForm(request.GET)
+    input_form.is_valid()
+    search_text = input_form.cleaned_data["search_text"]
+
+    # get the list of players
+    favparks = Parks.objects.filter(name__contains=search_text, id__in=favorites)
+    nofavparks = Parks.objects.filter(name__contains=search_text).exclude(id__in=favorites)
+    context = {"favsearchparks": favparks,"nofavsearchparks": nofavparks,"search_input": search_text,'favparks': favoriteParks }
+    return render(request, 'pickup/parks_list.html', context)
 
 @login_required(login_url="login")
 def park_signup(request, parkid):

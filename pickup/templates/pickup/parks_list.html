@@ -21,6 +21,7 @@
 </html>
 <p>My Parks:</p>
 <table class="table table-bordered table-striped">
+    <thead>
     <tr>
         <th>Name</th>
         <th>City</th>
@@ -28,6 +29,7 @@
         <th>Zipcode</th>
         <th>Favorite</th>
     </tr>
+    </thead>
     {% for park in favparks %}
     <tr>
         <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
@@ -39,24 +41,46 @@
     {% endfor %}
 </table>
 
-<p>Other Parks:</p>
-<table class="table table-bordered table-striped">
-    <tr>
-        <th>Name</th>
-        <th>City</th>
-        <th>State</th>
-        <th>Zipcode</th>
-        <th>Favorite</th>
-    </tr>
-    {% for park in otherparks %}
-    <tr>
-        <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
-        <td> {{ park.city}}</td>
-        <td> {{ park.state }}</td>
-        <td> {{ park.zipcode }}</td>
-        <td> <a href="/favorite/1/{{ park.id }}/"><span class="fa fa-star unchecked"></span></a></td>
-    </tr>
-    {% endfor %}
-</table>
+<p>Search for New Parks:</p>
+<form action="{% url 'parks' %}" method="get" id="search_form">
+    <p>
+        <input type="search" id="search_bar" name="search_text"
+            value="{{ search_input }}" />
+        <input type="submit" value="Search" />
+    </p>
+</form>
+
+{% if favsearchparks or nofavsearchparks %}
+    <p>Search results:</p>
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Zipcode</th>
+                <th>Favorite</th>
+            </tr>
+            </thead>
+            {% for park in favsearchparks %}
+            <tr>
+                <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
+                <td> {{ park.city}}</td>
+                <td> {{ park.state }}</td>
+                <td> {{ park.zipcode }}</td>
+                <td> <a href="/favorite/0/{{ park.id }}/"><span class="fa fa-star checked"></span></a></td>
+            </tr>
+            {% endfor %}
+            {% for park in nofavsearchparks %}
+            <tr>
+                <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
+                <td> {{ park.city}}</td>
+                <td> {{ park.state }}</td>
+                <td> {{ park.zipcode }}</td>
+                <td> <a href="/favorite/1/{{ park.id }}/"><span class="fa fa-star unchecked"></span></a></td>
+            </tr>
+            {% endfor %}
+        </table>
+{% endif %}
 
 {% endblock %}
