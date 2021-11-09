@@ -532,3 +532,76 @@ class ViewPlayerTests(TestCase):
         self.assertContains(response, "71 in")
         self.assertContains(response, "137 lbs")
         self.assertNotContains(response, "Edit Profile")
+
+
+# tests for searching for a player's profile
+class SearchPlayerTests(TestCase):
+
+    # test accessing the search page without searching for anything
+    def test_view_search_page_without_search(self):
+        user = Player.objects.create_user("Voter", "ivoted@vote411.org",
+                                          "Vote2024")
+        user.save()
+
+        # log in and get the search players page
+        fields = {"username": "Voter", "password": "Vote2024"}
+        response = self.client.post(reverse("login"), fields)
+        response = self.client.get(reverse("search_players"))
+
+        # check for correct results
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Search Players")
+        self.assertNotContains(response, "Search results")
+
+    # test performing searches
+    def test_search_players(self):
+
+        # create some players
+        player1 = Player.objects.create_user("SenCardin", "cardin@senate.gov",
+                                             "BenCardinMD")
+        player2 = Player.objects.create_user("SenVanHollen",
+                                             "vanhollen@senate.gov",
+                                             "ChrisVanHollenMD")
+        player3 = Player.objects.create_user("RepMfume", "mfume@house.gov",
+                                             "KweisiMfumeMD")
+        player1.save()
+        player2.save()
+        player3.save()
+
+        # log in
+        fields = {"username": "SenCardin", "password": "BenCardinMD"}
+        response = self.client.post(reverse("login"), fields)
+
+        # search with the empty string
+        response = self.client.post(reverse("search_players"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Search results")
+        self.assertContains(response, "SenCardin")
+        self.assertContains(response, "SenVanHollen")
+        self.assertContains(response, "RepMfume")
+        self.assertContains(response,
+                            reverse("view_player", args=["SenCardin"]))
+
+        # search for "Sen"
+        fields = {"search_text": "Sen"}
+        response = self.client.post(reverse("search_players"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "SenCardin")
+        self.assertContains(response, "SenVanHollen")
+        self.assertNotContains(response, "RepMfume")
+
+        # search for "Rep"
+        fields = {"search_text": "Rep"}
+        response = self.client.post(reverse("search_players"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "SenCardin")
+        self.assertNotContains(response, "SenVanHollen")
+        self.assertContains(response, "RepMfume")
+
+        # search for "President" (should have no results)
+        fields = {"search_text": "President"}
+        response = self.client.post(reverse("search_players"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "SenCardin")
+        self.assertNotContains(response, "SenVanHollen")
+        self.assertNotContains(response, "RepMfume")
