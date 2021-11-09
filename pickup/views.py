@@ -310,7 +310,7 @@ def park_signup(request, parkid):
         return HttpResponse("No park found")
 
 @login_required(login_url="login")
-def favorite_park(request, parkid):
+def favorite_park(request,add, parkid):
     park = Parks.objects.get(id=parkid)
     error = None
     #Get the list of matches specific to this park
@@ -318,17 +318,25 @@ def favorite_park(request, parkid):
     if park:
         if request.method != 'POST':
 
-            return render(request, 'pickup/favorite_park.html', {'park': park})
+            return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add})
 
-
-        #Save the new park
+        # Check if you are adding or deleting and respond
         current_player = request.user
-        new_fav = FavoriteParks(player=current_player, park=park)
-        try:
-            new_fav.save()
-        except IntegrityError:
-            error = "Error: This park is already one of your favorites!"
-            return render(request, 'pickup/favorite_park.html', {'park': park, 'error':error})
+
+        if add:
+            try:
+                new_fav = FavoriteParks(player=current_player, park=park)
+                new_fav.save()
+            except IntegrityError:
+                error = "Error: This park is already one of your favorites!"
+                return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add, 'error':error})
+
+        if not add:
+            try:
+                FavoriteParks.objects.get(park=park).delete()
+            except IntegrityError:
+                error = "Error: This park is not one of your favorites!"
+                return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add, 'error':error})
 
         return HttpResponseRedirect(reverse('parks'))
 

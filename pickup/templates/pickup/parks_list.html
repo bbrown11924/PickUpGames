@@ -10,6 +10,9 @@
 .checked {
   color: orange;
 }
+.unchecked {
+  color: gray;
+}
 </style>
 </head>
 <body>
@@ -17,7 +20,7 @@
 </body>
 </html>
 <p>Favorite Parks:</p>
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
     <tr>
         <th>Name</th>
         <th>City</th>
@@ -31,13 +34,13 @@
         <td> {{ park.city}}</td>
         <td> {{ park.state }}</td>
         <td> {{ park.zipcode }}</td>
-        <td> <a href="/favorite/{{ park.id }}/"><span class="fa fa-star checked"></span></a></td>
+        <td> <a href="/favorite/0/{{ park.id }}/"><span class="fa fa-star checked"></span></a></td>
     </tr>
     {% endfor %}
 </table>
 
 <p>Other Parks:</p>
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
     <tr>
         <th>Name</th>
         <th>City</th>
@@ -51,7 +54,7 @@
         <td> {{ park.city}}</td>
         <td> {{ park.state }}</td>
         <td> {{ park.zipcode }}</td>
-        <td> <a href="/favorite/{{ park.id }}/"><span class="fa fa-star"></span></a></td>
+        <td> <a href="/favorite/1/{{ park.id }}/"><span class="fa fa-star unchecked"></span></a></td>
     </tr>
     {% endfor %}
 </table>

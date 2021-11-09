@@ -6,12 +6,17 @@
 
 {% if error %}<p id="error">{{ error }}</p> {% endif %}
 
-<p>Would you like to favorite {{park.name}}:</p>
+{% if add %}
+    <p>Add {{park.name}} to your favorites?</p>
+{% else %}
+    <p>Remove {{park.name}} from your favorites?</p>
+{% endif %}
 
-<form action="{% url 'favorite_park' park.id %}" method="post">
+
+<form action="{% url 'favorite_park' add park.id %}" method="post">
     {% csrf_token %}
     <p>
-    <input type="submit" value="Add Favorite" />
+    <input type="submit" value="Confirm" />
     <a href="{% url 'parks' %}">Cancel</a>
     </p>
 </form>
