@@ -259,9 +259,11 @@ def add_park(request):
 @login_required(login_url="login")
 def view_park(request):
 
-    favorites = FavoriteParks.objects.filter(player=request.user)
+    favorites = FavoriteParks.objects.filter(player=request.user).values("park_id")
     favoriteParks = Parks.objects.filter(id__in=favorites)
+    print(favoriteParks)
     otherParks = Parks.objects.exclude(id__in=favorites)
+    print(otherParks)
     return render(request, 'pickup/parks_list.html', {'favparks': favoriteParks, 'otherparks':otherParks})
 
 @login_required(login_url="login")
