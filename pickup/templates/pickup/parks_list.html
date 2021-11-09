@@ -1,21 +1,59 @@
-<html>
-    <head>
-        <title>List of Parks</title>
-    </head>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>City</th>
-            <th>State</th>
-            <th>Zipcode</th>
-        </tr>
-        {% for park in parks %}
-        <tr>
-            <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
-            <td> {{ park.city}}</td>
-            <td> {{ park.state }}</td>
-            <td> {{ park.zipcode }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+{% extends 'pickup/base.html' %}
+
+{% block content %}
+<h1>Pickup Games: Park List</h1>
+
+<head>
+<!-- Font Awesome Icon Library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+.checked {
+  color: orange;
+}
+</style>
+</head>
+<body>
+
+</body>
 </html>
+<p>Favorite Parks:</p>
+<table class="table table-bordered">
+    <tr>
+        <th>Name</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Zipcode</th>
+        <th>Favorite</th>
+    </tr>
+    {% for park in favparks %}
+    <tr>
+        <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
+        <td> {{ park.city}}</td>
+        <td> {{ park.state }}</td>
+        <td> {{ park.zipcode }}</td>
+        <td> <a href="/favorite/{{ park.id }}/"><span class="fa fa-star checked"></span></a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p>Other Parks:</p>
+<table class="table table-bordered">
+    <tr>
+        <th>Name</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Zipcode</th>
+        <th>Favorite</th>
+    </tr>
+    {% for park in otherparks %}
+    <tr>
+        <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
+        <td> {{ park.city}}</td>
+        <td> {{ park.state }}</td>
+        <td> {{ park.zipcode }}</td>
+        <td> <a href="/favorite/{{ park.id }}/"><span class="fa fa-star"></span></a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

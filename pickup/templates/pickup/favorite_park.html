@@ -1,0 +1,19 @@
+{% extends 'pickup/base.html' %}
+
+{% block content %}
+
+<h1>Pickup Games: Favorite Park</h1>
+
+{% if error %}<p id="error">{{ error }}</p> {% endif %}
+
+<p>Would you like to favorite {{park.name}}:</p>
+
+<form action="{% url 'favorite_park' park.id %}" method="post">
+    {% csrf_token %}
+    <p>
+    <input type="submit" value="Add Favorite" />
+    <a href="{% url 'parks' %}">Cancel</a>
+    </p>
+</form>
+
+{% endblock %}

@@ -8,13 +8,10 @@ from django.contrib.auth import login, authenticate
 from django.http import HttpResponse, HttpResponseRedirect
 
 
-
-
-
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
     ChangePasswordForm
-from .models import Profile, Player, Parks, Schedule
+from .models import Profile, Player, Parks, Schedule, FavoriteParks
 
 def index(request):
     return render(request, "pickup/index.html")
@@ -262,9 +259,10 @@ def add_park(request):
 @login_required(login_url="login")
 def view_park(request):
 
-    parks = Parks.objects.all()
-
-    return render(request, 'pickup/parks_list.html', {'parks': parks})
+    favorites = FavoriteParks.objects.filter(player=request.user)
+    favoriteParks = Parks.objects.filter(id__in=favorites)
+    otherParks = Parks.objects.exclude(id__in=favorites)
+    return render(request, 'pickup/parks_list.html', {'favparks': favoriteParks, 'otherparks':otherParks})
 
 @login_required(login_url="login")
 def park_signup(request, parkid):
@@ -311,3 +309,28 @@ def park_signup(request, parkid):
     else:
         return HttpResponse("No park found")
 
+@login_required(login_url="login")
+def favorite_park(request, parkid):
+    park = Parks.objects.get(id=parkid)
+    error = None
+    #Get the list of matches specific to this park
+
+    if park:
+        if request.method != 'POST':
+
+            return render(request, 'pickup/favorite_park.html', {'park': park})
+
+
+        #Save the new park
+        current_player = request.user
+        new_fav = FavoriteParks(player=current_player, park=park)
+        try:
+            new_fav.save()
+        except IntegrityError:
+            error = "Error: This park is already one of your favorites!"
+            return render(request, 'pickup/favorite_park.html', {'park': park, 'error':error})
+
+        return HttpResponseRedirect(reverse('parks'))
+
+    else:
+        return HttpResponse("No park found")
