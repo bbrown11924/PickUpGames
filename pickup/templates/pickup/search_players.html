@@ -6,8 +6,7 @@
 
 <p>Enter a user's username to search for their profile.</p>
 
-<form action="{% url 'search_players' %}" method="post" id="search_form">
-    {% csrf_token %}
+<form action="{% url 'search_players' %}" method="get" id="search_form">
     <p>
         <input type="search" id="search_bar" name="search_text"
             value="{{ search_input }}" />
@@ -23,6 +22,8 @@
                 {{ player.username }}</a></li>
         {% endfor %}
     </ul>
+{% elif no_results %}
+    <p>No results found.</p>
 {% endif %}
 
 {% endblock %}

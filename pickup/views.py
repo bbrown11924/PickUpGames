@@ -175,19 +175,20 @@ def view_player(request, username):
 @login_required(login_url="login")
 def search_players(request):
 
-    # check for visiting for first time or submitting
-    if request.method != "POST":
+    # check for visiting for first time or searching
+    if "search_text" not in request.GET.keys():
         return render(request, 'pickup/search_players.html', {})
 
     # get validated data
-    input_form = SearchForm(request.POST)
+    input_form = SearchForm(request.GET)
     input_form.is_valid()
     search_text = input_form.cleaned_data["search_text"]
 
     # get the list of players
     players = Player.objects.filter(username__contains=search_text)
     context = {"players": players,
-               "search_input": search_text,}
+               "search_input": search_text,
+               "no_results": list(players) == [],}
     return render(request, 'pickup/search_players.html', context)
 
 

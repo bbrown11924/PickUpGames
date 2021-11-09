@@ -573,7 +573,8 @@ class SearchPlayerTests(TestCase):
         response = self.client.post(reverse("login"), fields)
 
         # search with the empty string
-        response = self.client.post(reverse("search_players"))
+        fields = {"search_text": ""}
+        response = self.client.get(reverse("search_players"), fields)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Search results")
         self.assertContains(response, "SenCardin")
@@ -584,7 +585,7 @@ class SearchPlayerTests(TestCase):
 
         # search for "Sen"
         fields = {"search_text": "Sen"}
-        response = self.client.post(reverse("search_players"), fields)
+        response = self.client.get(reverse("search_players"), fields)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "SenCardin")
         self.assertContains(response, "SenVanHollen")
@@ -592,7 +593,7 @@ class SearchPlayerTests(TestCase):
 
         # search for "Rep"
         fields = {"search_text": "Rep"}
-        response = self.client.post(reverse("search_players"), fields)
+        response = self.client.get(reverse("search_players"), fields)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "SenCardin")
         self.assertNotContains(response, "SenVanHollen")
@@ -600,8 +601,9 @@ class SearchPlayerTests(TestCase):
 
         # search for "President" (should have no results)
         fields = {"search_text": "President"}
-        response = self.client.post(reverse("search_players"), fields)
+        response = self.client.get(reverse("search_players"), fields)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "SenCardin")
         self.assertNotContains(response, "SenVanHollen")
         self.assertNotContains(response, "RepMfume")
+        self.assertContains(response, "No results found.")
