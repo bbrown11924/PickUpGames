@@ -62,15 +62,6 @@
                 <th>Favorite</th>
             </tr>
             </thead>
-            {% for park in favsearchparks %}
-            <tr>
-                <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
-                <td> {{ park.city}}</td>
-                <td> {{ park.state }}</td>
-                <td> {{ park.zipcode }}</td>
-                <td> <a href="/favorite/0/{{ park.id }}/"><span class="fa fa-star checked"></span></a></td>
-            </tr>
-            {% endfor %}
             {% for park in nofavsearchparks %}
             <tr>
                 <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
@@ -78,6 +69,15 @@
                 <td> {{ park.state }}</td>
                 <td> {{ park.zipcode }}</td>
                 <td> <a href="/favorite/1/{{ park.id }}/"><span class="fa fa-star unchecked"></span></a></td>
+            </tr>
+            {% endfor %}
+            {% for park in favsearchparks %}
+            <tr>
+                <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
+                <td> {{ park.city}}</td>
+                <td> {{ park.state }}</td>
+                <td> {{ park.zipcode }}</td>
+                <td> <a href="/favorite/0/{{ park.id }}/"><span class="fa fa-star checked"></span></a></td>
             </tr>
             {% endfor %}
         </table>

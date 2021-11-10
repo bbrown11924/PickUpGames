@@ -293,7 +293,8 @@ def view_park(request):
     favorites = FavoriteParks.objects.filter(player=request.user).values("park_id")
     favoriteParks = Parks.objects.filter(id__in=favorites)
 
-    if request.method != "GET":
+    # check for visiting for first time or searching
+    if "search_text" not in request.GET.keys():
 
         return render(request, 'pickup/parks_list.html', {'favparks': favoriteParks})
 
