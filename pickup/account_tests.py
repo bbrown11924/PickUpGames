@@ -310,6 +310,7 @@ class ProfileTests(TestCase):
         response = self.client.get(reverse("view_profile"))
 
         # check for correct information
+        self.assertContains(response, "Your Profile")
         self.assertContains(response, "44")
         self.assertContains(response, "Barack Obama")
         age = player.get_age()
@@ -317,6 +318,7 @@ class ProfileTests(TestCase):
         self.assertContains(response, "Male")
         self.assertContains(response, "74 in")
         self.assertContains(response, "175 lbs")
+        self.assertContains(response, "Edit Profile")
 
     # test that the edit profile page contains information already filled in
     def test_edit_profile_autofill(self):
@@ -369,6 +371,7 @@ class ProfileTests(TestCase):
         # get the profile page results
         response = self.client.get(reverse("view_profile"))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Your Profile")
         self.assertContains(response, "RBG")
         self.assertContains(response, "Ruth Bader Ginsburg")
         age = relativedelta(datetime.date.today(),
@@ -463,3 +466,144 @@ class ChangePasswordTests(TestCase):
         self.assertEqual(response.status_code, 200)
         error_string = "Error: New password does not match confirmed password."
         self.assertContains(response, error_string)
+
+
+# tests for viewing any player's profile
+class ViewPlayerTests(TestCase):
+
+    # test viewing one's own profile through the player viewing interface
+    def test_view_player_self(self):
+        player = Player.objects.create_user("DrFauci", "fauci@niaid.nih.gov",
+                                            "Vaccinated.")
+        player.first_name = "Anthony"
+        player.last_name = "Fauci"
+        player.date_of_birth = datetime.date(1940, 12, 24)
+        player.gender = Player.MALE
+        player.height = 67
+        player.weight = 176
+        player.save()
+
+        # log in and go to player/DrFauci page
+        fields = {"username": "DrFauci", "password": "Vaccinated."}
+        response = self.client.post(reverse("login"), fields)
+        response = self.client.get(reverse("view_player", args=["DrFauci"]))
+
+        # check for correct information
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Your Profile")
+        self.assertContains(response, "DrFauci")
+        self.assertContains(response, "Anthony Fauci")
+        age = player.get_age()
+        self.assertContains(response, age)
+        self.assertContains(response, "Male")
+        self.assertContains(response, "67 in")
+        self.assertContains(response, "176 lbs")
+        self.assertContains(response, "Edit Profile")
+
+    # test viewing another player's profile
+    def test_view_other_player(self):
+        user = Player.objects.create_user("DrFauci", "fauci@niaid.nih.gov",
+                                          "Vaccinated.")
+
+        player = Player.objects.create_user("CDC_Director", "walensky@cdc.gov",
+                                            "EndCOVID!")
+        player.first_name = "Rochelle"
+        player.last_name = "Walensky"
+        player.date_of_birth = datetime.date(1969, 4, 5)
+        player.gender = Player.FEMALE
+        player.height = 71
+        player.weight = 137
+        player.save()
+
+        # log in and go to player/CDC_Director page
+        fields = {"username": "DrFauci", "password": "Vaccinated."}
+        response = self.client.post(reverse("login"), fields)
+        response = self.client.get(reverse("view_player",
+                                           args=["CDC_Director"]))
+
+        # check for correct information
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Player Profile")
+        self.assertContains(response, "CDC_Director")
+        self.assertContains(response, "Rochelle Walensky")
+        age = player.get_age()
+        self.assertContains(response, age)
+        self.assertContains(response, "Female")
+        self.assertContains(response, "71 in")
+        self.assertContains(response, "137 lbs")
+        self.assertNotContains(response, "Edit Profile")
+
+
+# tests for searching for a player's profile
+class SearchPlayerTests(TestCase):
+
+    # test accessing the search page without searching for anything
+    def test_view_search_page_without_search(self):
+        user = Player.objects.create_user("Voter", "ivoted@vote411.org",
+                                          "Vote2024")
+        user.save()
+
+        # log in and get the search players page
+        fields = {"username": "Voter", "password": "Vote2024"}
+        response = self.client.post(reverse("login"), fields)
+        response = self.client.get(reverse("search_players"))
+
+        # check for correct results
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Search Players")
+        self.assertNotContains(response, "Search results")
+
+    # test performing searches
+    def test_search_players(self):
+
+        # create some players
+        player1 = Player.objects.create_user("SenCardin", "cardin@senate.gov",
+                                             "BenCardinMD")
+        player2 = Player.objects.create_user("SenVanHollen",
+                                             "vanhollen@senate.gov",
+                                             "ChrisVanHollenMD")
+        player3 = Player.objects.create_user("RepMfume", "mfume@house.gov",
+                                             "KweisiMfumeMD")
+        player1.save()
+        player2.save()
+        player3.save()
+
+        # log in
+        fields = {"username": "SenCardin", "password": "BenCardinMD"}
+        response = self.client.post(reverse("login"), fields)
+
+        # search with the empty string
+        fields = {"search_text": ""}
+        response = self.client.get(reverse("search_players"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Search results")
+        self.assertContains(response, "SenCardin")
+        self.assertContains(response, "SenVanHollen")
+        self.assertContains(response, "RepMfume")
+        self.assertContains(response,
+                            reverse("view_player", args=["SenCardin"]))
+
+        # search for "Sen"
+        fields = {"search_text": "Sen"}
+        response = self.client.get(reverse("search_players"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "SenCardin")
+        self.assertContains(response, "SenVanHollen")
+        self.assertNotContains(response, "RepMfume")
+
+        # search for "Rep"
+        fields = {"search_text": "Rep"}
+        response = self.client.get(reverse("search_players"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "SenCardin")
+        self.assertNotContains(response, "SenVanHollen")
+        self.assertContains(response, "RepMfume")
+
+        # search for "President" (should have no results)
+        fields = {"search_text": "President"}
+        response = self.client.get(reverse("search_players"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "SenCardin")
+        self.assertNotContains(response, "SenVanHollen")
+        self.assertNotContains(response, "RepMfume")
+        self.assertContains(response, "No results found.")
