@@ -1,0 +1,29 @@
+{% extends 'pickup/base.html' %}
+
+{% block content %}
+
+<h1>Pickup Games: Search Players</h1>
+
+<p>Enter a user's username to search for their profile.</p>
+
+<form action="{% url 'search_players' %}" method="get" id="search_form">
+    <p>
+        <input type="search" id="search_bar" name="search_text"
+            value="{{ search_input }}" />
+        <input type="submit" value="Search" />
+    </p>
+</form>
+
+{% if players %}
+    <p>Search results:</p>
+    <ul>
+        {% for player in players %}
+            <li><a href="{% url 'view_player' player.username %}">
+                {{ player.username }}</a></li>
+        {% endfor %}
+    </ul>
+{% elif no_results %}
+    <p>No results found.</p>
+{% endif %}
+
+{% endblock %}
