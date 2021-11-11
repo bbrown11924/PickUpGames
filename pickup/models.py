@@ -103,3 +103,14 @@ class Schedule(models.Model):
 
     objects = models.Manager()
 
+class FavoriteParks(models.Model):
+    class Meta:
+        # Prevent the same park from being entered twice
+        constraints = [
+            models.UniqueConstraint(fields=['player', 'park'], name="%(app_label)s_%(class)s_unique")]
+
+
+    player = models.ForeignKey(User, default="", on_delete=models.CASCADE)
+    park = models.ForeignKey(Parks, default="", on_delete=models.CASCADE)
+
+    objects = models.Manager()

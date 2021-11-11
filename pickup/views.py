@@ -5,16 +5,13 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from django.http import HttpResponse, HttpResponseRedirect
-
-
-
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
     ChangePasswordForm, SearchForm
-from .models import Profile, Player, Parks, Schedule
+from .models import Profile, Player, Parks, Schedule, FavoriteParks
 
 def index(request):
     return render(request, "pickup/index.html")
@@ -292,10 +289,26 @@ def add_park(request):
 
 @login_required(login_url="login")
 def view_park(request):
+    # check for visiting for first time or submitting
+    favorites = FavoriteParks.objects.filter(player=request.user).values("park_id")
+    favoriteParks = Parks.objects.filter(id__in=favorites)
 
-    parks = Parks.objects.all()
+    # check for visiting for first time or searching
+    if "search_text" not in request.GET.keys():
 
-    return render(request, 'pickup/parks_list.html', {'parks': parks})
+        return render(request, 'pickup/parks_list.html', {'favparks': favoriteParks})
+
+    # get validated data
+    input_form = SearchForm(request.GET)
+    input_form.is_valid()
+    search_text = input_form.cleaned_data["search_text"]
+
+    # get the list of players
+    favparks = Parks.objects.filter(name__contains=search_text, id__in=favorites)
+    nofavparks = Parks.objects.filter(name__contains=search_text).exclude(id__in=favorites)
+    context = {"favsearchparks": favparks,"nofavsearchparks": nofavparks,
+               "search_input": search_text,'favparks': favoriteParks }
+    return render(request, 'pickup/parks_list.html', context)
 
 @login_required(login_url="login")
 def park_signup(request, parkid):
@@ -340,5 +353,38 @@ def park_signup(request, parkid):
         return render(request, 'pickup/schedule_time.html', context)
 
     else:
-        return HttpResponse("No park found")
+        raise Http404
 
+@login_required(login_url="login")
+def favorite_park(request, add, parkid):
+    park = Parks.objects.get(id=parkid)
+    error = None
+    #Get the list of matches specific to this park
+
+    if park:
+        if request.method != 'POST':
+
+            return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add})
+
+        # Check if you are adding or deleting and respond
+        current_player = request.user
+
+        if add:
+            try:
+                new_fav = FavoriteParks(player=current_player, park=park)
+                new_fav.save()
+            except IntegrityError:
+                error = "Error: This park is already one of your favorites!"
+                return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add, 'error':error})
+
+        if not add:
+            try:
+                FavoriteParks.objects.get(park=park).delete()
+            except IntegrityError:
+                error = "Error: This park is not one of your favorites!"
+                return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add, 'error':error})
+
+        return HttpResponseRedirect(reverse('parks'))
+
+    else:
+        raise Http404
