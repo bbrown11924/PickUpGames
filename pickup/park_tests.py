@@ -145,7 +145,7 @@ class SearchParkTests(TestCase):
 
         my_user = User.objects.create(username='Testuser')
 
-        # create some players
+        # create some parks
         new_park1 = Parks(player=my_user, name='Yellowstone',
                          street='Golden', city='Brickroad',
                          state='WY', zipcode='12345')
@@ -201,7 +201,7 @@ class FavoriteParksTests(TestCase):
 
         my_user = User.objects.create(username='Testuser')
 
-        # create some players
+        # create some parks
         new_park1 = Parks(player=my_user, name='Yellowstone',
                          street='Golden', city='Brickroad',
                          state='WY', zipcode='12345')
