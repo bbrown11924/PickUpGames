@@ -301,6 +301,7 @@ class ProfileTests(TestCase):
         player.gender = Player.MALE
         player.height = 74
         player.weight = 175
+        player.is_public = True
         player.save()
 
         # log in and go to profile page
@@ -318,6 +319,7 @@ class ProfileTests(TestCase):
         self.assertContains(response, "Male")
         self.assertContains(response, "74 in")
         self.assertContains(response, "175 lbs")
+        self.assertContains(response, "Public")
         self.assertContains(response, "Edit Profile")
 
     # test that the edit profile page contains information already filled in
@@ -364,7 +366,8 @@ class ProfileTests(TestCase):
                   "date_of_birth": "1933-03-15",
                   "gender": Player.FEMALE,
                   "height": "61",
-                  "weight": "110"}
+                  "weight": "110",
+                  "is_public": True,}
         response = self.client.post(reverse("edit_profile"), fields)
         self.assertRedirects(response, reverse("view_profile"))
 
@@ -380,7 +383,20 @@ class ProfileTests(TestCase):
         self.assertContains(response, "Female")
         self.assertContains(response, "61 in")
         self.assertContains(response, "110 lbs")
+        self.assertContains(response, "Public")
 
+        # make profile private again
+        fields = {"first_name": "Ruth",
+                  "last_name": "Bader Ginsburg",
+                  "date_of_birth": "1933-03-15",
+                  "gender": Player.FEMALE,
+                  "height": "61",
+                  "weight": "110",
+                  "is_public": False,}
+        response = self.client.post(reverse("edit_profile"), fields)
+        self.assertRedirects(response, reverse("view_profile"))
+        response = self.client.get(reverse("view_profile"))
+        self.assertContains(response, "Private")
 
 # tests for changing a user's password
 class ChangePasswordTests(TestCase):
@@ -498,6 +514,7 @@ class ViewPlayerTests(TestCase):
         self.assertContains(response, "Male")
         self.assertContains(response, "67 in")
         self.assertContains(response, "176 lbs")
+        self.assertContains(response, "Profile status")
         self.assertContains(response, "Edit Profile")
 
     # test viewing another player's profile
@@ -513,6 +530,7 @@ class ViewPlayerTests(TestCase):
         player.gender = Player.FEMALE
         player.height = 71
         player.weight = 137
+        player.is_public = True
         player.save()
 
         # log in and go to player/CDC_Director page
@@ -531,6 +549,36 @@ class ViewPlayerTests(TestCase):
         self.assertContains(response, "Female")
         self.assertContains(response, "71 in")
         self.assertContains(response, "137 lbs")
+        self.assertNotContains(response, "Profile status")
+        self.assertNotContains(response, "Edit Profile")
+
+    # test trying to view a player's profile that is set to private
+    def test_view_private_player(self):
+        user = Player.objects.create_user("Uncleared", "random@person.com",
+                                          "RandomPerson...")
+
+        player = Player.objects.create_user("ahaines", "director@dni.gov",
+                                            "IC4Life")
+        player.first_name = "Avril"
+        player.last_name = "Haines"
+        player.date_of_birth = datetime.date(1969, 8, 27)
+        player.gender = Player.FEMALE
+        player.height = 67
+        player.weight = 110
+        player.is_public = False
+        player.save()
+
+        # log in and go to player/ahaines page
+        fields = {"username": "Uncleared", "password": "RandomPerson..."}
+        response = self.client.post(reverse("login"), fields)
+        response = self.client.get(reverse("view_player", args=["ahaines"]))
+
+        # check for correct information present or missing
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Player Profile")
+        self.assertContains(response, "ahaines")
+        self.assertContains(response, "This player's profile is private.")
+        self.assertNotContains(response, "Avril Haines")
         self.assertNotContains(response, "Edit Profile")
 
 

@@ -24,6 +24,7 @@ class ProfileForm(forms.Form):
     gender = forms.ChoiceField(choices=Player.genders, required=False)
     height = forms.IntegerField(required=False)
     weight = forms.IntegerField(required=False)
+    is_public = forms.BooleanField(required=False)
 
 # form for the change password page
 # fields are labeled as optional so that validation can be handled by the view

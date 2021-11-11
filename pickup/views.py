@@ -164,7 +164,8 @@ def view_player(request, username):
                "gender": gender,
                "height": height,
                "weight": weight,
-               "is_self": is_self,}
+               "is_self": is_self,
+               "is_public": user.is_public,}
     return render(request, 'pickup/profile.html', context)
 
 
@@ -223,7 +224,8 @@ def edit_profile(request):
                    "date_of_birth": date_of_birth,
                    "gender": user.gender,
                    "height": user.height,
-                   "weight": user.weight,}
+                   "weight": user.weight,
+                   "is_public": user.is_public}
         return render(request, 'pickup/edit_profile.html', context)
 
     # get validated data
@@ -238,7 +240,8 @@ def edit_profile(request):
                    "date_of_birth": request.POST["date_of_birth"],
                    "gender": request.POST["gender"],
                    "height": request.POST["height"],
-                   "weight": request.POST["weight"],}
+                   "weight": request.POST["weight"],
+                   "is_public": request.POST["is_public"],}
         return render(request, 'pickup/edit_profile.html', context)
 
     input_data = input_form.cleaned_data
@@ -249,6 +252,7 @@ def edit_profile(request):
     user.date_of_birth = input_data["date_of_birth"]
     user.height = input_data["height"]
     user.weight = input_data["weight"]
+    user.is_public = input_data["is_public"]
 
     # update gender
     if input_data["gender"] == "":
