@@ -306,7 +306,8 @@ def view_park(request):
     # get the list of players
     favparks = Parks.objects.filter(name__contains=search_text, id__in=favorites)
     nofavparks = Parks.objects.filter(name__contains=search_text).exclude(id__in=favorites)
-    context = {"favsearchparks": favparks,"nofavsearchparks": nofavparks,"search_input": search_text,'favparks': favoriteParks }
+    context = {"favsearchparks": favparks,"nofavsearchparks": nofavparks,
+               "search_input": search_text,'favparks': favoriteParks }
     return render(request, 'pickup/parks_list.html', context)
 
 @login_required(login_url="login")
