@@ -5,7 +5,7 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 
 # Import models and forms
@@ -312,7 +312,7 @@ def view_park(request):
 
 @login_required(login_url="login")
 def park_signup(request, parkid):
-    park = Parks.objects.get(id=parkid)
+    park = Parks.objects.filter(id=parkid)
     error = None
     #Get the list of matches specific to this park
     try:
@@ -353,11 +353,11 @@ def park_signup(request, parkid):
         return render(request, 'pickup/schedule_time.html', context)
 
     else:
-        return HttpResponse("No park found")
+        raise Http404
 
 @login_required(login_url="login")
-def favorite_park(request,add, parkid):
-    park = Parks.objects.get(id=parkid)
+def favorite_park(request, add, parkid):
+    park = Parks.objects.filter(id=parkid)
     error = None
     #Get the list of matches specific to this park
 
@@ -387,4 +387,4 @@ def favorite_park(request,add, parkid):
         return HttpResponseRedirect(reverse('parks'))
 
     else:
-        return HttpResponse("No park found")
+        raise Http404
