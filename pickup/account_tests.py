@@ -612,6 +612,7 @@ class SearchPlayerTests(TestCase):
                                              "ChrisVanHollenMD")
         player3 = Player.objects.create_user("RepMfume", "mfume@house.gov",
                                              "KweisiMfumeMD")
+        player3.is_public = True
         player1.save()
         player2.save()
         player3.save()
@@ -630,6 +631,10 @@ class SearchPlayerTests(TestCase):
         self.assertContains(response, "RepMfume")
         self.assertContains(response,
                             reverse("view_player", args=["SenCardin"]))
+        self.assertNotContains(response,
+                               reverse("view_player", args=["SenVanHollen"]))
+        self.assertContains(response,
+                            reverse("view_player", args=["RepMfume"]))
 
         # search for "Sen"
         fields = {"search_text": "Sen"}

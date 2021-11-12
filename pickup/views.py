@@ -186,7 +186,8 @@ def search_players(request):
     players = Player.objects.filter(username__contains=search_text)
     context = {"players": players,
                "search_input": search_text,
-               "no_results": list(players) == [],}
+               "no_results": list(players) == [],
+               "user": request.user,}
     return render(request, 'pickup/search_players.html', context)
 
 
