@@ -10,6 +10,7 @@
     <h2>Player Profile: {{ username }}</h2>
 {% endif %}
 
+{% if is_public or is_self %}
 <table class="table">
     <tr>
         <td>Actual name: </td>
@@ -31,7 +32,16 @@
         <td>Weight: </td>
         <td>{{ weight }}</td>
     </tr>
+    {% if is_self %}
+    <tr>
+        <td>Profile status: </td>
+        <td>{% if is_public %} Public {% else %} Private {% endif %}</td>
+    </tr>
+    {% endif %}
 </table>
+{% else %}
+<p>This player's profile is private.</p>
+{% endif %}
 
 {% if is_self %}
     <p><a href="{% url 'edit_profile' %}">Edit Profile</a></p>
