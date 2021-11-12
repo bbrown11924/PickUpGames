@@ -125,7 +125,10 @@ def view_player(request, username):
     is_self = request.user.username == username
 
     # get the user's information
-    user = Player.objects.get(username=username)
+    try:
+        user = Player.objects.get(username=username)
+    except Player.DoesNotExist:
+        raise Http404
 
     # get the user's actual full name
     if user.first_name != "" and user.last_name != "":

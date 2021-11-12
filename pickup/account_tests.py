@@ -581,6 +581,18 @@ class ViewPlayerTests(TestCase):
         self.assertNotContains(response, "Avril Haines")
         self.assertNotContains(response, "Edit Profile")
 
+    # test viewing the profile of a player that does not exist
+    def test_view_player_that_does_not_exist(self):
+        user = Player.objects.create_user("DrFauci", "fauci@niaid.nih.gov",
+                                          "Vaccinated.")
+
+        # log in and go to a player page that does not exist
+        fields = {"username": "DrFauci", "password": "Vaccinated."}
+        response = self.client.post(reverse("login"), fields)
+        response = self.client.get(reverse("view_player",
+                                            args=["NaturallyImmune"]))
+        self.assertEqual(response.status_code, 404)
+
 
 # tests for searching for a player's profile
 class SearchPlayerTests(TestCase):
