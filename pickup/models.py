@@ -21,6 +21,7 @@ class Player(User):
 
     height = models.IntegerField(null=True, blank=True) # in inches
     weight = models.IntegerField(null=True, blank=True) # in pounds
+    is_public = models.BooleanField(default=False)
 
     # return the user's age based on their birthday, None if no birthday was
     # provided
@@ -105,3 +106,14 @@ class Schedule(models.Model):
 
     objects = models.Manager()
 
+class FavoriteParks(models.Model):
+    class Meta:
+        # Prevent the same park from being entered twice
+        constraints = [
+            models.UniqueConstraint(fields=['player', 'park'], name="%(app_label)s_%(class)s_unique")]
+
+
+    player = models.ForeignKey(User, default="", on_delete=models.CASCADE)
+    park = models.ForeignKey(Parks, default="", on_delete=models.CASCADE)
+
+    objects = models.Manager()

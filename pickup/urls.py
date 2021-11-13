@@ -4,13 +4,18 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('home/', views.home, name='home'),
     path('register/', views.register, name='register'),
     path('login/', views.Login.as_view(), name='login'),
     path('logout/', views.Logout.as_view(), name='logout'),
     path('profile/', views.view_profile, name='view_profile'),
+    path('player/<str:username>/', views.view_player, name='view_player'),
+    path('searchplayers/', views.search_players, name='search_players'),
+    path('changepassword/', views.change_password, name='change_password'),
     path('add_park/', views.add_park, name='Add Park'),
     path('profile/edit', views.edit_profile, name='edit_profile'),
     path("parks/", views.view_park, name='parks'),
     path("parks/<int:parkid>/", views.park_signup, name='park_signup'),
+    path("favorite/<int:add>/<int:parkid>/", views.favorite_park, name='favorite_park'),
     path('messages/', views.message_user, name="message")
 ]

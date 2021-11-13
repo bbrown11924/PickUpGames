@@ -119,3 +119,147 @@ class ParkViewTests(TestCase):
 
         park = Parks.objects.get(name="Good Park")
         self.assertEqual(park.name, 'Good Park')
+
+# tests for searching for a player's profile
+class SearchParkTests(TestCase):
+
+    # test accessing the parks page without searching for anything
+    def test_view_park_without_search(self):
+        user = Player.objects.create_user("Chevy", "corvette@c6.org",
+                                          "fa5test")
+        user.save()
+
+        # log in and get the parks page
+        fields = {"username": "Chevy", "password": "fa5test"}
+        response = self.client.post(reverse("login"), fields)
+
+        response = self.client.get(reverse("parks"))
+
+        # check for correct results
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Search for New Parks")
+        self.assertNotContains(response, "Search results")
+
+    # test performing searches
+    def test_search_parks(self):
+
+        my_user = User.objects.create(username='Testuser')
+
+        # create some parks
+        new_park1 = Parks(player=my_user, name='Yellowstone',
+                         street='Golden', city='Brickroad',
+                         state='WY', zipcode='12345')
+        new_park2 = Parks(player=my_user, name='Yosemite',
+                          street='Bear', city='Parkville',
+                          state='CA', zipcode='12378')
+        new_park3 = Parks(player=my_user, name='Glacier National Park',
+                          street='Cold', city='Antarctica',
+                          state='MO', zipcode='54321')
+        new_park1.save()
+        new_park2.save()
+        new_park3.save()
+
+
+        # log in
+        user = Player.objects.create_user("Chevy", "corvette@c6.org",
+                                          "fa5test")
+        user.save()
+
+        # log in and get the parks page
+        fields = {"username": "Chevy", "password": "fa5test"}
+        response = self.client.post(reverse("login"), fields)
+
+
+        # search with the empty string
+        fields = {"search_text": ""}
+        response = self.client.get(reverse("parks"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Search results")
+        self.assertContains(response, "Yellowstone")
+        self.assertContains(response, "Yosemite")
+        self.assertContains(response, "Glacier National Park")
+
+        # search for "i"
+        fields = {"search_text": "i"}
+        response = self.client.get(reverse("parks"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Yosemite")
+        self.assertContains(response, "Glacier National Park")
+        self.assertNotContains(response, "Yellowstone")
+
+        # search for "Panda"
+        fields = {"search_text": "Panda"}
+        response = self.client.get(reverse("parks"), fields)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Yellowstone")
+        self.assertNotContains(response, "Yosemite")
+        self.assertNotContains(response, "Glacier National Park")
+
+class FavoriteParksTests(TestCase):
+
+    def test_favorite_and_unfavorite_parks(self):
+
+        my_user = User.objects.create(username='Testuser')
+
+        # create some parks
+        new_park1 = Parks(player=my_user, name='Yellowstone',
+                         street='Golden', city='Brickroad',
+                         state='WY', zipcode='12345')
+        new_park2 = Parks(player=my_user, name='Yosemite',
+                          street='Bear', city='Parkville',
+                          state='CA', zipcode='12378')
+        new_park3 = Parks(player=my_user, name='Glacier National Park',
+                          street='Cold', city='Antarctica',
+                          state='MO', zipcode='54321')
+        new_park1.save()
+        new_park2.save()
+        new_park3.save()
+
+
+        # log in
+        user = Player.objects.create_user("Chevy", "corvette@c6.org",
+                                          "fa5test")
+        user.save()
+
+        # log in and get the parks page
+        fields = {"username": "Chevy", "password": "fa5test"}
+        response = self.client.post(reverse("login"), fields)
+
+
+        # Load page and check favorites (will display favorites without searching)
+        response = self.client.get(reverse("parks"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Search results")
+        self.assertNotContains(response, "Yellowstone")
+        self.assertNotContains(response, "Yosemite")
+        self.assertNotContains(response, "Glacier National Park")
+
+        #favorite yosemite
+        add = 1
+        park = Parks.objects.get(name='Yosemite').id
+        fields = {'park': park, 'add': add}
+        response = self.client.post(reverse("favorite_park", kwargs={'add':add, 'parkid':park}), fields)
+        #should redirect back to the parks page
+        self.assertEqual(response.status_code, 302)
+
+        #Check if yosemite is a favorite
+        response = self.client.get(reverse('parks'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Yosemite")
+        self.assertNotContains(response, "Glacier National Park")
+        self.assertNotContains(response, "Yellowstone")
+
+        # unfavorite yosemite
+        add = 0
+        park = Parks.objects.get(name='Yosemite').id
+        fields = {'park': park, 'add': add}
+        response = self.client.post(reverse("favorite_park", kwargs={'add':add, 'parkid':park}), fields)
+        # should redirect back to the parks page
+        self.assertEqual(response.status_code, 302)
+
+        #Ensure that the park was removed as a favorite
+        response = self.client.get(reverse('parks'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Yellowstone")
+        self.assertNotContains(response, "Yosemite")
+        self.assertNotContains(response, "Glacier National Park")

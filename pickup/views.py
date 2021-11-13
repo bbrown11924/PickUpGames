@@ -4,16 +4,20 @@ from django.core.validators import validate_email
 from django.db.utils import IntegrityError
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
-from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import login, authenticate
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+
 
 # Import models and forms
-from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm
-from .models import Profile, Player, Parks, Schedule
+from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
+    ChangePasswordForm, SearchForm
+from .models import Profile, Player, Parks, Schedule, FavoriteParks
 
 def index(request):
     return render(request, "pickup/index.html")
 
+def home(request):
+    return render(request, 'pickup/home.html', {})
 # view for page to register a new account
 def register(request):
     # check for visiting for first time or submitting
@@ -72,15 +76,59 @@ class Login(LoginView):
 class Logout(LogoutView):
     next_page = "login"
 
-# view for page to view one's own profile (must be logged in)
 
-# view for page to view a profile (must be logged in)
+# view for changing one's password (must be logged in)
+@login_required(login_url="login")
+def change_password(request):
+    # check for visiting for first time or submitting
+    if request.method != "POST":
+        return render(request, 'pickup/change_password.html', {})
+
+    # get validated data
+    input_form = ChangePasswordForm(request.POST)
+    if not input_form.is_valid():
+        return render(request, 'pickup/change_password.html',
+                      {"error": "Error: Input is invalid."})
+
+    input_data = input_form.cleaned_data
+
+    # validate old password
+    if authenticate(username=request.user.username,
+                    password=input_data["old_password"]) == None:
+        return render(request, 'pickup/change_password.html',
+                      {"error": "Error: Incorrect old password."})
+
+    # verify both passwords match
+    if input_data["new_password"] != input_data["confirm_password"]:
+        context = {"error":
+                   "Error: New password does not match confirmed password."}
+        return render(request, 'pickup/change_password.html', context)
+
+    # update the user's password
+    request.user.set_password(input_data["new_password"])
+    request.user.save()
+    login(request, request.user)
+    return HttpResponseRedirect(reverse('view_profile'))
+
+
+# view for page to view one's own profile (must be logged in)
 @login_required(login_url="login")
 def view_profile(request):
+    return view_player(request, request.user.username)
 
-    # get the user's username
-    username = request.user.username
-    user = Player.objects.get(username=username)
+
+# view for page to view any player's profile
+@login_required(login_url="login")
+def view_player(request, username):
+
+    # check for viewing own profile
+    is_self = request.user.username == username
+
+    # get the user's information
+    try:
+        user = Player.objects.get(username=username)
+    except Player.DoesNotExist:
+        raise Http404
 
     # get the user's actual full name
     if user.first_name != "" and user.last_name != "":
@@ -118,8 +166,33 @@ def view_profile(request):
                "age": age,
                "gender": gender,
                "height": height,
-               "weight": weight,}
+               "weight": weight,
+               "is_self": is_self,
+               "is_public": user.is_public,}
     return render(request, 'pickup/profile.html', context)
+
+
+# view for page to search for player profiles
+@login_required(login_url="login")
+def search_players(request):
+
+    # check for visiting for first time or searching
+    if "search_text" not in request.GET.keys():
+        return render(request, 'pickup/search_players.html', {})
+
+    # get validated data
+    input_form = SearchForm(request.GET)
+    input_form.is_valid()
+    search_text = input_form.cleaned_data["search_text"]
+
+    # get the list of players
+    players = Player.objects.filter(username__contains=search_text)
+    context = {"players": players,
+               "search_input": search_text,
+               "no_results": list(players) == [],
+               "user": request.user,}
+    return render(request, 'pickup/search_players.html', context)
+
 
 def profile_list(request):
     profileList = Profile.objects.all()
@@ -155,7 +228,8 @@ def edit_profile(request):
                    "date_of_birth": date_of_birth,
                    "gender": user.gender,
                    "height": user.height,
-                   "weight": user.weight,}
+                   "weight": user.weight,
+                   "is_public": user.is_public}
         return render(request, 'pickup/edit_profile.html', context)
 
     # get validated data
@@ -170,7 +244,8 @@ def edit_profile(request):
                    "date_of_birth": request.POST["date_of_birth"],
                    "gender": request.POST["gender"],
                    "height": request.POST["height"],
-                   "weight": request.POST["weight"],}
+                   "weight": request.POST["weight"],
+                   "is_public": request.POST["is_public"],}
         return render(request, 'pickup/edit_profile.html', context)
 
     input_data = input_form.cleaned_data
@@ -181,6 +256,7 @@ def edit_profile(request):
     user.date_of_birth = input_data["date_of_birth"]
     user.height = input_data["height"]
     user.weight = input_data["weight"]
+    user.is_public = input_data["is_public"]
 
     # update gender
     if input_data["gender"] == "":
@@ -221,10 +297,26 @@ def add_park(request):
 
 @login_required(login_url="login")
 def view_park(request):
+    # check for visiting for first time or submitting
+    favorites = FavoriteParks.objects.filter(player=request.user).values("park_id")
+    favoriteParks = Parks.objects.filter(id__in=favorites)
 
-    parks = Parks.objects.all()
+    # check for visiting for first time or searching
+    if "search_text" not in request.GET.keys():
 
-    return render(request, 'pickup/parks_list.html', {'parks': parks})
+        return render(request, 'pickup/parks_list.html', {'favparks': favoriteParks})
+
+    # get validated data
+    input_form = SearchForm(request.GET)
+    input_form.is_valid()
+    search_text = input_form.cleaned_data["search_text"]
+
+    # get the list of players
+    favparks = Parks.objects.filter(name__contains=search_text, id__in=favorites)
+    nofavparks = Parks.objects.filter(name__contains=search_text).exclude(id__in=favorites)
+    context = {"favsearchparks": favparks,"nofavsearchparks": nofavparks,
+               "search_input": search_text,'favparks': favoriteParks }
+    return render(request, 'pickup/parks_list.html', context)
 
 @login_required(login_url="login")
 def park_signup(request, parkid):
@@ -269,7 +361,41 @@ def park_signup(request, parkid):
         return render(request, 'pickup/schedule_time.html', context)
 
     else:
-        return HttpResponse("No park found")
+        raise Http404
+
+@login_required(login_url="login")
+def favorite_park(request, add, parkid):
+    park = Parks.objects.get(id=parkid)
+    error = None
+    #Get the list of matches specific to this park
+
+    if park:
+        if request.method != 'POST':
+
+            return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add})
+
+        # Check if you are adding or deleting and respond
+        current_player = request.user
+
+        if add:
+            try:
+                new_fav = FavoriteParks(player=current_player, park=park)
+                new_fav.save()
+            except IntegrityError:
+                error = "Error: This park is already one of your favorites!"
+                return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add, 'error':error})
+
+        if not add:
+            try:
+                FavoriteParks.objects.get(park=park).delete()
+            except IntegrityError:
+                error = "Error: This park is not one of your favorites!"
+                return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add, 'error':error})
+
+        return HttpResponseRedirect(reverse('parks'))
+
+    else:
+        raise Http404
 
 
 @login_required(login_url="login")

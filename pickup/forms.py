@@ -24,6 +24,15 @@ class ProfileForm(forms.Form):
     gender = forms.ChoiceField(choices=Player.genders, required=False)
     height = forms.IntegerField(required=False)
     weight = forms.IntegerField(required=False)
+    is_public = forms.BooleanField(required=False)
+
+# form for the change password page
+# fields are labeled as optional so that validation can be handled by the view
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput(), required=False)
+    new_password = forms.CharField(widget=forms.PasswordInput(), required=False)
+    confirm_password = forms.CharField(widget=forms.PasswordInput(),
+                                       required=False)
 
 #Creating the park form from the park model
 class ParkForm(ModelForm):
@@ -48,3 +57,7 @@ class ScheduleForm(ModelForm):
         if date < datetime.date.today():
             raise forms.ValidationError("The date cannot be in the past!")
         return date
+
+# form for searching something
+class SearchForm(forms.Form):
+    search_text = forms.CharField(required=False)
