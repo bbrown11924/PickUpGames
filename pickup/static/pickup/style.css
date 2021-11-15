@@ -59,10 +59,24 @@ main{
     padding: 1em 3em 2em 3em;
     background-color: #afafaf;
     margin: 0;
-
 }
 
 h2{
     color: navy;
+}
+
+.checked {
+  color: orange;
+}
+.unchecked {
+  color: gray;
+}
+
+#MessagesLeft{
+    float: left;
+}
+
+#MessagesRight{
+    float: right;
 }
 

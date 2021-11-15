@@ -17,5 +17,6 @@ urlpatterns = [
     path("parks/", views.view_park, name='parks'),
     path("parks/<int:parkid>/", views.park_signup, name='park_signup'),
     path("favorite/<int:add>/<int:parkid>/", views.favorite_park, name='favorite_park'),
-    path('messages/', views.message_user, name="message")
+    path('messages/', views.message_user, name="messages"),
+    path('newMessage/', views.new_message, name= 'new_message'),
 ]

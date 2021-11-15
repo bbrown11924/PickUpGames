@@ -1,0 +1,36 @@
+{% extends 'pickup/base.html' %}
+
+{% block content %}
+
+<p>Enter a user's username to search for their profile.</p>
+
+<form action="{% url 'search_players' %}" method="get" id="search_form">
+    <p>
+        <input type="search" id="search_bar" name="search_text"
+            value="{{ search_input }}" />
+        <input type="submit" value="Search" />
+    </p>
+</form>
+<form action="{% url 'messages' %}" method='add' id="new_message_form">
+    {% if players %}
+        <p>Search results:</p>
+        <ul>
+            {% for player in players %}
+                <li>
+                    {% if player.is_public or player.username == user.username %}
+                        <a href="{% url 'view_player' player.username %}">
+                    {% endif %}
+                    {{ player.username }}
+                    {% if player.is_public %}
+                        </a>
+                    {% endif %}
+                    <input type="radio" name="receiver">
+                </li>
+            {% endfor %}
+        </ul>
+    {% elif no_results %}
+        <p>No results found.</p>
+    {% endif %}
+</form>
+
+{% endblock %}

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core.validators import validate_email
 from django.db.utils import IntegrityError
+from django.db.models import Q
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
@@ -11,7 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
     ChangePasswordForm, SearchForm
-from .models import Profile, Player, Parks, Schedule, FavoriteParks
+from .models import Profile, Player, Parks, Schedule, FavoriteParks, Messages
 
 def index(request):
     return render(request, "pickup/index.html")
@@ -400,4 +401,24 @@ def favorite_park(request, add, parkid):
 
 @login_required(login_url="login")
 def message_user(request):
-    return render(request, 'pickup/messages.html')
+
+    # Find which user and get all messages sent or received by the user
+    user = request.user
+    try:
+        conversations = Messages.objects.get(Q(sender=user) | Q(receiver=user))
+    except Messages.DoesNotExist:
+        conversations = None
+
+
+    if conversations:
+        if request.method != 'POST':
+            return render(request, 'pickup/messages.html')
+
+        if add:
+            return render(request, 'pickup/messages.html')
+    else:
+        return render(request, 'pickup/messages.html')
+
+def new_message(request):
+    user = request.user
+    return render(request, 'pickup/newMessage.html')

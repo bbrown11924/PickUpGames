@@ -1,23 +1,25 @@
-<!doctype html>
-<html lang="en">
+{% extends 'pickup/base.html' %}
 
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'pickup/style.css' %}">
+{% block content %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <div id="MessagesLeft">
+        <form action="{% url 'new_message' %}" method="add" id="send_message_form">
+            {% csrf_token %}
+            <button type="submit" name="newMsgBtn">New Message</button>
+        </form>
 
-    <link rel="shortcut icon" type="image/x-icon" href="{% static 'pickup/PickUpGamesTabImg.ico' %}" />
-    <title>PickUpGames - Messages</title>
-</head>
+        <form action="{% url 'messages' %}" method="get" id="view_form">
+            {% csrf_token %}
+            {% for people in conversations %}
+                <button type="submit" name="newMsgBtn">{{people.username}}</button>
+            {% empty %}
+                <p>No Messages</p>
+            {% endfor %}
+        </form>
+    </div>
 
-<body>
-<main>
-    <h1>
-        hello world
-    </h1>
-</main>
-</body>
+    <div id="MessagesRight">
+        <p>Messages go here</p>
+    </div>
+
+{% endblock %}
