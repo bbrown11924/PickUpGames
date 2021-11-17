@@ -19,7 +19,7 @@ class ScheduleModelTests(TestCase):
 
         park = Parks.objects.get(name="Parky")
 
-        new_entry = Schedule(player=my_user, park=park, date='2023-11-03',time='4')
+        new_entry = Schedule(creator=my_user, park=park, date='2023-11-03',time='4')
         new_entry.save()
 
         entry = Schedule.objects.get(date='2023-11-03')
@@ -37,7 +37,7 @@ class ScheduleModelTests(TestCase):
         park = Parks.objects.get(name="Parky")
 
         try:
-            new_entry = Schedule(player=my_user, park=park, date='7', time='4')
+            new_entry = Schedule(creator=my_user, park=park, date='7', time='4')
             new_entry.save()
         except Exception:
             return
@@ -58,10 +58,10 @@ class ScheduleViewTests(TransactionTestCase):
         new_park.save()
 
         park = Parks.objects.get(name="Parky")
-        response = self.client.get(reverse('park_signup',  kwargs={'parkid': park.id}))
+        response = self.client.get(reverse('event_signup',  kwargs={'parkid': park.id}))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Schedule Time for Parky")
+        self.assertContains(response, "Schedule at Parky")
 
     def test_schedule_add(self):
         player = Player.objects.create_user("root", "root@root.com",
@@ -78,8 +78,8 @@ class ScheduleViewTests(TransactionTestCase):
 
         park = Parks.objects.get(name="Parky")
 
-        fields = {'date': '2024-11-04', 'time': '4'}
-        response = self.client.post(reverse('park_signup',  kwargs={'parkid': park.id}), fields)
+        fields = {'date': '2024-11-04', 'time': '4', 'name': 'Test Match'}
+        response = self.client.post(reverse('event_signup',  kwargs={'parkid': park.id}), fields)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Nov. 4, 2024")
@@ -99,8 +99,8 @@ class ScheduleViewTests(TransactionTestCase):
 
         park = Parks.objects.get(name="Parky")
 
-        fields = {'date': '2020-11-04', 'time': '4'}
-        response = self.client.post(reverse('park_signup',  kwargs={'parkid': park.id}), fields)
+        fields = {'date': '2020-11-04', 'time': '4', 'name': 'Test Match'}
+        response = self.client.post(reverse('event_signup',  kwargs={'parkid': park.id}), fields)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "The date cannot be in the past!")
@@ -121,11 +121,11 @@ class ScheduleViewTests(TransactionTestCase):
 
         park = Parks.objects.get(name="Parky")
 
-        fields = {'date': '2024-11-05', 'time': '4'}
-        self.client.post(reverse('park_signup', kwargs={'parkid': park.id}), fields)
-        response = self.client.post(reverse('park_signup',  kwargs={'parkid': park.id}), fields)
+        fields = {'date': '2024-11-05', 'time': '4', 'name': 'Test Match'}
+        self.client.post(reverse('event_signup', kwargs={'parkid': park.id}), fields)
+        response = self.client.post(reverse('event_signup',  kwargs={'parkid': park.id}), fields)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Already signed up for this slot")
+        self.assertContains(response, "There is already a match at this time with this name")
         self.assertContains(response, "Nov. 5, 2024")
 
