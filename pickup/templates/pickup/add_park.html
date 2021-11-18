@@ -1,5 +1,10 @@
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'pickup/style.css' %}">
+{% extends 'pickup/base.html' %}
+
+{% block title %}
+Add Park
+{% endblock %}
+
+{% block content %}
 <html>
 <h1> Add New Park </h1>
 
@@ -11,3 +16,4 @@
     <input type="submit" value="Submit">
 </form>
 </html>
+{% endblock %}
