@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 from pickup.models import Parks, Player
+import os
 
 # tests for the Park model, independent of any view
 class ParkModelTests(TestCase):
@@ -76,7 +77,7 @@ class ParkViewTests(TestCase):
         self.assertContains(response, "Enter a zip code in the format")
         self.assertNotContains(response, "Park has been added!")
 
-    # test to see if there is an
+    # test to see if there is any crucial missing information in the address
     def test_add_park_missing_info(self):
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
@@ -91,6 +92,7 @@ class ParkViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Park has been added!")
 
+     # check if input state doesn't exist
     def test_add_park_bad_state(self):
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
@@ -105,7 +107,12 @@ class ParkViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Park has been added!")
 
+    # checking a believable but fake address
     def test_add_park_not_real(self):
+        try:
+            os.environ['apiKey']
+        except KeyError:
+            return
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
         player.save()
@@ -120,7 +127,13 @@ class ParkViewTests(TestCase):
         self.assertNotContains(response, "Park has been added!")
 
 
+    # checking a real address
     def test_add_park_real(self):
+        try:
+            os.environ['apiKey']
+        except KeyError:
+            return
+        
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
         player.save()
@@ -137,7 +150,14 @@ class ParkViewTests(TestCase):
         park = Parks.objects.get(name="Good Park")
         self.assertEqual(park.name, 'Good Park')
 
+    # checking a flawed real address
     def test_add_park_real_malformed_address(self):
+        try:
+            os.environ['apiKey']
+        except KeyError:
+            return
+    
+    
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
         player.save()
