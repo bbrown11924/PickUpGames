@@ -280,10 +280,11 @@ def add_park(request):
             
             # Sets up the API using the env variable apiKey
             api_key = os.environ.get('apiKey')
-            api_formatted_address = input_data['street'] + "," + input_data['city'] + "," + input_data['state'] + "," + input_data['zipcode']
+            formatted_address =  input_data['street'] + ", " + input_data['city'] + ", " + input_data['state'] + " " + input_data['zipcode'] + ", USA"
+            print(formatted_address)
             
             # Formats the address to better works with the maps API
-            geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address={}".format(api_formatted_address)
+            geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address={}".format(formatted_address)
             if api_key is not None:
                 geocode_url = geocode_url + "&key={}".format(api_key)
             
@@ -292,8 +293,27 @@ def add_park(request):
             # Results will be in JSON format - convert to dict using requests functionality
             results = results.json()
             
-            print(results)
             
+            api_formatted_address = results['results'][0]['formatted_address']
+            new_input_data = api_formatted_address.split(", ")
+            if len(new_input_data) > 4:
+                new_input_data = new_input_data[1:]
+                api_formatted_address = ", ".join(new_input_data)
+            
+            if len(new_input_data) < 3:
+                context = {
+                    "error": "All fields need to belong to a valid address"
+                }
+            
+            if (api_formatted_address != formatted_address):
+                print(new_input_data)
+                
+                
+                context = {
+                "form": form,
+                "error": "Google Maps found the following match for an address! Is this the correct address?: \n {}".format(api_formatted_address),
+                }
+                return render(request, 'pickup/add_park.html', context)
             
             
             try:

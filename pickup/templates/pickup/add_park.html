@@ -1,4 +1,7 @@
 <h1> Add New Park </h1>
+
+{% if error %}<p id="error">{{ error }}</p> {% endif %}
+
 <form action="/add_park/" method="post">
     {% csrf_token %}
     {{ form.as_p }}
