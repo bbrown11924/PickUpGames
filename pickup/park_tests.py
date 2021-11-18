@@ -60,6 +60,7 @@ class ParkViewTests(TestCase):
         self.assertRedirects(response, reverse("login") + "?next=" +
                              reverse("view_profile"))
 
+    # testing to see if an invalid zip format is entered
     def test_add_park_invalid_zip(self):
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
@@ -75,6 +76,7 @@ class ParkViewTests(TestCase):
         self.assertContains(response, "Enter a zip code in the format")
         self.assertNotContains(response, "Park has been added!")
 
+    # test to see if there is an
     def test_add_park_missing_info(self):
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
@@ -82,7 +84,7 @@ class ParkViewTests(TestCase):
         fields = {"username": "root", "password": "root"}
         self.client.post(reverse("login"), fields)
 
-        fields = {'name':'Parky', 'street':'Parkstreet', 'city':'',
+        fields = {'name':'Parky', 'street':'', 'city':'Parkville',
                              'state':'AZ', 'zipcode':'12345'}
         response = self.client.post(reverse('Add Park'), fields)
 
@@ -103,7 +105,7 @@ class ParkViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Park has been added!")
 
-    def test_add_park_good(self):
+    def test_add_park_not_real(self):
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
         player.save()
@@ -115,11 +117,43 @@ class ParkViewTests(TestCase):
         response = self.client.post(reverse('Add Park'), fields)
 
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Park has been added!")
+
+
+    def test_add_park_real(self):
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Good Park', 'street':'20 Hudson Yards', 'city':'New York',
+                             'state':'NY', 'zipcode':'10001'}
+        response = self.client.post(reverse('Add Park'), fields)
+
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Park has been added!")
 
         park = Parks.objects.get(name="Good Park")
         self.assertEqual(park.name, 'Good Park')
 
+    def test_add_park_real_malformed_address(self):
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Good Park', 'street':'20 Huson Yards', 'city':'New York',
+                             'state':'NY', 'zipcode':'10001'}
+        response = self.client.post(reverse('Add Park'), fields)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Park has been added!")
+        self.assertContains(response, "20 Hudson Yards, New York, NY 10001")
+
+        
+        
 # tests for searching for a player's profile
 class SearchParkTests(TestCase):
 

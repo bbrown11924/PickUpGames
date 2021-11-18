@@ -281,7 +281,6 @@ def add_park(request):
             # Sets up the API using the env variable apiKey
             api_key = os.environ.get('apiKey')
             formatted_address =  input_data['street'] + ", " + input_data['city'] + ", " + input_data['state'] + " " + input_data['zipcode'] + ", USA"
-            print(formatted_address)
             
             # Formats the address to better works with the maps API
             geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address={}".format(formatted_address)
@@ -294,32 +293,38 @@ def add_park(request):
                 results = results.json()
             
             
+                # converts the results into a usable array
                 api_formatted_address = results['results'][0]['formatted_address']
                 new_input_data = api_formatted_address.split(", ")
                 if len(new_input_data) > 4:
                     new_input_data = new_input_data[1:]
                     api_formatted_address = ", ".join(new_input_data)
             
+                #input validation
                 if len(new_input_data) < 3:
                     context = {
-                        "error": "All fields need to belong to a valid address"
+                        "error": "The fields need to belong to a valid address",
+                        "form": form
                     }
-            
+                    
+                    return render(request, 'pickup/add_park.html', context)
+                    
+                # if google maps didn't find the exact address user looking for
                 if (api_formatted_address != formatted_address):
                     
                     form = ParkForm({'name':input_data['name'], 'street':new_input_data[0],
                     'city':new_input_data[1], 'state':new_input_data[2][0:2],
                     'zipcode':new_input_data[2][3:9]})
                 
+                    # shows the page again
                     context = {
                     "form": form,
                     "error": "Google Maps found the following match for an address! Is this the correct address?: \n {}".format(api_formatted_address),
                     }
                 
-                    print(form)
                     return render(request, 'pickup/add_park.html', context)
             
-            
+            # attempts to save the player in the database
             try:
                 current_player = request.user
 
