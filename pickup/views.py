@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
     ChangePasswordForm, SearchForm
-from .models import Profile, Player, Parks, Schedule, FavoriteParks
+from .models import Profile, Player, Parks, Schedule, FavoriteParks,EventSignup
 
 def index(request):
     return render(request, "pickup/index.html")
@@ -319,21 +319,24 @@ def view_park(request):
     return render(request, 'pickup/parks_list.html', context)
 
 @login_required(login_url="login")
-def park_signup(request, parkid):
+def event_signup(request, parkid):
+    current_player = request.user
     park = Parks.objects.get(id=parkid)
     error = None
-    #Get the list of matches specific to this park
-    try:
-        matches = Schedule.objects.filter(park=parkid).order_by('date')
-    except Schedule.DoesNotExist:
-        matches = None
+    #Get the list of events specific to this park
 
+        #matches = Schedule.objects.filter(park=parkid).order_by('date')
+
+    myevents = EventSignup.objects.filter(player_id=current_player).values('event_id')
+    mymatches = Schedule.objects.filter(park=parkid, id__in=myevents).order_by('date')
+    othermatches = Schedule.objects.filter(park=parkid).exclude(id__in=myevents).order_by('date')
     if park:
         if request.method != 'POST':
 
             form = ScheduleForm()
 
-            return render(request, 'pickup/schedule_time.html', {'form': form, 'park': park, 'matches': matches})
+            return render(request, 'pickup/schedule_time.html', {'form': form, 'park': park,
+                                                                 'mymatches': mymatches, 'othermatches': othermatches})
 
         form = ScheduleForm(request.POST)
 
@@ -341,22 +344,24 @@ def park_signup(request, parkid):
             context = {'form': form,
                        'park': park,
                        'error': form.errors,
-                       'matches': matches}
+                       'mymatches': mymatches, 'othermatches': othermatches}
             return render(request, 'pickup/schedule_time.html',context)
 
         input_data = form.cleaned_data
 
         #Save the new schedule
-        current_player = request.user
-        new_match = Schedule(player=current_player, park=park,time=input_data['time'], date=input_data['date'])
+
+        new_match = Schedule(creator=current_player, name=input_data['name'], park=park,time=input_data['time'],
+                             date=input_data['date'])
         try:
             new_match.save()
         except IntegrityError:
-            error = "Error: Already signed up for this slot"
+            error = "Error: There is already a match at this time with this name.  Please join the" \
+                    " existing match or create a new match with a unique name."
 
         context = {'form': form,
                    'park': park,
-                   'matches': matches,
+                   'mymatches': mymatches, 'othermatches': othermatches,
                    'error': error}
         return render(request, 'pickup/schedule_time.html', context)
 
@@ -394,5 +399,43 @@ def favorite_park(request, add, parkid):
 
         return HttpResponseRedirect(reverse('parks'))
 
+    else:
+        raise Http404
+
+@login_required(login_url="login")
+def join_event(request, parkid, add, eventid):
+    event = Schedule.objects.get(id=eventid)
+    park = Parks.objects.get(id=parkid)
+
+    #Get the list of all people attending the eventk
+    event_player = EventSignup.objects.filter(event=eventid).values("player_id")
+    players = Player.objects.filter(id__in=event_player)
+
+    if event:
+        if request.method != 'POST':
+
+            return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'park': park, 'players':players})
+
+        # Check if you are adding or deleting and respond
+        current_player = request.user
+
+        if add:
+            try:
+                join = EventSignup(player=current_player, event=event)
+                join.save()
+            except IntegrityError:
+                error = "Error: You have already joined this match!"
+                return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'error':error,
+                                                                  'park': park, 'players':players})
+
+        if not add:
+            try:
+                EventSignup.objects.get(event=event).delete()
+            except IntegrityError:
+                error = "Error: You can't leave because you haven't joined!"
+                return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'error':error,
+                                                                  'park': park, 'players':players})
+
+        return HttpResponseRedirect(reverse('event_signup', kwargs={'parkid': parkid} ))
     else:
         raise Http404

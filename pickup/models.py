@@ -89,7 +89,7 @@ class Schedule(models.Model):
     class Meta:
         # Prevent the same park from being entered twice
         constraints = [
-            models.UniqueConstraint(fields=['player', 'park', 'time', 'date'], name="%(app_label)s_%(class)s_unique")]
+            models.UniqueConstraint(fields=['park', 'time', 'date'], name="%(app_label)s_%(class)s_unique")]
 
     times = []
     for i in range(0, 24 * 4):
@@ -97,10 +97,23 @@ class Schedule(models.Model):
         datetext = time.strftime("%I:%M %p")
         times.append((i, datetext))
 
-    player = models.ForeignKey(User, default="", on_delete=models.CASCADE)
+    name = models.CharField(max_length=400, default="")
+    creator = models.ForeignKey(User, default="", on_delete=models.CASCADE)
     park = models.ForeignKey(Parks, default="", on_delete=models.CASCADE)
     date = models.DateField(null=True, blank=True)
     time = models.IntegerField(choices=times)
+
+    objects = models.Manager()
+
+class EventSignup(models.Model):
+    class Meta:
+        # Prevent the same event from being joined twice
+        constraints = [
+            models.UniqueConstraint(fields=['player', 'event'], name="%(app_label)s_%(class)s_unique")]
+
+
+    player = models.ForeignKey(User, default="", on_delete=models.CASCADE)
+    event = models.ForeignKey(Schedule, default="", on_delete=models.CASCADE)
 
     objects = models.Manager()
 
