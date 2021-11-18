@@ -287,7 +287,12 @@ def add_park(request):
             if api_key is not None:
                 geocode_url = geocode_url + "&key={}".format(api_key)
             else:
-                return
+                context = {
+                    "error": "Error: The google maps api key is missing",
+                    "form": form
+                }
+                
+                return render(request, 'pickup/add_park.html', context)
             # requests geocoding results from google maps API
             results = requests.get(geocode_url)
             # Results will be in JSON format - convert to dict using requests functionality
@@ -305,7 +310,7 @@ def add_park(request):
             #input validation
             if len(new_input_data) < 3:
                 context = {
-                    "error": "The fields need to belong to a valid address",
+                    "error": "Error: The fields need to belong to a valid address",
                     "form": form
                 }
                 
