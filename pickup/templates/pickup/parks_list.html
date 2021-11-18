@@ -1,9 +1,28 @@
+<<<<<<< HEAD
 <html>
     <head>
+=======
+{% extends 'pickup/base.html' %}
 
-        <title>List of Parks</title>
-    </head>
+{% block content %}
+<h1>Park List</h1>
+>>>>>>> 5810b46d70f2cf24a4e0e0b7168d7b6a42816633
 
+<head>
+<!-- Font Awesome Icon Library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+.checked {
+  color: orange;
+}
+.unchecked {
+  color: gray;
+}
+</style>
+</head>
+<body>
+
+<<<<<<< HEAD
     <body>
 
 
@@ -27,3 +46,73 @@
 
 
 </html>
+=======
+</body>
+</html>
+<p>My Parks:</p>
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Zipcode</th>
+        <th>Favorite</th>
+    </tr>
+    </thead>
+    {% for park in favparks %}
+    <tr>
+        <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
+        <td> {{ park.city}}</td>
+        <td> {{ park.state }}</td>
+        <td> {{ park.zipcode }}</td>
+        <td> <a href="/favorite/0/{{ park.id }}/"><span class="fa fa-star checked"></span></a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p>Search for New Parks:</p>
+<form action="{% url 'parks' %}" method="get" id="search_form">
+    <p>
+        <input type="search" id="search_bar" name="search_text"
+            value="{{ search_input }}" />
+        <input type="submit" value="Search" />
+    </p>
+</form>
+
+{% if favsearchparks or nofavsearchparks %}
+    <p>Search results:</p>
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Zipcode</th>
+                <th>Favorite</th>
+            </tr>
+            </thead>
+            {% for park in nofavsearchparks %}
+            <tr>
+                <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
+                <td> {{ park.city}}</td>
+                <td> {{ park.state }}</td>
+                <td> {{ park.zipcode }}</td>
+                <td> <a href="/favorite/1/{{ park.id }}/"><span class="fa fa-star unchecked"></span></a></td>
+            </tr>
+            {% endfor %}
+            {% for park in favsearchparks %}
+            <tr>
+                <td> <a href="/parks/{{ park.id }}/">{{ park.name }}</a></td>
+                <td> {{ park.city}}</td>
+                <td> {{ park.state }}</td>
+                <td> {{ park.zipcode }}</td>
+                <td> <a href="/favorite/0/{{ park.id }}/"><span class="fa fa-star checked"></span></a></td>
+            </tr>
+            {% endfor %}
+        </table>
+{% endif %}
+
+{% endblock %}
+
+>>>>>>> 5810b46d70f2cf24a4e0e0b7168d7b6a42816633

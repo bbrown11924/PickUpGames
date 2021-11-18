@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 {% load static %}
@@ -26,3 +27,64 @@
     <p>Copyright PickUpGames 2021</p>
 </footer>
 </html>
+=======
+
+{% extends 'pickup/base.html' %}
+
+{% block content %}
+
+<h1>Pickup Games</h1>
+
+{% if is_self %}
+
+    <h2>Your Profile: {{ username }}</h2>
+{% else %}
+    <h2>Player Profile: {{ username }}</h2>
+{% endif %}
+
+{% if is_public or is_self %}
+<table class="table">
+    <tr>
+        <td>Actual name: </td>
+        <td>{{ full_name }}</td>
+    </tr>
+    <tr>
+        <td>Age: </td>
+        <td>{{ age }}</td>
+    </tr>
+    <tr>
+        <td>Gender: </td>
+        <td>{{ gender }}</td>
+    </tr>
+    <tr>
+        <td>Height: </td>
+        <td>{{ height }}</td>
+    </tr>
+    <tr>
+        <td>Weight: </td>
+        <td>{{ weight }}</td>
+    </tr>
+    {% if is_self %}
+    <tr>
+        <td>Profile status: </td>
+        <td>{% if is_public %} Public {% else %} Private {% endif %}</td>
+    </tr>
+    {% endif %}
+</table>
+{% else %}
+<p>This player's profile is private.</p>
+{% endif %}
+
+{% if is_self %}
+    <p><a href="{% url 'edit_profile' %}">Edit Profile</a></p>
+    <p><a href="{% url 'change_password' %}">Change Password</a></p>
+{% endif %}
+
+    {% endblock %}
+</body>
+
+<footer>
+    <p>Copyright PickUpGames 2021</p>
+</footer>
+</html>
+>>>>>>> 5810b46d70f2cf24a4e0e0b7168d7b6a42816633

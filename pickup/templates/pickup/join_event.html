@@ -1,0 +1,37 @@
+{% extends 'pickup/base.html' %}
+
+{% block content %}
+
+<h1>Pickup Games: Join Event</h1>
+
+{% if error %}<p id="error">{{ error }}</p> {% endif %}
+
+<p>Event name: {{event.name}}</p>
+<p>Event date: {{event.date}}</p>
+<p>Event time: {{event.get_time_display}}</p>
+{% if players %}
+Current players:
+    {% for player in players %}
+    <p>{{player.first_name}} {{player.last_name}}</p>
+    {% endfor %}
+
+{% else %}
+    <p>There are currently no players for this event.</p>
+{% endif %}
+
+{% if add %}
+    <p>Join this match?</p>
+{% else %}
+    <p>Leave this match?</p>
+{% endif %}
+
+
+<form action="{% url 'join_event' park.id add event.id %}" method="post">
+    {% csrf_token %}
+    <p>
+    <input type="submit" value="Confirm" />
+    <a href="{% url 'event_signup' park.id %}">Cancel</a>
+    </p>
+</form>
+
+{% endblock %}
