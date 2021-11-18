@@ -55,6 +55,9 @@
         <p>Weight: <input type="number" id="weight" name="weight"
             value = "{{ weight }}" /> lbs</p>
 
+        <p>Make profile public: <input type="checkbox" id="is_public"
+            name="is_public" {% if is_public %} checked {% endif %} /></p>
+
         <input type="submit" value="Save" />
     </form>
     {% endblock %}
