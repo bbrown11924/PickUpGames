@@ -276,21 +276,24 @@ def add_park(request):
         form = ParkForm(request.POST)
         if form.is_valid():
             input_data = form.cleaned_data
-            # is valid: add the user to the Player database
+            # is valid: add the parks to the parks database
+            
+            # Sets up the API using the env variable apiKey
             api_key = os.environ.get('apiKey')
             api_formatted_address = input_data['street'] + "," + input_data['city'] + "," + input_data['state'] + "," + input_data['zipcode']
+            
+            # Formats the address to better works with the maps API
             geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address={}".format(api_formatted_address)
             if api_key is not None:
                 geocode_url = geocode_url + "&key={}".format(api_key)
             
+            # requests geocoding results from google maps API
             results = requests.get(geocode_url)
             # Results will be in JSON format - convert to dict using requests functionality
             results = results.json()
             
             print(results)
             
-            if len(results['results']['address_components'][types]) != "street_number":
-                return HttpResponse("Address was not found by Google Maps")
             
             
             try:
