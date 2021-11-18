@@ -1,16 +1,14 @@
 {% extends 'pickup/base.html' %}
 
+{% block title %}
+Parks
+{% endblock %}
+
 {% block content %}
-<h1>Park List</h1>
 
-<head>
-<!-- Font Awesome Icon Library -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-</head>
-<body>
+<h1>Parks List</h1>
 
-</body>
-</html>
+{% if favparks %}
 <p>My Parks:</p>
 <table class="table table-bordered table-striped">
     <thead>
@@ -32,6 +30,9 @@
     </tr>
     {% endfor %}
 </table>
+{% else %}
+ <p>You have not yet favorited any parks! Search below and click the star!</p>
+{% endif%}
 
 <p>Search for New Parks:</p>
 <form action="{% url 'parks' %}" method="get" id="search_form">
