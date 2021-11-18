@@ -2,35 +2,30 @@
 
 {% block content %}
 
-<p>Enter a user's username to search for their profile.</p>
-
-<form action="{% url 'search_players' %}" method="get" id="search_form">
+<form action="{% url 'new_message' %}" method="get" id="search_form">
     <p>
         <input type="search" id="search_bar" name="search_text"
-            value="{{ search_input }}" />
-        <input type="submit" value="Search" />
+            value="{{ search_input }}" placeholder="Players Username">
+        <input type="submit" value="Search">
     </p>
 </form>
-<form action="{% url 'messages' %}" method='add' id="new_message_form">
-    {% if players %}
-        <p>Search results:</p>
-        <ul>
-            {% for player in players %}
-                <li>
-                    {% if player.is_public or player.username == user.username %}
-                        <a href="{% url 'view_player' player.username %}">
-                    {% endif %}
-                    {{ player.username }}
-                    {% if player.is_public %}
-                        </a>
-                    {% endif %}
-                    <input type="radio" name="receiver">
-                </li>
-            {% endfor %}
-        </ul>
-    {% elif no_results %}
-        <p>No results found.</p>
-    {% endif %}
+{% if players %}
+        <p>Select user to message:</p>
+    <ul>
+        {% for player in players %}
+            <li>
+                {{ player.username }}
+            </li>
+            <br>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form action="{% url 'new_message' %}" method="post" id="new_message_form">
+    {% csrf_token %}
+    <input  type="text" id="receiver" name="receiver" required>
+    <input type="text" id="userMessage" maxlength="1000" placeholder="Message" name="userMessage" required>
+    <input type="submit" value="Send">
 </form>
 
 {% endblock %}

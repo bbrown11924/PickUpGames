@@ -74,9 +74,11 @@ h2{
 
 #MessagesLeft{
     float: left;
+    width: 30%;
 }
 
 #MessagesRight{
     float: right;
+    width: 70%;
 }
 

@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
-    ChangePasswordForm, SearchForm
+    ChangePasswordForm, SearchForm, NewMessageForm
 from .models import Profile, Player, Parks, Schedule, FavoriteParks, Messages
 
 def index(request):
@@ -404,21 +404,65 @@ def message_user(request):
 
     # Find which user and get all messages sent or received by the user
     user = request.user
+    player = Player.objects.get(username=user.username)
     try:
-        conversations = Messages.objects.get(Q(sender=user) | Q(receiver=user))
+        conversations = Messages.objects.filter(sender=player).order_by('time_sent')
     except Messages.DoesNotExist:
         conversations = None
 
-
-    if conversations:
-        if request.method != 'POST':
+    if conversations is not None:
+        if request.method == 'POST':
             return render(request, 'pickup/messages.html')
 
-        if add:
-            return render(request, 'pickup/messages.html')
+        elif request.method == 'get':
+            print('conv get')
+            return render(request, 'pickup/messages.html', {'conversations': conversations})
+
+        else:
+            print('conv else')
+            print(len(conversations))
+            return render(request, 'pickup/messages.html', {'conversations': conversations})
     else:
-        return render(request, 'pickup/messages.html')
+        print('else')
+        return render(request, 'pickup/messages.html',{})
 
 def new_message(request):
     user = request.user
-    return render(request, 'pickup/newMessage.html')
+
+    # The user has sent a message
+    if request.method == 'POST':
+        form = NewMessageForm(request.POST)
+        if form.is_valid():
+            if Player.objects.get(username=form.data['receiver']):
+                sender = Player.objects.get(username=user.username)
+                receiver = Player.objects.get(username=form.data['receiver'])
+                msg = form.data['userMessage']
+                message = Messages.objects.create(sender=sender, receiver=receiver, message=msg)
+                message.save()
+                return HttpResponseRedirect(reverse('messages'))
+            else:
+                #handle player not existing :(
+                return render(request, 'pickup/newMessage.html')
+        else:
+            print(form.errors)
+            return render(request, 'pickup/newMessage.html',form.errors)
+
+
+    elif request.method == 'GET':
+        if "search_text" not in request.GET.keys():
+            return render(request, 'pickup/newMessage.html', {})
+        input_form = SearchForm(request.GET)
+        input_form.is_valid()
+        search_text = input_form.cleaned_data["search_text"]
+
+        # get the list of players
+        players = Player.objects.filter(username__contains=search_text)
+        context = {"players": players,
+                   "search_input": search_text,
+                   "no_results": list(players) == [],
+                   "user": request.user, }
+        return render(request, 'pickup/newMessage.html', context)
+
+    else:
+        form = NewMessageForm()
+        return render(request, 'pickup/newMessage.html')
