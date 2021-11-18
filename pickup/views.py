@@ -6,7 +6,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-
+import os
+import requests
 
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
@@ -276,6 +277,22 @@ def add_park(request):
         if form.is_valid():
             input_data = form.cleaned_data
             # is valid: add the user to the Player database
+            api_key = os.environ.get('apiKey')
+            api_formatted_address = input_data['street'] + "," + input_data['city'] + "," + input_data['state'] + "," + input_data['zipcode']
+            geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address={}".format(api_formatted_address)
+            if api_key is not None:
+                geocode_url = geocode_url + "&key={}".format(api_key)
+            
+            results = requests.get(geocode_url)
+            # Results will be in JSON format - convert to dict using requests functionality
+            results = results.json()
+            
+            print(results)
+            
+            if len(results['results']['address_components'][types]) != "street_number":
+                return HttpResponse("Address was not found by Google Maps")
+            
+            
             try:
                 current_player = request.user
 
