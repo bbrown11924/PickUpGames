@@ -1,6 +1,13 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'pickup/style.css' %}">
+<html>
 <h1> Add New Park </h1>
+
+{% if error %}<p id="error">{{ error }}</p> {% endif %}
+
 <form action="/add_park/" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit">
 </form>
+</html>
