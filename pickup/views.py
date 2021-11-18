@@ -14,11 +14,17 @@ from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
     ChangePasswordForm, SearchForm
 from .models import Profile, Player, Parks, Schedule, FavoriteParks,EventSignup
 
+# view for index page if not logged in, home page if logged in
 def index(request):
-    return render(request, "pickup/index.html")
-  
-def home(request):
-    return render(request, 'pickup/home.html', {})
+
+    # not logged in: index page
+    if not request.user.is_authenticated:
+        return render(request, "pickup/index.html")
+
+    # logged in: home page
+    return render(request, "pickup/home.html")
+
+
 # view for page to register a new account
 def register(request):
     # check for visiting for first time or submitting
