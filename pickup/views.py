@@ -14,11 +14,27 @@ from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
     ChangePasswordForm, SearchForm
 from .models import Profile, Player, Parks, Schedule, FavoriteParks,EventSignup
 
+# view for index page if not logged in, home page if logged in
 def index(request):
-    return render(request, "pickup/index.html")
-  
-def home(request):
-    return render(request, 'pickup/home.html', {})
+
+    # not logged in: index page
+    if not request.user.is_authenticated:
+        return render(request, "pickup/index.html")
+
+    # logged in: home page - get signups
+    signups = EventSignup.objects.filter(player_id=request.user)
+    event_ids = signups.values('event_id')
+    matches = Schedule.objects.filter(id__in=event_ids).order_by('date')
+
+    times = [ match.get_time_str() for match in matches ]
+    signups = [ (matches[i], times[i]) for i in range(len(matches)) ]
+
+    # display the home page
+    context = {"username": request.user.username,
+               "signups": signups,}
+    return render(request, "pickup/home.html", context)
+
+
 # view for page to register a new account
 def register(request):
     # check for visiting for first time or submitting
@@ -75,7 +91,7 @@ class Login(LoginView):
 
 # view for logging out
 class Logout(LogoutView):
-    next_page = "login"
+    next_page = "index"
 
 
 # view for changing one's password (must be logged in)

@@ -105,6 +105,11 @@ class Schedule(models.Model):
 
     objects = models.Manager()
 
+    def get_time_str(self):
+        time = datetime.datetime(1900, 1, 1, 0, 0) + \
+               datetime.timedelta(minutes=15 * self.time)
+        return time.strftime("%I:%M %p")
+
 class EventSignup(models.Model):
     class Meta:
         # Prevent the same event from being joined twice

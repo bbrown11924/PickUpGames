@@ -216,7 +216,7 @@ class LoginTests(TestCase):
         response = self.client.post(reverse("login"), fields)
 
         # verify successful redirect
-        self.assertRedirects(response, reverse("view_profile"))
+        self.assertRedirects(response, reverse("index"))
 
         # verify profile page can be accessed
         response = self.client.get(reverse("view_profile"))
@@ -263,11 +263,11 @@ class LoginTests(TestCase):
         # log in
         fields = {"username": "BenJohnson", "password": "Cats4ever"}
         response = self.client.post(reverse("login"), fields)
-        self.assertRedirects(response, reverse("view_profile"))
+        self.assertRedirects(response, reverse("index"))
 
         # log out
         response = self.client.get(reverse("logout"))
-        self.assertRedirects(response, reverse("login"))
+        self.assertRedirects(response, reverse("index"))
 
         # ensure we are logged out
         response = self.client.get(reverse("view_profile"))
@@ -307,7 +307,7 @@ class ProfileTests(TestCase):
         # log in and go to profile page
         fields = {"username": "44", "password": "YesWeCan!"}
         response = self.client.post(reverse("login"), fields)
-        self.assertRedirects(response, reverse("view_profile"))
+        self.assertRedirects(response, reverse("index"))
         response = self.client.get(reverse("view_profile"))
 
         # check for correct information
@@ -431,7 +431,7 @@ class ChangePasswordTests(TestCase):
 
         # log out
         response = self.client.get(reverse("logout"))
-        self.assertRedirects(response, reverse("login"))
+        self.assertRedirects(response, reverse("index"))
 
         # try logging in with the old password
         fields = {"username": "Ted", "password": "ObamaIsTheWorst!"}
