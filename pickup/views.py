@@ -21,8 +21,7 @@ def index(request):
     if not request.user.is_authenticated:
         return render(request, "pickup/index.html")
 
-    # logged in: home page
-
+    # logged in: home page - get signups
     signups = EventSignup.objects.filter(player_id=request.user)
     event_ids = signups.values('event_id')
     matches = Schedule.objects.filter(id__in=event_ids).order_by('date')
@@ -30,6 +29,7 @@ def index(request):
     times = [ match.get_time_str() for match in matches ]
     signups = [ (matches[i], times[i]) for i in range(len(matches)) ]
 
+    # display the home page
     context = {"username": request.user.username,
                "signups": signups,}
     return render(request, "pickup/home.html", context)
