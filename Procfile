@@ -1,1 +1,1 @@
-web: waitress PickUpGames.wsgi
+web: gunicorn PickUpGames.wsgi
