@@ -22,7 +22,17 @@ def index(request):
         return render(request, "pickup/index.html")
 
     # logged in: home page
-    return render(request, "pickup/home.html")
+
+    signups = EventSignup.objects.filter(player_id=request.user)
+    event_ids = signups.values('event_id')
+    matches = Schedule.objects.filter(id__in=event_ids).order_by('date')
+
+    times = [ match.get_time_str() for match in matches ]
+    signups = [ (matches[i], times[i]) for i in range(len(matches)) ]
+
+    context = {"username": request.user.username,
+               "signups": signups,}
+    return render(request, "pickup/home.html", context)
 
 
 # view for page to register a new account

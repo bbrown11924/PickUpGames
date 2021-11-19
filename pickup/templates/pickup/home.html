@@ -6,5 +6,51 @@ Home Page
 
 
 {% block content %}
-	<h1>Hello World! This is the future location of the home page!</h1>
+<h1>Welcome to Pickup Games!</h1>
+<br />
+
+<div class="container" id="home-top">
+	<h2 class="center-text">Your Dashboard</h2>
+	<br />
+
+	<div class="list-group">
+		<a href="{% url 'view_profile' %}" class="list-group-item btn btn-dark btn-lg gap-3 py-3">
+			Your Profile
+		</a>
+		<a href="{% url 'parks' %}" class="list-group-item btn btn-dark btn-lg gap-3 py-3">
+			View Parks
+		</a>
+		<a href="{% url 'search_players' %}" class="list-group-item btn btn-dark btn-lg gap-3 py-3">
+			Search Players
+		</a>
+	</div>
+</div>
+
+<br />
+
+<div class="container" id="home-signups">
+	<h2 class="center-text">Your Signups</h2>
+	<br />
+	<p class="center-text">Click on any signup to view details or cancel.</p>
+	<br />
+
+	<div id="signup-list">
+		{% for match, time in signups %}
+			<a class="btn btn-dark btn-lg gap-3 py-3 btn-signup"
+				href="{% url 'join_event' match.park_id 0 match.id %}">
+				<p>{{ match.name }}</p>
+				<p>{{ match.date }} at {{ time }}</p>
+				<p>
+					{{ match.park.name }}<br />
+					{{ match.park.street }}<br />
+					{{ match.park.city }}, {{ match.park.state }}
+					{{ match.park.zipcode}}
+				</p>
+			</a>
+		{% empty %}
+			<p>You haven't signed up for any matches yet!</p>
+		{% endfor %}
+	</div>
+</div>
+
 {% endblock %}
