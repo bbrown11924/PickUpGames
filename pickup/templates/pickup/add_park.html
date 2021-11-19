@@ -1,6 +1,11 @@
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'pickup/style.css' %}">
-<html>
+{% extends 'pickup/base.html' %}
+
+{% block title %}
+Add Park
+{% endblock %}
+
+{% block content %}
+
 <h1> Add New Park </h1>
 
 {% if error %}<p id="error">{{ error }}</p> {% endif %}
@@ -10,4 +15,5 @@
     {{ form.as_p }}
     <input type="submit" value="Submit">
 </form>
-</html>
+
+{% endblock %}
