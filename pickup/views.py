@@ -91,7 +91,7 @@ class Login(LoginView):
 
 # view for logging out
 class Logout(LogoutView):
-    next_page = "login"
+    next_page = "index"
 
 
 # view for changing one's password (must be logged in)
