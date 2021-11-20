@@ -22,6 +22,10 @@ header h1{
     padding-left: 1em;
 }
 
+.navbar {
+    height: 60px;
+}
+
 #LoginSignUp{
 
     float: right;
@@ -94,10 +98,10 @@ ul.no-bullets {
     background-color: darkorange;
     border-color: black;
     color: navy;
-    border-radius: 0em;
 }
 
-.btn-dark:hover, .btn-dark:focus {
+.btn-dark:hover, .btn-dark:focus, .btn-signup:hover, .btn-signup:focus,
+.btn-signup:active {
     background-color: orange;
     border-color: black;
     color: navy;
@@ -119,8 +123,29 @@ ul.no-bullets {
     margin: 20px;
 }
 
-.btn-signup:hover, .btn-signup:focus, .btn-signup:active {
-    background-color: orange;
-    border-color: black;
-    color: navy;
+#login-display {
+    background-color: #afafaf;
+    padding: 20px;
+    height: 275px;
+    max-width: 400px;
+    border-radius: 1em;
+    position: relative;
+    top: calc(50vh - 150px);
+}
+
+#login-btn {
+    border-color: darkorange;
+}
+
+.list-group-item {
+    border-radius: 0em;
+}
+
+#login-list-group {
+    max-width: 300px;
+    padding: 20px
+}
+
+.height325 {
+    min-height: 325px;
 }
