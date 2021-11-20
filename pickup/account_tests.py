@@ -23,7 +23,7 @@ class RegistrationTests(TestCase):
         response = self.client.get(reverse("register"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
 
     # test to make sure an error message is printed when the password and
     # confirm password boxes do not match
@@ -36,7 +36,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: Passwords do not match.")
 
         # check for username and email boxes still filled
@@ -54,7 +54,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: Invalid email address.")
 
         # check for username box filled, but not email box
@@ -71,7 +71,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: All fields are required.")
 
     # test to ensure an error message is printed if no email is given
@@ -84,7 +84,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: All fields are required.")
 
     # test to ensure an error message is printed if the password field is blank
@@ -97,7 +97,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: All fields are required.")
 
     # test to ensure an error message is printed if the confirm_password field is
@@ -111,7 +111,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: All fields are required.")
 
     # test to make sure a valid user is successfully added
@@ -141,7 +141,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay with username box blank
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: User name unavailable.")
         self.assertNotContains(response, "Joe")
 

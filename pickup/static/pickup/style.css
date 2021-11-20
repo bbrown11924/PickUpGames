@@ -133,7 +133,17 @@ ul.no-bullets {
     top: calc(50vh - 150px);
 }
 
-#login-btn {
+#register-display {
+    background-color: #afafaf;
+    padding: 20px;
+    height: 435px;
+    max-width: 400px;
+    border-radius: 1em;
+    position: relative;
+    top: calc(50vh - 218px);
+}
+
+#login-btn, #register-btn {
     border-color: darkorange;
 }
 
@@ -143,9 +153,24 @@ ul.no-bullets {
 
 #login-list-group {
     max-width: 300px;
-    padding: 20px
+    padding: 20px;
 }
 
-.height325 {
+#register-list-group {
+    max-width: 300px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+}
+
+.larger-login {
     min-height: 325px;
+}
+
+.larger-register {
+    min-height: 470px;
+}
+
+.form-control {
+    margin: 5px;
 }
