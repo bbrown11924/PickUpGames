@@ -23,7 +23,7 @@ header h1{
 }
 
 .navbar {
-    height: 60px;
+    min-height: 60px;
 }
 
 #LoginSignUp{
@@ -187,10 +187,10 @@ ul.no-bullets {
     min-height: 470px;
 }
 
-.form-control {
+.form-control, .form-select, .form-check-input {
     margin: 5px;
 }
 
-.change-password-field {
+.change-password-field, .edit-profile-field {
     max-width: 300px;
 }
