@@ -321,6 +321,7 @@ class ProfileTests(TestCase):
         self.assertContains(response, "175 lbs")
         self.assertContains(response, "Public")
         self.assertContains(response, "Edit Profile")
+        self.assertNotContains(response, "Back")
 
     # test that the edit profile page contains information already filled in
     def test_edit_profile_autofill(self):
@@ -534,6 +535,7 @@ class ViewPlayerTests(TestCase):
         self.assertContains(response, "176 lbs")
         self.assertContains(response, "Profile status")
         self.assertContains(response, "Edit Profile")
+        self.assertNotContains(response, "Back")
 
     # test viewing another player's profile
     def test_view_other_player(self):
@@ -569,6 +571,7 @@ class ViewPlayerTests(TestCase):
         self.assertContains(response, "137 lbs")
         self.assertNotContains(response, "Profile status")
         self.assertNotContains(response, "Edit Profile")
+        self.assertContains(response, "Back")
 
     # test trying to view a player's profile that is set to private
     def test_view_private_player(self):
@@ -598,6 +601,7 @@ class ViewPlayerTests(TestCase):
         self.assertContains(response, "This player's profile is private.")
         self.assertNotContains(response, "Avril Haines")
         self.assertNotContains(response, "Edit Profile")
+        self.assertContains(response, "Back")
 
     # test viewing the profile of a player that does not exist
     def test_view_player_that_does_not_exist(self):
