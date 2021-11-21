@@ -187,10 +187,23 @@ ul.no-bullets {
     min-height: 470px;
 }
 
-.form-control, .form-select, .form-check-input {
+.form-control, .form-select, .form-check-input, .search-btn {
     margin: 5px;
 }
 
-.change-password-field, .edit-profile-field {
+.change-password-field, .edit-profile-field, .search-bar {
     max-width: 300px;
+}
+
+.search-btn {
+    max-width: 75px;
+}
+
+.search-list-item:before {
+    content: "\1F3C0";
+    padding-right: 5px;
+}
+
+.search-row {
+    margin-left: -5px;
 }
