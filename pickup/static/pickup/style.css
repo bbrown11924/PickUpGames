@@ -107,6 +107,22 @@ ul.no-bullets {
     color: navy;
 }
 
+.btn-light {
+    background-color: #cccccc;
+    border-color: white;
+    color: navy;
+}
+
+.btn-light:hover, .btn-light:focus {
+    background-color: #dddddd;
+    border-color: white;
+    color: navy;
+}
+
+.cancel-btn {
+    margin-left: 20px;
+}
+
 #signup-list {
     display: flex;
     flex-direction: row;
@@ -173,4 +189,8 @@ ul.no-bullets {
 
 .form-control {
     margin: 5px;
+}
+
+.change-password-field {
+    max-width: 300px;
 }

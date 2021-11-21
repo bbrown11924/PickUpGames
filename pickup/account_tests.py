@@ -483,6 +483,24 @@ class ChangePasswordTests(TestCase):
         error_string = "Error: New password does not match confirmed password."
         self.assertContains(response, error_string)
 
+    # test trying to change the user's password to an empty password
+    def test_change_password_to_empty(self):
+        player = Player.objects.create_user("Mitch", "GopLeader@senate.gov",
+                                            "ConfirmJudges")
+        player.save()
+
+        # log in
+        fields = {"username": "Mitch", "password": "ConfirmJudges"}
+        response = self.client.post(reverse("login"), fields)
+
+        # try changing the user's password
+        fields = {"old_password": "ConfirmJudges",
+                  "new_password": "",
+                  "confirm_password": "",}
+        response = self.client.post(reverse("change_password"), fields)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Error: No new password given.")
 
 # tests for viewing any player's profile
 class ViewPlayerTests(TestCase):
