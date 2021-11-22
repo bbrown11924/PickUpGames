@@ -7,8 +7,8 @@
             <button type="submit" name="newMsgBtn">New Message</button>
         </form>
     <ul>
-            {% for convers in conversations %}
-                <li>{{people}}</li>
+            {% for people in conversations %}
+                <li>{{people.receiver.username}}</li>
             {% empty %}
                 <li>No Messages</li>
             {% endfor %}

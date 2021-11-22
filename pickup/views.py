@@ -406,7 +406,7 @@ def message_user(request):
     user = request.user
     player = Player.objects.get(username=user.username)
     try:
-        conversations = Messages.objects.filter(sender=player).order_by('time_sent')
+        conversations = Messages.objects.filter(Q(sender=player)|Q(receiver=player)).values('sender', 'receiver').distinct()
     except Messages.DoesNotExist:
         conversations = None
 
