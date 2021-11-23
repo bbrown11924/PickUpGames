@@ -120,6 +120,11 @@ def change_password(request):
         return render(request, 'pickup/change_password.html',
                       {"error": "Error: Incorrect old password."})
 
+    # verify the new password is not empty
+    if input_data["new_password"] == "":
+        context = {"error": "Error: No new password given."}
+        return render(request, 'pickup/change_password.html', context)
+
     # verify both passwords match
     if input_data["new_password"] != input_data["confirm_password"]:
         context = {"error":

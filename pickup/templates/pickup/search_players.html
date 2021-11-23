@@ -6,23 +6,24 @@ Search Players
 
 {% block content %}
 
-<h1>Pickup Games: Search Players</h1>
+<h1>Search Players</h1>
 
-<p>Enter a user's username to search for their profile.</p>
+<p>Enter a player's user name to search for their profile.</p>
 
 <form action="{% url 'search_players' %}" method="get" id="search_form">
-    <p>
+    <p class="row search-row">
         <input type="search" id="search_bar" name="search_text"
-            value="{{ search_input }}" />
-        <input type="submit" value="Search" />
+            value="{{ search_input }}" class="form-control search-bar col" />
+        <input type="submit" value="Search"
+            class="btn btn-dark col search-btn" />
     </p>
 </form>
 
 {% if players %}
     <p>Search results:</p>
-    <ul>
+    <ul class="list-unstyled">
         {% for player in players %}
-            <li>
+            <li class="search-list-item">
                 {% if player.is_public or player.username == user.username %}
                     <a href="{% url 'view_player' player.username %}">
                 {% endif %}
