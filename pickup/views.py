@@ -7,14 +7,35 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-
+import os
+import requests
 
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
     ChangePasswordForm, SearchForm, NewMessageForm
-from .models import Profile, Player, Parks, Schedule, FavoriteParks, Messages
+from .models import Profile, Player, Parks, Schedule, FavoriteParks, Messages, EventSignup
 
+# view for index page if not logged in, home page if logged in
 def index(request):
+
+    # not logged in: index page
+    if not request.user.is_authenticated:
+        return render(request, "pickup/index.html")
+
+    # logged in: home page - get signups
+    signups = EventSignup.objects.filter(player_id=request.user)
+    event_ids = signups.values('event_id')
+    matches = Schedule.objects.filter(id__in=event_ids).order_by('date')
+
+    times = [ match.get_time_str() for match in matches ]
+    signups = [ (matches[i], times[i]) for i in range(len(matches)) ]
+
+    # display the home page
+    context = {"username": request.user.username,
+               "signups": signups,}
+    return render(request, "pickup/home.html", context)
+
+
     return render(request, "pickup/index.html")
 
 def home(request):
@@ -75,7 +96,7 @@ class Login(LoginView):
 
 # view for logging out
 class Logout(LogoutView):
-    next_page = "login"
+    next_page = "index"
 
 
 # view for changing one's password (must be logged in)
@@ -276,7 +297,62 @@ def add_park(request):
         form = ParkForm(request.POST)
         if form.is_valid():
             input_data = form.cleaned_data
-            # is valid: add the user to the Player database
+            # is valid: add the parks to the parks database
+
+            # Sets up the API using the env variable apiKey
+            api_key = os.environ.get('apiKey')
+            formatted_address =  input_data['street'] + ", " + input_data['city'] + ", " + input_data['state'] + " " + input_data['zipcode'] + ", USA"
+
+            # Formats the address to better works with the maps API
+            geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address={}".format(formatted_address)
+            if api_key is not None:
+                geocode_url = geocode_url + "&key={}".format(api_key)
+            else:
+                context = {
+                    "error": "Error: The google maps api key is missing",
+                    "form": form
+                }
+
+                return render(request, 'pickup/add_park.html', context)
+            # requests geocoding results from google maps API
+            results = requests.get(geocode_url)
+            # Results will be in JSON format - convert to dict using requests functionality
+            results = results.json()
+
+
+
+            # converts the results into a usable array
+            api_formatted_address = results['results'][0]['formatted_address']
+            new_input_data = api_formatted_address.split(", ")
+            if len(new_input_data) > 4:
+                new_input_data = new_input_data[1:]
+                api_formatted_address = ", ".join(new_input_data)
+
+            #input validation
+            if len(new_input_data) < 3:
+                context = {
+                    "error": "Error: The fields need to belong to a valid address",
+                    "form": form
+                }
+
+                return render(request, 'pickup/add_park.html', context)
+
+            # if google maps didn't find the exact address user looking for
+            if (api_formatted_address != formatted_address):
+
+                form = ParkForm({'name':input_data['name'], 'street':new_input_data[0],
+                'city':new_input_data[1], 'state':new_input_data[2][0:2],
+                'zipcode':new_input_data[2][3:9]})
+
+                # shows the page again
+                context = {
+                "form": form,
+                "error": "Google Maps found the following match for an address! Is this the correct address?: \n {}".format(api_formatted_address),
+                }
+
+                return render(request, 'pickup/add_park.html', context)
+
+            # attempts to save the player in the database
             try:
                 current_player = request.user
 
@@ -320,21 +396,24 @@ def view_park(request):
     return render(request, 'pickup/parks_list.html', context)
 
 @login_required(login_url="login")
-def park_signup(request, parkid):
+def event_signup(request, parkid):
+    current_player = request.user
     park = Parks.objects.get(id=parkid)
     error = None
-    #Get the list of matches specific to this park
-    try:
-        matches = Schedule.objects.filter(park=parkid).order_by('date')
-    except Schedule.DoesNotExist:
-        matches = None
+    #Get the list of events specific to this park
 
+        #matches = Schedule.objects.filter(park=parkid).order_by('date')
+
+    myevents = EventSignup.objects.filter(player_id=current_player).values('event_id')
+    mymatches = Schedule.objects.filter(park=parkid, id__in=myevents).order_by('date')
+    othermatches = Schedule.objects.filter(park=parkid).exclude(id__in=myevents).order_by('date')
     if park:
         if request.method != 'POST':
 
             form = ScheduleForm()
 
-            return render(request, 'pickup/schedule_time.html', {'form': form, 'park': park, 'matches': matches})
+            return render(request, 'pickup/schedule_time.html', {'form': form, 'park': park,
+                                                                 'mymatches': mymatches, 'othermatches': othermatches})
 
         form = ScheduleForm(request.POST)
 
@@ -342,22 +421,24 @@ def park_signup(request, parkid):
             context = {'form': form,
                        'park': park,
                        'error': form.errors,
-                       'matches': matches}
+                       'mymatches': mymatches, 'othermatches': othermatches}
             return render(request, 'pickup/schedule_time.html',context)
 
         input_data = form.cleaned_data
 
         #Save the new schedule
-        current_player = request.user
-        new_match = Schedule(player=current_player, park=park,time=input_data['time'], date=input_data['date'])
+
+        new_match = Schedule(creator=current_player, name=input_data['name'], park=park,time=input_data['time'],
+                             date=input_data['date'])
         try:
             new_match.save()
         except IntegrityError:
-            error = "Error: Already signed up for this slot"
+            error = "Error: There is already a match at this time with this name.  Please join the" \
+                    " existing match or create a new match with a unique name."
 
         context = {'form': form,
                    'park': park,
-                   'matches': matches,
+                   'mymatches': mymatches, 'othermatches': othermatches,
                    'error': error}
         return render(request, 'pickup/schedule_time.html', context)
 
@@ -397,6 +478,45 @@ def favorite_park(request, add, parkid):
 
     else:
         raise Http404
+
+@login_required(login_url="login")
+def join_event(request, parkid, add, eventid):
+    event = Schedule.objects.get(id=eventid)
+    park = Parks.objects.get(id=parkid)
+
+    #Get the list of all people attending the eventk
+    event_player = EventSignup.objects.filter(event=eventid).values("player_id")
+    players = Player.objects.filter(id__in=event_player)
+
+    if event:
+        if request.method != 'POST':
+
+            return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'park': park, 'players':players})
+
+        # Check if you are adding or deleting and respond
+        current_player = request.user
+
+        if add:
+            try:
+                join = EventSignup(player=current_player, event=event)
+                join.save()
+            except IntegrityError:
+                error = "Error: You have already joined this match!"
+                return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'error':error,
+                                                                  'park': park, 'players':players})
+
+        if not add:
+            try:
+                EventSignup.objects.get(event=event).delete()
+            except IntegrityError:
+                error = "Error: You can't leave because you haven't joined!"
+                return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'error':error,
+                                                                  'park': park, 'players':players})
+
+        return HttpResponseRedirect(reverse('event_signup', kwargs={'parkid': parkid} ))
+    else:
+        raise Http404
+
 
 
 @login_required(login_url="login")

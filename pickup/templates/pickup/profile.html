@@ -1,8 +1,12 @@
 {% extends 'pickup/base.html' %}
 
+{% block title %}
+Profile
+{% endblock %}
+
 {% block content %}
 
-<h1>Pickup Games</h1>
+<h1>Profile</h1>
 
 {% if is_self %}
     <h2>Your Profile: {{ username }}</h2>

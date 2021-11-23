@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 from pickup.models import Parks, Player
+import os
 
 # tests for the Park model, independent of any view
 class ParkModelTests(TestCase):
@@ -60,6 +61,7 @@ class ParkViewTests(TestCase):
         self.assertRedirects(response, reverse("login") + "?next=" +
                              reverse("view_profile"))
 
+    # testing to see if an invalid zip format is entered
     def test_add_park_invalid_zip(self):
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
@@ -75,6 +77,7 @@ class ParkViewTests(TestCase):
         self.assertContains(response, "Enter a zip code in the format")
         self.assertNotContains(response, "Park has been added!")
 
+    # test to see if there is any crucial missing information in the address
     def test_add_park_missing_info(self):
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
@@ -82,13 +85,14 @@ class ParkViewTests(TestCase):
         fields = {"username": "root", "password": "root"}
         self.client.post(reverse("login"), fields)
 
-        fields = {'name':'Parky', 'street':'Parkstreet', 'city':'',
+        fields = {'name':'Parky', 'street':'', 'city':'Parkville',
                              'state':'AZ', 'zipcode':'12345'}
         response = self.client.post(reverse('Add Park'), fields)
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Park has been added!")
 
+     # check if input state doesn't exist
     def test_add_park_bad_state(self):
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
@@ -103,7 +107,13 @@ class ParkViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Park has been added!")
 
-    def test_add_park_good(self):
+    # checking a believable but fake address
+    def test_add_park_not_real(self):
+        try:
+            os.environ['apiKey']
+        except KeyError:
+            return
+            
         player = Player.objects.create_user("root", "root@root.com",
                                             "root")
         player.save()
@@ -115,11 +125,76 @@ class ParkViewTests(TestCase):
         response = self.client.post(reverse('Add Park'), fields)
 
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Park has been added!")
+
+
+    # checking a real address
+    def test_add_park_real(self):
+        try:
+            os.environ['apiKey']
+        except KeyError:
+            return
+        
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Good Park', 'street':'20 Hudson Yards', 'city':'New York',
+                             'state':'NY', 'zipcode':'10001'}
+        response = self.client.post(reverse('Add Park'), fields)
+
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Park has been added!")
 
         park = Parks.objects.get(name="Good Park")
         self.assertEqual(park.name, 'Good Park')
 
+    # checking a flawed real address
+    def test_add_park_real_malformed_address(self):
+        try:
+            os.environ['apiKey']
+        except KeyError:
+            return
+    
+    
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Good Park', 'street':'20 Huson Yards', 'city':'New York',
+                             'state':'NY', 'zipcode':'10001'}
+        response = self.client.post(reverse('Add Park'), fields)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Park has been added!")
+        self.assertContains(response, "20 Hudson Yards, New York, NY 10001")
+
+        
+    # checking a real address
+    def test_add_park_absent_apikey(self):
+        try:
+            os.environ['apiKey']
+        except KeyError:
+            player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+            player.save()
+            fields = {"username": "root", "password": "root"}
+            self.client.post(reverse("login"), fields)
+
+            fields = {'name':'Good Park', 'street':'20 Hudson Yards', 'city':'New York',
+                             'state':'NY', 'zipcode':'10001'}
+            response = self.client.post(reverse('Add Park'), fields)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, "The google maps api key is missing")
+        return
+      
+        
+        
 # tests for searching for a player's profile
 class SearchParkTests(TestCase):
 

@@ -47,7 +47,7 @@ class DateInput(forms.DateInput):
 class ScheduleForm(ModelForm):
     class Meta:
         model = Schedule
-        fields = ['date', 'time']
+        fields = ['name', 'date', 'time']
         widgets = {
             'date': DateInput()
         }
