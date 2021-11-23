@@ -22,6 +22,10 @@ header h1{
     padding-left: 1em;
 }
 
+.navbar {
+    min-height: 60px;
+}
+
 #LoginSignUp{
 
     float: right;
@@ -94,13 +98,29 @@ ul.no-bullets {
     background-color: darkorange;
     border-color: black;
     color: navy;
-    border-radius: 0em;
 }
 
-.btn-dark:hover, .btn-dark:focus {
+.btn-dark:hover, .btn-dark:focus, .btn-signup:hover, .btn-signup:focus,
+.btn-signup:active {
     background-color: orange;
     border-color: black;
     color: navy;
+}
+
+.btn-light {
+    background-color: #cccccc;
+    border-color: white;
+    color: navy;
+}
+
+.btn-light:hover, .btn-light:focus {
+    background-color: #dddddd;
+    border-color: white;
+    color: navy;
+}
+
+.cancel-btn {
+    margin-left: 20px;
 }
 
 #signup-list {
@@ -119,8 +139,71 @@ ul.no-bullets {
     margin: 20px;
 }
 
-.btn-signup:hover, .btn-signup:focus, .btn-signup:active {
-    background-color: orange;
-    border-color: black;
-    color: navy;
+#login-display {
+    background-color: #afafaf;
+    padding: 20px;
+    height: 275px;
+    max-width: 400px;
+    border-radius: 1em;
+    position: relative;
+    top: calc(50vh - 150px);
+}
+
+#register-display {
+    background-color: #afafaf;
+    padding: 20px;
+    height: 435px;
+    max-width: 400px;
+    border-radius: 1em;
+    position: relative;
+    top: calc(50vh - 218px);
+}
+
+#login-btn, #register-btn {
+    border-color: darkorange;
+}
+
+.list-group-item {
+    border-radius: 0em;
+}
+
+#login-list-group {
+    max-width: 300px;
+    padding: 20px;
+}
+
+#register-list-group {
+    max-width: 300px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+}
+
+.larger-login {
+    min-height: 325px;
+}
+
+.larger-register {
+    min-height: 470px;
+}
+
+.form-control, .form-select, .form-check-input, .search-btn {
+    margin: 5px;
+}
+
+.change-password-field, .edit-profile-field, .search-bar {
+    max-width: 300px;
+}
+
+.search-btn {
+    max-width: 75px;
+}
+
+.search-list-item:before {
+    content: "\1F3C0";
+    padding-right: 5px;
+}
+
+.search-row {
+    margin-left: -5px;
 }

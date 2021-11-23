@@ -6,13 +6,13 @@ Profile
 
 {% block content %}
 
-<h1>Profile</h1>
-
 {% if is_self %}
-    <h2>Your Profile: {{ username }}</h2>
+    <h1>Your Profile</h1>
 {% else %}
-    <h2>Player Profile: {{ username }}</h2>
+    <h1>Player Profile</h1>
 {% endif %}
+
+<h2>User name: {{ username }}</h2>
 
 {% if is_public or is_self %}
 <table class="table">
@@ -48,8 +48,16 @@ Profile
 {% endif %}
 
 {% if is_self %}
-    <p><a href="{% url 'edit_profile' %}">Edit Profile</a></p>
-    <p><a href="{% url 'change_password' %}">Change Password</a></p>
+    <p><a href="{% url 'edit_profile' %}" class="btn btn-dark">
+        Edit Profile
+    </a></p>
+    <p><a href="{% url 'change_password' %}" class="btn btn-dark">
+        Change Password
+    </a></p>
+{% else %}
+    <p><a href="javascript:history.back()" class="btn btn-light">
+        Back
+    </a></p>
 {% endif %}
 
 {% endblock %}
