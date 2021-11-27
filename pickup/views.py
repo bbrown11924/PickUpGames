@@ -13,7 +13,7 @@ import requests
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
     ChangePasswordForm, SearchForm, NewMessageForm
-from .models import Profile, Player, Parks, Schedule, FavoriteParks, Messages, EventSignup
+from .models import Profile, Player, Parks, Schedule, FavoriteParks,EventSignup, Messages
 
 # view for index page if not logged in, home page if logged in
 def index(request):
@@ -522,7 +522,25 @@ def join_event(request, parkid, add, eventid):
     else:
         raise Http404
 
+# Function for getting the
+def get_user_conversations(player):
+    try:
+        sent = list(Messages.objects.filter(sender=player).values('receiver').distinct())
+        received = list(Messages.objects.filter(receiver=player).values('sender').distinct())
+        conversations=[]
 
+        for people in sent:
+            person = Player.objects.get(id=people['receiver'])
+            conversations.append(person)
+
+        for people in received:
+            person = Player.objects.get(id=people['sender'])
+            if person not in conversations:
+                conversations.append(person)
+    except Messages.DoesNotExist:
+        conversations = None
+
+    return conversations
 
 @login_required(login_url="login")
 def message_user(request):
@@ -530,27 +548,21 @@ def message_user(request):
     # Find which user and get all messages sent or received by the user
     user = request.user
     player = Player.objects.get(username=user.username)
-    try:
-        conversations = Messages.objects.filter(Q(sender=player)|Q(receiver=player)).values('sender', 'receiver').distinct()
-    except Messages.DoesNotExist:
-        conversations = None
+    conversations = get_user_conversations(player)
 
     if conversations is not None:
+        # From to send a new message
         if request.method == 'POST':
             return render(request, 'pickup/messages.html')
 
-        elif request.method == 'get':
-            print('conv get')
-            return render(request, 'pickup/messages.html', {'conversations': conversations})
-
+        # Display all conversations
         else:
-            print('conv else')
-            print(len(conversations))
             return render(request, 'pickup/messages.html', {'conversations': conversations})
     else:
         print('else')
         return render(request, 'pickup/messages.html',{})
 
+@login_required(login_url="login")
 def new_message(request):
     user = request.user
 
@@ -591,3 +603,30 @@ def new_message(request):
     else:
         form = NewMessageForm()
         return render(request, 'pickup/newMessage.html')
+
+
+def message_conversation(request, username):
+    # Find which user and get all messages sent or received by the user
+    user = request.user
+    player = Player.objects.get(username=user.username)
+    conversations = get_user_conversations(player)
+
+    if conversations is not None:
+        # From to send a new message
+        if request.method == 'POST':
+            return render(request, 'pickup/messages.html')
+
+        # Display all conversations
+        else:
+            if (username):
+                person = Player.objects.get(username=username)
+                print(person)
+                sent = Messages.objects.filter(Q(sender=player) & Q(receiver=person))
+                received = Messages.objects.filter(Q(sender=person) & Q(receiver=player))
+                messages = sent.union(received)
+                messages.order_by('time_sent')
+                print(messages)
+            return render(request, 'pickup/messages.html', {'conversations': conversations, 'messages': messages})
+    else:
+        print('else')
+        return render(request, 'pickup/messages.html', {})
