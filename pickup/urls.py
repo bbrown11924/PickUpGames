@@ -18,6 +18,6 @@ urlpatterns = [
     path("favorite/<int:add>/<int:parkid>/", views.favorite_park, name='favorite_park'),
     path("parks/<int:parkid>/<int:add>/<int:eventid>/", views.join_event, name='join_event'),
     path('messages/', views.message_user, name="messages"),
-    path('messages/<str:username>', views.message_conversation, name="messages"),
-    path('newMessage/', views.new_message, name= 'new_message'),
+    path('messages/<str:username>', views.message_conversation, name="messages_conversation"),
+    path('newMessage/', views.new_message, name='new_message'),
 ]

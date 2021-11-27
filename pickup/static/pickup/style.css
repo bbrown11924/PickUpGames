@@ -207,3 +207,13 @@ ul.no-bullets {
 .search-row {
     margin-left: -5px;
 }
+
+#MessagesLeft{
+    float:left;
+    width: 30%;
+}
+
+#MessagesRight{
+    float: right;
+    width: 70%;
+}

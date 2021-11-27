@@ -13,11 +13,11 @@ import requests
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
     ChangePasswordForm, SearchForm, NewMessageForm
-from .models import Profile, Player, Parks, Schedule, FavoriteParks,EventSignup, Messages
+from .models import Profile, Player, Parks, Schedule, FavoriteParks, EventSignup, Messages
+
 
 # view for index page if not logged in, home page if logged in
 def index(request):
-
     # not logged in: index page
     if not request.user.is_authenticated:
         return render(request, "pickup/index.html")
@@ -27,19 +27,19 @@ def index(request):
     event_ids = signups.values('event_id')
     matches = Schedule.objects.filter(id__in=event_ids).order_by('date')
 
-    times = [ match.get_time_str() for match in matches ]
-    signups = [ (matches[i], times[i]) for i in range(len(matches)) ]
+    times = [match.get_time_str() for match in matches]
+    signups = [(matches[i], times[i]) for i in range(len(matches))]
 
     # display the home page
     context = {"username": request.user.username,
-               "signups": signups,}
+               "signups": signups, }
     return render(request, "pickup/home.html", context)
 
 
-    return render(request, "pickup/index.html")
-
 def home(request):
     return render(request, 'pickup/home.html', {})
+
+
 # view for page to register a new account
 def register(request):
     # check for visiting for first time or submitting
@@ -116,7 +116,7 @@ def change_password(request):
 
     # validate old password
     if authenticate(username=request.user.username,
-                    password=input_data["old_password"]) == None:
+                    password=input_data["old_password"]) is None:
         return render(request, 'pickup/change_password.html',
                       {"error": "Error: Incorrect old password."})
 
@@ -128,7 +128,7 @@ def change_password(request):
     # verify both passwords match
     if input_data["new_password"] != input_data["confirm_password"]:
         context = {"error":
-                   "Error: New password does not match confirmed password."}
+                       "Error: New password does not match confirmed password."}
         return render(request, 'pickup/change_password.html', context)
 
     # update the user's password
@@ -147,7 +147,6 @@ def view_profile(request):
 # view for page to view any player's profile
 @login_required(login_url="login")
 def view_player(request, username):
-
     # check for viewing own profile
     is_self = request.user.username == username
 
@@ -167,23 +166,23 @@ def view_player(request, username):
 
     # get the user's age
     age = user.get_age()
-    if age == None:
+    if age is None:
         age = "Not provided"
 
     # get the user's gender
-    if user.gender != None:
+    if user.gender is not None:
         gender = Player.genders[user.gender][1]
     else:
         gender = "Not provided"
 
     # get the user's height
-    if user.height != None:
+    if user.height is not None:
         height = str(user.height) + " in"
     else:
         height = "Not provided"
 
     # get the user's weight
-    if user.weight != None:
+    if user.weight is not None:
         weight = str(user.weight) + " lbs"
     else:
         weight = "Not provided"
@@ -195,14 +194,13 @@ def view_player(request, username):
                "height": height,
                "weight": weight,
                "is_self": is_self,
-               "is_public": user.is_public,}
+               "is_public": user.is_public, }
     return render(request, 'pickup/profile.html', context)
 
 
 # view for page to search for player profiles
 @login_required(login_url="login")
 def search_players(request):
-
     # check for visiting for first time or searching
     if "search_text" not in request.GET.keys():
         return render(request, 'pickup/search_players.html', {})
@@ -217,7 +215,7 @@ def search_players(request):
     context = {"players": players,
                "search_input": search_text,
                "no_results": list(players) == [],
-               "user": request.user,}
+               "user": request.user, }
     return render(request, 'pickup/search_players.html', context)
 
 
@@ -229,10 +227,10 @@ def profile_list(request):
                                                                      Height=q.get_height_cust())
     return HttpResponse(output)
 
+
 # view for page to view to edit one's profile (must be logged in)
 @login_required(login_url="login")
 def edit_profile(request):
-
     # get the user's information to prefill
     username = request.user.username
     user = Player.objects.get(username=username)
@@ -272,7 +270,7 @@ def edit_profile(request):
                    "gender": request.POST["gender"],
                    "height": request.POST["height"],
                    "weight": request.POST["weight"],
-                   "is_public": request.POST["is_public"],}
+                   "is_public": request.POST["is_public"], }
         return render(request, 'pickup/edit_profile.html', context)
 
     input_data = input_form.cleaned_data
@@ -296,6 +294,7 @@ def edit_profile(request):
     # redirect back to the profile page
     return HttpResponseRedirect(reverse('view_profile'))
 
+
 @login_required(login_url="login")
 def add_park(request):
     if request.method == 'POST':
@@ -306,7 +305,8 @@ def add_park(request):
 
             # Sets up the API using the env variable apiKey
             api_key = os.environ.get('apiKey')
-            formatted_address =  input_data['street'] + ", " + input_data['city'] + ", " + input_data['state'] + " " + input_data['zipcode'] + ", USA"
+            formatted_address = input_data['street'] + ", " + input_data['city'] + ", " + input_data['state'] + " " + \
+                                input_data['zipcode'] + ", USA"
 
             # Formats the address to better works with the maps API
             geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address={}".format(formatted_address)
@@ -324,8 +324,6 @@ def add_park(request):
             # Results will be in JSON format - convert to dict using requests functionality
             results = results.json()
 
-
-
             # converts the results into a usable array
             api_formatted_address = results['results'][0]['formatted_address']
             new_input_data = api_formatted_address.split(", ")
@@ -333,7 +331,7 @@ def add_park(request):
                 new_input_data = new_input_data[1:]
                 api_formatted_address = ", ".join(new_input_data)
 
-            #input validation
+            # input validation
             if len(new_input_data) < 3:
                 context = {
                     "error": "Error: The fields need to belong to a valid address",
@@ -343,16 +341,16 @@ def add_park(request):
                 return render(request, 'pickup/add_park.html', context)
 
             # if google maps didn't find the exact address user looking for
-            if (api_formatted_address != formatted_address):
-
-                form = ParkForm({'name':input_data['name'], 'street':new_input_data[0],
-                'city':new_input_data[1], 'state':new_input_data[2][0:2],
-                'zipcode':new_input_data[2][3:9]})
+            if api_formatted_address != formatted_address:
+                form = ParkForm({'name': input_data['name'], 'street': new_input_data[0],
+                                 'city': new_input_data[1], 'state': new_input_data[2][0:2],
+                                 'zipcode': new_input_data[2][3:9]})
 
                 # shows the page again
                 context = {
-                "form": form,
-                "error": "Google Maps found the following match for an address! Is this the correct address?: \n {}".format(api_formatted_address),
+                    "form": form,
+                    "error": "Google Maps found the following match for an address! Is this the correct address?: \n {}".format(
+                        api_formatted_address),
                 }
 
                 return render(request, 'pickup/add_park.html', context)
@@ -377,6 +375,7 @@ def add_park(request):
 
     return render(request, 'pickup/add_park.html', {'form': form})
 
+
 @login_required(login_url="login")
 def view_park(request):
     # check for visiting for first time or submitting
@@ -385,7 +384,6 @@ def view_park(request):
 
     # check for visiting for first time or searching
     if "search_text" not in request.GET.keys():
-
         return render(request, 'pickup/parks_list.html', {'favparks': favoriteParks})
 
     # get validated data
@@ -396,25 +394,25 @@ def view_park(request):
     # get the list of players
     favparks = Parks.objects.filter(name__contains=search_text, id__in=favorites)
     nofavparks = Parks.objects.filter(name__contains=search_text).exclude(id__in=favorites)
-    context = {"favsearchparks": favparks,"nofavsearchparks": nofavparks,
-               "search_input": search_text,'favparks': favoriteParks }
+    context = {"favsearchparks": favparks, "nofavsearchparks": nofavparks,
+               "search_input": search_text, 'favparks': favoriteParks}
     return render(request, 'pickup/parks_list.html', context)
+
 
 @login_required(login_url="login")
 def event_signup(request, parkid):
     current_player = request.user
     park = Parks.objects.get(id=parkid)
     error = None
-    #Get the list of events specific to this park
+    # Get the list of events specific to this park
 
-        #matches = Schedule.objects.filter(park=parkid).order_by('date')
+    # matches = Schedule.objects.filter(park=parkid).order_by('date')
 
     myevents = EventSignup.objects.filter(player_id=current_player).values('event_id')
     mymatches = Schedule.objects.filter(park=parkid, id__in=myevents).order_by('date')
     othermatches = Schedule.objects.filter(park=parkid).exclude(id__in=myevents).order_by('date')
     if park:
         if request.method != 'POST':
-
             form = ScheduleForm()
 
             return render(request, 'pickup/schedule_time.html', {'form': form, 'park': park,
@@ -427,13 +425,13 @@ def event_signup(request, parkid):
                        'park': park,
                        'error': form.errors,
                        'mymatches': mymatches, 'othermatches': othermatches}
-            return render(request, 'pickup/schedule_time.html',context)
+            return render(request, 'pickup/schedule_time.html', context)
 
         input_data = form.cleaned_data
 
-        #Save the new schedule
+        # Save the new schedule
 
-        new_match = Schedule(creator=current_player, name=input_data['name'], park=park,time=input_data['time'],
+        new_match = Schedule(creator=current_player, name=input_data['name'], park=park, time=input_data['time'],
                              date=input_data['date'])
         try:
             new_match.save()
@@ -450,15 +448,15 @@ def event_signup(request, parkid):
     else:
         raise Http404
 
+
 @login_required(login_url="login")
 def favorite_park(request, add, parkid):
     park = Parks.objects.get(id=parkid)
     error = None
-    #Get the list of matches specific to this park
+    # Get the list of matches specific to this park
 
     if park:
         if request.method != 'POST':
-
             return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add})
 
         # Check if you are adding or deleting and respond
@@ -470,33 +468,34 @@ def favorite_park(request, add, parkid):
                 new_fav.save()
             except IntegrityError:
                 error = "Error: This park is already one of your favorites!"
-                return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add, 'error':error})
+                return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add, 'error': error})
 
         if not add:
             try:
                 FavoriteParks.objects.get(park=park).delete()
             except IntegrityError:
                 error = "Error: This park is not one of your favorites!"
-                return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add, 'error':error})
+                return render(request, 'pickup/favorite_park.html', {'park': park, 'add': add, 'error': error})
 
         return HttpResponseRedirect(reverse('parks'))
 
     else:
         raise Http404
 
+
 @login_required(login_url="login")
 def join_event(request, parkid, add, eventid):
     event = Schedule.objects.get(id=eventid)
     park = Parks.objects.get(id=parkid)
 
-    #Get the list of all people attending the eventk
+    # Get the list of all people attending the event
     event_player = EventSignup.objects.filter(event=eventid).values("player_id")
     players = Player.objects.filter(id__in=event_player)
 
     if event:
         if request.method != 'POST':
-
-            return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'park': park, 'players':players})
+            return render(request, 'pickup/join_event.html',
+                          {'event': event, 'add': add, 'park': park, 'players': players})
 
         # Check if you are adding or deleting and respond
         current_player = request.user
@@ -507,27 +506,28 @@ def join_event(request, parkid, add, eventid):
                 join.save()
             except IntegrityError:
                 error = "Error: You have already joined this match!"
-                return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'error':error,
-                                                                  'park': park, 'players':players})
+                return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'error': error,
+                                                                  'park': park, 'players': players})
 
         if not add:
             try:
                 EventSignup.objects.get(event=event).delete()
             except IntegrityError:
                 error = "Error: You can't leave because you haven't joined!"
-                return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'error':error,
-                                                                  'park': park, 'players':players})
+                return render(request, 'pickup/join_event.html', {'event': event, 'add': add, 'error': error,
+                                                                  'park': park, 'players': players})
 
-        return HttpResponseRedirect(reverse('event_signup', kwargs={'parkid': parkid} ))
+        return HttpResponseRedirect(reverse('event_signup', kwargs={'parkid': parkid}))
     else:
         raise Http404
+
 
 # Function for getting the
 def get_user_conversations(player):
     try:
         sent = list(Messages.objects.filter(sender=player).values('receiver').distinct())
         received = list(Messages.objects.filter(receiver=player).values('sender').distinct())
-        conversations=[]
+        conversations = []
 
         for people in sent:
             person = Player.objects.get(id=people['receiver'])
@@ -542,9 +542,9 @@ def get_user_conversations(player):
 
     return conversations
 
+
 @login_required(login_url="login")
 def message_user(request):
-
     # Find which user and get all messages sent or received by the user
     user = request.user
     player = Player.objects.get(username=user.username)
@@ -560,7 +560,8 @@ def message_user(request):
             return render(request, 'pickup/messages.html', {'conversations': conversations})
     else:
         print('else')
-        return render(request, 'pickup/messages.html',{})
+        return render(request, 'pickup/messages.html', {})
+
 
 @login_required(login_url="login")
 def new_message(request):
@@ -578,11 +579,11 @@ def new_message(request):
                 message.save()
                 return HttpResponseRedirect(reverse('messages'))
             else:
-                #handle player not existing :(
+                # handle player not existing :(
                 return render(request, 'pickup/newMessage.html')
         else:
             print(form.errors)
-            return render(request, 'pickup/newMessage.html',form.errors)
+            return render(request, 'pickup/newMessage.html', form.errors)
 
 
     elif request.method == 'GET':
