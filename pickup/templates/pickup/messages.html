@@ -8,7 +8,11 @@
         </form>
     <ul>
             {% for people in conversations %}
-                <li>{{people.receiver.username}}</li>
+                <li>
+                <a href="{% url 'messages_conversation' people.username %}">
+                    {{people}}
+                </a>
+                </li>
             {% empty %}
                 <li>No Messages</li>
             {% endfor %}
@@ -16,7 +20,12 @@
     </div>
 
     <div id="MessagesRight">
-        <p>Messages go here</p>
+    {% for message in messages %}
+    <p>
+        Sent by: {{ message.sender }} <br>
+        Message: {{ message.message }}
+    </p>
+    {% endfor %}
     </div>
 
 {% endblock %}
