@@ -66,3 +66,5 @@ class NewMessageForm(forms.Form):
     receiver = forms.CharField(required=True)
     userMessage = forms.CharField(max_length=1000, required=True)
 
+class SendMessage(forms.Form):
+    userMessage = forms.CharField(max_length=1000, required=True)

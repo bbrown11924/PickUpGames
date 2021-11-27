@@ -5,7 +5,7 @@
 <form action="{% url 'new_message' %}" method="get" id="search_form">
     <p>
         <input type="search" id="search_bar" name="search_text"
-            value="{{ search_input }}" placeholder="Players Username">
+            value="{{ search_input }}" placeholder="Search for Player">
         <input type="submit" value="Search">
     </p>
 </form>
@@ -23,7 +23,7 @@
 
 <form action="{% url 'new_message' %}" method="post" id="new_message_form">
     {% csrf_token %}
-    <input  type="text" id="receiver" name="receiver" required>
+    <input  type="text" id="receiver" name="receiver" placeholder="Player's Username" required>
     <input type="text" id="userMessage" maxlength="1000" placeholder="Message" name="userMessage" required>
     <input type="submit" value="Send">
 </form>
