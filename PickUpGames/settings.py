@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-f5x6$l*scj2h2c6(@y59f7i5i8r17u^umrnzu@z+ig)f)irl#3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if 'HEROKU' in os.environ:
+    DEBUG = False
+else:
+    DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -118,6 +122,7 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Default primary key field type
@@ -126,4 +131,9 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # URL to redirect to after login
-LOGIN_REDIRECT_URL = "/profile/"
+LOGIN_REDIRECT_URL = "/"
+
+if 'HEROKU' in os.environ:
+    import django_heroku
+    django_heroku.settings(locals())
+

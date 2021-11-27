@@ -23,7 +23,7 @@ class RegistrationTests(TestCase):
         response = self.client.get(reverse("register"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
 
     # test to make sure an error message is printed when the password and
     # confirm password boxes do not match
@@ -36,7 +36,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: Passwords do not match.")
 
         # check for username and email boxes still filled
@@ -54,7 +54,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: Invalid email address.")
 
         # check for username box filled, but not email box
@@ -71,7 +71,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: All fields are required.")
 
     # test to ensure an error message is printed if no email is given
@@ -84,7 +84,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: All fields are required.")
 
     # test to ensure an error message is printed if the password field is blank
@@ -97,7 +97,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: All fields are required.")
 
     # test to ensure an error message is printed if the confirm_password field is
@@ -111,7 +111,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: All fields are required.")
 
     # test to make sure a valid user is successfully added
@@ -141,7 +141,7 @@ class RegistrationTests(TestCase):
 
         # check for error message and form redisplay with username box blank
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Register Account")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Error: User name unavailable.")
         self.assertNotContains(response, "Joe")
 
@@ -216,7 +216,7 @@ class LoginTests(TestCase):
         response = self.client.post(reverse("login"), fields)
 
         # verify successful redirect
-        self.assertRedirects(response, reverse("view_profile"))
+        self.assertRedirects(response, reverse("index"))
 
         # verify profile page can be accessed
         response = self.client.get(reverse("view_profile"))
@@ -263,11 +263,11 @@ class LoginTests(TestCase):
         # log in
         fields = {"username": "BenJohnson", "password": "Cats4ever"}
         response = self.client.post(reverse("login"), fields)
-        self.assertRedirects(response, reverse("view_profile"))
+        self.assertRedirects(response, reverse("index"))
 
         # log out
         response = self.client.get(reverse("logout"))
-        self.assertRedirects(response, reverse("login"))
+        self.assertRedirects(response, reverse("index"))
 
         # ensure we are logged out
         response = self.client.get(reverse("view_profile"))
@@ -307,7 +307,7 @@ class ProfileTests(TestCase):
         # log in and go to profile page
         fields = {"username": "44", "password": "YesWeCan!"}
         response = self.client.post(reverse("login"), fields)
-        self.assertRedirects(response, reverse("view_profile"))
+        self.assertRedirects(response, reverse("index"))
         response = self.client.get(reverse("view_profile"))
 
         # check for correct information
@@ -321,6 +321,7 @@ class ProfileTests(TestCase):
         self.assertContains(response, "175 lbs")
         self.assertContains(response, "Public")
         self.assertContains(response, "Edit Profile")
+        self.assertNotContains(response, "Back")
 
     # test that the edit profile page contains information already filled in
     def test_edit_profile_autofill(self):
@@ -431,7 +432,7 @@ class ChangePasswordTests(TestCase):
 
         # log out
         response = self.client.get(reverse("logout"))
-        self.assertRedirects(response, reverse("login"))
+        self.assertRedirects(response, reverse("index"))
 
         # try logging in with the old password
         fields = {"username": "Ted", "password": "ObamaIsTheWorst!"}
@@ -483,6 +484,24 @@ class ChangePasswordTests(TestCase):
         error_string = "Error: New password does not match confirmed password."
         self.assertContains(response, error_string)
 
+    # test trying to change the user's password to an empty password
+    def test_change_password_to_empty(self):
+        player = Player.objects.create_user("Mitch", "GopLeader@senate.gov",
+                                            "ConfirmJudges")
+        player.save()
+
+        # log in
+        fields = {"username": "Mitch", "password": "ConfirmJudges"}
+        response = self.client.post(reverse("login"), fields)
+
+        # try changing the user's password
+        fields = {"old_password": "ConfirmJudges",
+                  "new_password": "",
+                  "confirm_password": "",}
+        response = self.client.post(reverse("change_password"), fields)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Error: No new password given.")
 
 # tests for viewing any player's profile
 class ViewPlayerTests(TestCase):
@@ -516,6 +535,7 @@ class ViewPlayerTests(TestCase):
         self.assertContains(response, "176 lbs")
         self.assertContains(response, "Profile status")
         self.assertContains(response, "Edit Profile")
+        self.assertNotContains(response, "Back")
 
     # test viewing another player's profile
     def test_view_other_player(self):
@@ -551,6 +571,7 @@ class ViewPlayerTests(TestCase):
         self.assertContains(response, "137 lbs")
         self.assertNotContains(response, "Profile status")
         self.assertNotContains(response, "Edit Profile")
+        self.assertContains(response, "Back")
 
     # test trying to view a player's profile that is set to private
     def test_view_private_player(self):
@@ -580,6 +601,7 @@ class ViewPlayerTests(TestCase):
         self.assertContains(response, "This player's profile is private.")
         self.assertNotContains(response, "Avril Haines")
         self.assertNotContains(response, "Edit Profile")
+        self.assertContains(response, "Back")
 
     # test viewing the profile of a player that does not exist
     def test_view_player_that_does_not_exist(self):
