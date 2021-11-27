@@ -61,3 +61,8 @@ class ScheduleForm(ModelForm):
 # form for searching something
 class SearchForm(forms.Form):
     search_text = forms.CharField(required=False)
+
+class NewMessageForm(forms.Form):
+    receiver = forms.CharField(required=True)
+    userMessage = forms.CharField(max_length=1000, required=True)
+

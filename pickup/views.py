@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core.validators import validate_email
 from django.db.utils import IntegrityError
+from django.db.models import Q
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
@@ -11,8 +12,8 @@ import requests
 
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
-    ChangePasswordForm, SearchForm
-from .models import Profile, Player, Parks, Schedule, FavoriteParks,EventSignup
+    ChangePasswordForm, SearchForm, NewMessageForm
+from .models import Profile, Player, Parks, Schedule, FavoriteParks,EventSignup, Messages
 
 # view for index page if not logged in, home page if logged in
 def index(request):
@@ -35,6 +36,10 @@ def index(request):
     return render(request, "pickup/home.html", context)
 
 
+    return render(request, "pickup/index.html")
+
+def home(request):
+    return render(request, 'pickup/home.html', {})
 # view for page to register a new account
 def register(request):
     # check for visiting for first time or submitting
@@ -298,11 +303,11 @@ def add_park(request):
         if form.is_valid():
             input_data = form.cleaned_data
             # is valid: add the parks to the parks database
-            
+
             # Sets up the API using the env variable apiKey
             api_key = os.environ.get('apiKey')
             formatted_address =  input_data['street'] + ", " + input_data['city'] + ", " + input_data['state'] + " " + input_data['zipcode'] + ", USA"
-            
+
             # Formats the address to better works with the maps API
             geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address={}".format(formatted_address)
             if api_key is not None:
@@ -312,46 +317,46 @@ def add_park(request):
                     "error": "Error: The google maps api key is missing",
                     "form": form
                 }
-                
+
                 return render(request, 'pickup/add_park.html', context)
             # requests geocoding results from google maps API
             results = requests.get(geocode_url)
             # Results will be in JSON format - convert to dict using requests functionality
             results = results.json()
-            
-            
-            
+
+
+
             # converts the results into a usable array
             api_formatted_address = results['results'][0]['formatted_address']
             new_input_data = api_formatted_address.split(", ")
             if len(new_input_data) > 4:
                 new_input_data = new_input_data[1:]
                 api_formatted_address = ", ".join(new_input_data)
-            
+
             #input validation
             if len(new_input_data) < 3:
                 context = {
                     "error": "Error: The fields need to belong to a valid address",
                     "form": form
                 }
-                
+
                 return render(request, 'pickup/add_park.html', context)
-                
+
             # if google maps didn't find the exact address user looking for
             if (api_formatted_address != formatted_address):
-                
+
                 form = ParkForm({'name':input_data['name'], 'street':new_input_data[0],
                 'city':new_input_data[1], 'state':new_input_data[2][0:2],
                 'zipcode':new_input_data[2][3:9]})
-            
+
                 # shows the page again
                 context = {
                 "form": form,
                 "error": "Google Maps found the following match for an address! Is this the correct address?: \n {}".format(api_formatted_address),
                 }
-            
+
                 return render(request, 'pickup/add_park.html', context)
-            
+
             # attempts to save the player in the database
             try:
                 current_player = request.user
@@ -516,3 +521,112 @@ def join_event(request, parkid, add, eventid):
         return HttpResponseRedirect(reverse('event_signup', kwargs={'parkid': parkid} ))
     else:
         raise Http404
+
+# Function for getting the
+def get_user_conversations(player):
+    try:
+        sent = list(Messages.objects.filter(sender=player).values('receiver').distinct())
+        received = list(Messages.objects.filter(receiver=player).values('sender').distinct())
+        conversations=[]
+
+        for people in sent:
+            person = Player.objects.get(id=people['receiver'])
+            conversations.append(person)
+
+        for people in received:
+            person = Player.objects.get(id=people['sender'])
+            if person not in conversations:
+                conversations.append(person)
+    except Messages.DoesNotExist:
+        conversations = None
+
+    return conversations
+
+@login_required(login_url="login")
+def message_user(request):
+
+    # Find which user and get all messages sent or received by the user
+    user = request.user
+    player = Player.objects.get(username=user.username)
+    conversations = get_user_conversations(player)
+
+    if conversations is not None:
+        # From to send a new message
+        if request.method == 'POST':
+            return render(request, 'pickup/messages.html')
+
+        # Display all conversations
+        else:
+            return render(request, 'pickup/messages.html', {'conversations': conversations})
+    else:
+        print('else')
+        return render(request, 'pickup/messages.html',{})
+
+@login_required(login_url="login")
+def new_message(request):
+    user = request.user
+
+    # The user has sent a message
+    if request.method == 'POST':
+        form = NewMessageForm(request.POST)
+        if form.is_valid():
+            if Player.objects.get(username=form.data['receiver']):
+                sender = Player.objects.get(username=user.username)
+                receiver = Player.objects.get(username=form.data['receiver'])
+                msg = form.data['userMessage']
+                message = Messages.objects.create(sender=sender, receiver=receiver, message=msg)
+                message.save()
+                return HttpResponseRedirect(reverse('messages'))
+            else:
+                #handle player not existing :(
+                return render(request, 'pickup/newMessage.html')
+        else:
+            print(form.errors)
+            return render(request, 'pickup/newMessage.html',form.errors)
+
+
+    elif request.method == 'GET':
+        if "search_text" not in request.GET.keys():
+            return render(request, 'pickup/newMessage.html', {})
+        input_form = SearchForm(request.GET)
+        input_form.is_valid()
+        search_text = input_form.cleaned_data["search_text"]
+
+        # get the list of players
+        players = Player.objects.filter(username__contains=search_text)
+        context = {"players": players,
+                   "search_input": search_text,
+                   "no_results": list(players) == [],
+                   "user": request.user, }
+        return render(request, 'pickup/newMessage.html', context)
+
+    else:
+        form = NewMessageForm()
+        return render(request, 'pickup/newMessage.html')
+
+
+def message_conversation(request, username):
+    # Find which user and get all messages sent or received by the user
+    user = request.user
+    player = Player.objects.get(username=user.username)
+    conversations = get_user_conversations(player)
+
+    if conversations is not None:
+        # From to send a new message
+        if request.method == 'POST':
+            return render(request, 'pickup/messages.html')
+
+        # Display all conversations
+        else:
+            if (username):
+                person = Player.objects.get(username=username)
+                print(person)
+                sent = Messages.objects.filter(Q(sender=player) & Q(receiver=person))
+                received = Messages.objects.filter(Q(sender=person) & Q(receiver=player))
+                messages = sent.union(received)
+                messages.order_by('time_sent')
+                print(messages)
+            return render(request, 'pickup/messages.html', {'conversations': conversations, 'messages': messages})
+    else:
+        print('else')
+        return render(request, 'pickup/messages.html', {})

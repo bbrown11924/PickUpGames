@@ -3,19 +3,16 @@
 {% block content %}
 
     <div id="MessagesLeft">
-        <form action="{% url 'new_message' %}" method="add" id="send_message_form">
-            {% csrf_token %}
+        <form action="{% url 'new_message' %}" method="get" id="send_message_form">
             <button type="submit" name="newMsgBtn">New Message</button>
         </form>
-
-        <form action="{% url 'messages' %}" method="get" id="view_form">
-            {% csrf_token %}
+    <ul>
             {% for people in conversations %}
-                <button type="submit" name="newMsgBtn">{{people.username}}</button>
+                <li>{{people.receiver.username}}</li>
             {% empty %}
-                <p>No Messages</p>
+                <li>No Messages</li>
             {% endfor %}
-        </form>
+    </ul>
     </div>
 
     <div id="MessagesRight">
