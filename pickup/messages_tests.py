@@ -16,6 +16,7 @@ class MessageModelTests(TestCase):
         user_message.save()
         self.assertEqual(Messages.objects.get(sender=player1), Messages.objects.get(receiver=player2))
 
+
 class MessageViewTest(TestCase):
 
     # Test that the messages page can be reached when signed in
