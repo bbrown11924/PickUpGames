@@ -30,10 +30,12 @@ class Player(User):
             return None
         return relativedelta(datetime.date.today(), self.date_of_birth).years
 
+
 class Messages(models.Model):
     sender = models.ForeignKey(Player, related_name="sender", on_delete=models.RESTRICT)
     receiver = models.ForeignKey(Player, related_name="receiver", on_delete=models.RESTRICT)
     message = models.CharField(max_length=1000)
+    time_sent = models.DateTimeField(default=datetime.datetime.now, blank=True)
 
 
 class Profile(models.Model):

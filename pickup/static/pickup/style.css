@@ -207,3 +207,32 @@ ul.no-bullets {
 .search-row {
     margin-left: -5px;
 }
+
+#MessagesLeft{
+    float:left;
+    width: 30%;
+}
+
+#MessagesLeft ul{
+    list-style: none;
+}
+
+#MessagesLeft li{
+    padding: .5em;
+}
+
+#MessagesLeft a{
+    text-decoration: none;
+}
+
+#MessagesRight{
+    float: right;
+    width: 70%;
+}
+
+.Message-received{
+    text-align: left;
+}
+.Message-sent{
+    text-align: right;
+}

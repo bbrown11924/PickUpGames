@@ -1,0 +1,42 @@
+{% extends 'pickup/base.html' %}
+
+{% block title %} Messages {% endblock %}
+
+{% block content %}
+
+    <div id="MessagesLeft">
+        <form action="{% url 'new_message' %}" method="get" id="send_message_form">
+            <button type="submit" name="newMsgBtn">New Conversation</button>
+        </form>
+    <ul>
+            {% for people in conversations %}
+                <li>
+                <a href="{% url 'messages_conversation' people.username %}">
+                    {{people}}
+                </a>
+                </li>
+            {% empty %}
+                <li>No Conversations</li>
+            {% endfor %}
+    </ul>
+    </div>
+
+    <div id="MessagesRight">
+    {% if messages %}
+        <h1>{{ person }}</h1>
+        {% for message in messages %}
+            {% if message.sender == person %}
+                <p class="Message-received">{{ message.message }} <br></p>
+            {% else  %}
+                <p class="Message-sent">{{ message.message }}<br></p>
+            {% endif %}
+        {% endfor %}
+        <form action="{% url 'messages_conversation' person %}" method="post" id="message_form">
+            {% csrf_token %}
+            <input type="text" id="userMessage" maxlength="1000" placeholder="New Message" name="userMessage" required>
+            <input type="submit" value="Send">
+        </form>
+    {% endif %}
+    </div>
+
+{% endblock %}
