@@ -36,11 +36,6 @@
             <input type="text" id="userMessage" maxlength="1000" placeholder="New Message" name="userMessage" required>
             <input type="submit" value="Send">
         </form>
-        {% else %}
-            <p>
-                No Messages <br>
-                <a href="{% url 'new_message' %}">Send a new one here</a>
-            </p>
     {% endif %}
     </div>
 
