@@ -552,14 +552,10 @@ def message_user(request):
 
     if conversations is not None:
         # From to send a new message
-        if request.method == 'POST':
-            return render(request, 'pickup/messages.html')
 
         # Display all conversations
-        else:
             return render(request, 'pickup/messages.html', {'conversations': conversations})
     else:
-        print('else')
         return render(request, 'pickup/messages.html', {})
 
 
