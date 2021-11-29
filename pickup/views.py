@@ -566,7 +566,7 @@ def new_message(request):
     # The user has sent a message
     if request.method == 'POST':
         form = NewMessageForm(request.POST)
-        from = form.cleaned_data()
+        form = form.cleaned_data()
         if form.is_valid():
             if Player.objects.get(username=form.data['receiver']):
                 sender = Player.objects.get(username=user.username)
