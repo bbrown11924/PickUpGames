@@ -21,6 +21,12 @@
     </ul>
 {% endif %}
 
+    {% if form.errors %}
+            <p>
+                Error: Username not found
+            </p>
+    {% endif %}
+
 <form action="{% url 'new_message' %}" method="post" id="new_message_form">
     {% csrf_token %}
     <input  type="text" id="receiver" name="receiver" placeholder="Player's Username" required>
