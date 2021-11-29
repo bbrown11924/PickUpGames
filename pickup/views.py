@@ -566,18 +566,18 @@ def new_message(request):
     # The user has sent a message
     if request.method == 'POST':
         form = NewMessageForm(request.POST)
-        form = form.cleaned_data()
         if form.is_valid():
-            if Player.objects.get(username=form.data['receiver']):
+            form = form.cleaned_data
+            if Player.objects.get(username=form['receiver']):
                 sender = Player.objects.get(username=user.username)
-                receiver = Player.objects.get(username=form.data['receiver'])
-                msg = form.data['userMessage']
+                receiver = Player.objects.get(username=form['receiver'])
+                msg = form['userMessage']
                 message = Messages.objects.create(sender=sender, receiver=receiver, message=msg)
                 message.save()
                 return HttpResponseRedirect(reverse('messages'))
             else:
                 # handle player not existing :(
-                return render(request, 'pickup/newMessage.html', form.errors)
+                return render(request, 'pickup/newMessage.html', form)
         else:
             return render(request, 'pickup/newMessage.html', form.errors)
 
