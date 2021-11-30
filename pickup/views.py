@@ -312,48 +312,42 @@ def add_park(request):
             geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address={}".format(formatted_address)
             if api_key is not None:
                 geocode_url = geocode_url + "&key={}".format(api_key)
-            else:
-                context = {
-                    "error": "Error: The google maps api key is missing",
-                    "form": form
-                }
-
-                return render(request, 'pickup/add_park.html', context)
-            # requests geocoding results from google maps API
-            results = requests.get(geocode_url)
-            # Results will be in JSON format - convert to dict using requests functionality
-            results = results.json()
-
-            # converts the results into a usable array
-            api_formatted_address = results['results'][0]['formatted_address']
-            new_input_data = api_formatted_address.split(", ")
-            if len(new_input_data) > 4:
-                new_input_data = new_input_data[1:]
-                api_formatted_address = ", ".join(new_input_data)
-
-            # input validation
-            if len(new_input_data) < 3:
-                context = {
-                    "error": "Error: The fields need to belong to a valid address",
-                    "form": form
-                }
-
-                return render(request, 'pickup/add_park.html', context)
-
-            # if google maps didn't find the exact address user looking for
-            if api_formatted_address != formatted_address:
-                form = ParkForm({'name': input_data['name'], 'street': new_input_data[0],
-                                 'city': new_input_data[1], 'state': new_input_data[2][0:2],
-                                 'zipcode': new_input_data[2][3:9]})
-
-                # shows the page again
-                context = {
-                    "form": form,
-                    "error": "Google Maps found the following match for an address! Is this the correct address?: \n {}".format(
-                        api_formatted_address),
-                }
-
-                return render(request, 'pickup/add_park.html', context)
+            
+                # requests geocoding results from google maps API
+                results = requests.get(geocode_url)
+                # Results will be in JSON format - convert to dict using requests functionality
+                results = results.json()
+    
+                # converts the results into a usable array
+                api_formatted_address = results['results'][0]['formatted_address']
+                new_input_data = api_formatted_address.split(", ")
+                if len(new_input_data) > 4:
+                    new_input_data = new_input_data[1:]
+                    api_formatted_address = ", ".join(new_input_data)
+    
+                # input validation
+                if len(new_input_data) < 3:
+                    context = {
+                        "error": "Error: The fields need to belong to a valid address",
+                        "form": form
+                    }
+    
+                    return render(request, 'pickup/add_park.html', context)
+    
+                # if google maps didn't find the exact address user looking for
+                if api_formatted_address != formatted_address:
+                    form = ParkForm({'name': input_data['name'], 'street': new_input_data[0],
+                                    'city': new_input_data[1], 'state': new_input_data[2][0:2],
+                                    'zipcode': new_input_data[2][3:9]})
+    
+                    # shows the page again
+                    context = {
+                        "form": form,
+                        "error": "Google Maps found the following match for an address! Is this the correct address?: \n {}".format(
+                            api_formatted_address),
+                    }
+    
+                    return render(request, 'pickup/add_park.html', context)
 
             # attempts to save the player in the database
             try:

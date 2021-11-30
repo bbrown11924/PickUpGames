@@ -190,7 +190,7 @@ class ParkViewTests(TestCase):
             response = self.client.post(reverse('Add Park'), fields)
 
             self.assertEqual(response.status_code, 200)
-            self.assertContains(response, "The google maps api key is missing")
+            self.assertContains(response, "Park has been added!")
         return
       
         
