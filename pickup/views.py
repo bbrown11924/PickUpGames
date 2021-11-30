@@ -313,20 +313,7 @@ def add_park(request):
             if api_key is not None:
                 geocode_url = geocode_url + "&key={}".format(api_key)
 
-                # attempts to save the player in the database
-            try:
-                current_player = request.user
 
-                new_park = Parks(player=current_player, name=input_data['name'],
-                                 street=input_data['street'], city=input_data['city'],
-                                 state=input_data['state'], zipcode=input_data['zipcode'])
-                new_park.save()
-
-            except IntegrityError:
-                return render(request, reverse('Add Park'))
-                
-            return HttpResponse("Park has been added!")
-                
             # requests geocoding results from google maps API
             results = requests.get(geocode_url)
             # Results will be in JSON format - convert to dict using requests functionality
