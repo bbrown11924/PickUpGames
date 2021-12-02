@@ -230,13 +230,38 @@ ul.no-bullets {
     width: 70%;
 }
 
-.Message-received{
-    text-align: left;
-}
-.Message-sent{
-    text-align: right;
+.Message-box{
+    width: 60%;
+    display: inline-block;
 }
 
+.Message-received{
+    float: left;
+    max-width: 60%;
+}
+
+.Message-received p{
+    background-color: orange;
+
+    border: orange solid .5em;
+    border-radius: 1em;
+}
+
+.Message-sent{
+    float: right;
+    max-width: 60%;
+}
+
+.Message-sent p{
+    background-color: darkolivegreen;
+    border: darkolivegreen solid .5em;
+    border-radius: 1em;
+}
+
+#message_form{
+
+    float: bottom;
+}
 
 /* Any changes for mobile go here */
 @media only screen and (max-width: 500px) {
