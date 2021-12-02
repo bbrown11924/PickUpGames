@@ -236,3 +236,12 @@ ul.no-bullets {
 .Message-sent{
     text-align: right;
 }
+
+
+/* Any changes for mobile go here */
+@media only screen and (max-width: 500px) {
+    body{
+        width: 100%;
+    }
+}
+
