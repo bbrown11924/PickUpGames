@@ -24,25 +24,27 @@
     <div id="MessagesRight">
     {% if messages %}
         <h1>{{ person }}</h1>
-        {% for message in messages %}
-            {% if message.sender == person %}
-                <div class="Message-box">
-                    <div class="Message-received">
-                        <p>{{message.message}}</p>
-                    </div>
+        <div class="Message-scroll-box">
+            {% for message in messages %}
+                <div class="Message-line">
+                    {% if message.sender == person %}
+                        <div class="Message-received">
+                            <p>{{message.message}}</p>
+                        </div>
+
+                    {% else  %}
+                        <div class="Message-sent">
+                            <p>{{message.message}}</p>
+                        </div>
+                    {% endif %}
                 </div>
-            {% else  %}
-                <div class="Message-box">
-                    <div class="Message-sent">
-                        <p>{{message.message}}</p>
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
+            {% endfor %}
+        </div>
         <form action="{% url 'messages_conversation' person %}" method="post" id="message_form">
             {% csrf_token %}
-            <input type="text" id="userMessage" maxlength="1000" placeholder="New Message" name="userMessage" required>
-            <input type="submit" value="Send">
+            <!--<input type="text" id="userMessage" maxlength="1000" placeholder="New Message" name="userMessage" required>-->
+            <textarea name="userMessage" id="userMessage" placeholder="New Message" required></textarea>
+            <input type="submit" id="send-btn" value="Send">
         </form>
     {% endif %}
     </div>

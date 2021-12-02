@@ -230,8 +230,15 @@ ul.no-bullets {
     width: 70%;
 }
 
-.Message-box{
-    width: 60%;
+div.Message-scroll-box{
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    height: calc(80vh - 120px);
+}
+
+.Message-line{
+    width: 90%;
     display: inline-block;
 }
 
@@ -259,9 +266,20 @@ ul.no-bullets {
 }
 
 #message_form{
-
-    float: bottom;
+    position: relative;
+    bottom: 0;
 }
+
+#userMessage{
+    width: 70%;
+    height: 75px;
+    resize: none;
+}
+
+#send-btn{
+    width: 20%;
+}
+
 
 /* Any changes for mobile go here */
 @media only screen and (max-width: 500px) {
