@@ -2,6 +2,12 @@
     In no way an actual css design,
     just wanted to make sure it worked properly
  */
+:root{
+    c_Gray: #afafaf;
+    c_Creme: #f5f5f5;
+    c_Gray2: #cccccc;
+    c_Gray3: #dddddd;
+}
 
 body{
     background-color: slategray;
@@ -61,7 +67,7 @@ header h1{
 
 main{
     padding: 1em 3em 2em 3em;
-    background-color: #afafaf;
+    background-color: c_Gray;
     margin: 0;
     min-height: calc(100vh - 120px);
     height: 100%;
@@ -76,7 +82,7 @@ h2{
   bottom: 0;
   width: 100%;
   height: 60px; /* Set the fixed height of the footer here */
-  background-color: #f5f5f5;
+  background-color: c_Creme;
 }
 
 ul.no-bullets {
@@ -108,13 +114,13 @@ ul.no-bullets {
 }
 
 .btn-light {
-    background-color: #cccccc;
+    background-color: c_Gray2;
     border-color: white;
     color: navy;
 }
 
 .btn-light:hover, .btn-light:focus {
-    background-color: #dddddd;
+    background-color: c_Gray3;
     border-color: white;
     color: navy;
 }
@@ -140,7 +146,7 @@ ul.no-bullets {
 }
 
 #login-display {
-    background-color: #afafaf;
+    background-color: c_Gray;
     padding: 20px;
     height: 275px;
     max-width: 400px;
@@ -150,7 +156,7 @@ ul.no-bullets {
 }
 
 #register-display {
-    background-color: #afafaf;
+    background-color: c_Gray;
     padding: 20px;
     height: 435px;
     max-width: 400px;
