@@ -64,6 +64,9 @@ class ScheduleForm(ModelForm):
 
     def clean_date(self):
         date = self.cleaned_data['date']
+
+        if not date:
+            raise forms.ValidationError("Must provide a date!")
         if date < datetime.date.today():
             raise forms.ValidationError("The date cannot be in the past!")
         return date
