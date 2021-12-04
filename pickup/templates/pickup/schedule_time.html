@@ -7,50 +7,63 @@ New Match
 {% block content %}
 
 <h1> Schedule at {{ park.name}} </h1>
-Schedule New Match:
-{% if error %}<p id="error">{{ error }}</p> {% endif %}
-<form action= "{% url 'event_signup' park.id %}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit">
-</form>
-{% if mymatches %}
-My Matches:
-<table class="table">
-    <tr>
-        <th>Name</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Leave</th>
-    </tr>
-    {% for match in mymatches %}
-    <tr>
-        <td> {{ match.name}}</td>
-        <td> {{ match.date}}</td>
-        <td> {{ match.get_time_display}}</td>
-        <td> <a href="/parks/{{ park.id }}/0/{{ match.id }}/">Leave</a></td>
-    </tr>
-    {% endfor %}
-</table>
-{% endif %}
 
-{% if othermatches %}
-Other Matches:
-<table class="table">
-    <tr>
-        <th>Name</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Join</th>
-    </tr>
-    {% for match in othermatches %}
-    <tr>
-        <td> {{ match.name}}</td>
-        <td> {{ match.date}}</td>
-        <td> {{ match.get_time_display}}</td>
-        <td> <a href="/parks/{{ park.id }}/1/{{ match.id }}/">Join</a></td>
-    </tr>
-    {% endfor %}
-</table>
+    <p>
+    Schedule New Match:
+    {% if error %}<p id="error">{{ error }}</p> {% endif %}
+    <form action= "{% url 'event_signup' park.id %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" class="btn btn-dark">
+    </form>
+    </p>
+
+    <p>
+    {% if mymatches %}
+    My Matches:
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Leave</th>
+        </tr>
+        </thead>
+        {% for match in mymatches %}
+        <tr>
+            <td> {{ match.name}}</td>
+            <td> {{ match.date}}</td>
+            <td> {{ match.get_time_display}}</td>
+            <td> <a href="/parks/{{ park.id }}/0/{{ match.id }}/">Leave</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    </p>
+
+    <p>
+    {% if othermatches %}
+    Other Matches:
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Join</th>
+        </tr>
+        </thead>
+        {% for match in othermatches %}
+        <tr>
+            <td> {{ match.name}}</td>
+            <td> {{ match.date}}</td>
+            <td> {{ match.get_time_display}}</td>
+            <td> <a href="/parks/{{ park.id }}/1/{{ match.id }}/">Join</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    </p>
+
 {% endif %}
 {% endblock %}

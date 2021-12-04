@@ -13,7 +13,7 @@ Add Park
 <form action="/add_park/" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Submit">
+    <input type="submit" value="Submit" class="btn btn-dark">
 </form>
 
 {% endblock %}
