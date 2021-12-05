@@ -230,11 +230,54 @@ ul.no-bullets {
     width: 70%;
 }
 
-.Message-received{
-    text-align: left;
+div.Message-scroll-box{
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    height: calc(80vh - 120px);
 }
+
+.Message-line{
+    width: 90%;
+    display: inline-block;
+}
+
+.Message-received{
+    float: left;
+    max-width: 60%;
+}
+
+.Message-received p{
+    background-color: orange;
+
+    border: orange solid .5em;
+    border-radius: 1em;
+}
+
 .Message-sent{
-    text-align: right;
+    float: right;
+    max-width: 60%;
+}
+
+.Message-sent p{
+    background-color: darkolivegreen;
+    border: darkolivegreen solid .5em;
+    border-radius: 1em;
+}
+
+#message_form{
+    position: relative;
+    bottom: 0;
+}
+
+#userMessage{
+    width: 70%;
+    height: 75px;
+    resize: none;
+}
+
+#send-btn{
+    width: 20%;
 }
 
 
