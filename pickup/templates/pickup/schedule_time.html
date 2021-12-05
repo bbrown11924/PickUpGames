@@ -10,6 +10,7 @@
 
 
     <p>Schedule New Match:</p>
+    {% if error %}<p id="error">{{ error }}</p> {% endif %}
     <form action="{% url 'event_signup' park.id %}" method="post">
         {% csrf_token %}
         {{ form.as_p }}
