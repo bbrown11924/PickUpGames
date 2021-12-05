@@ -22,15 +22,20 @@
     </div>
 
     <div id="MessagesRight">
-    {% if messages %}
+    {% if person %}
         <h1>{{ person }}</h1>
-        {% for message in messages %}
-            {% if message.sender == person %}
-                <p class="Message-received">{{ message.message }} <br></p>
-            {% else  %}
-                <p class="Message-sent">{{ message.message }}<br></p>
-            {% endif %}
-        {% endfor %}
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.sender == person %}
+                    <p class="Message-received">{{ message.message }} <br></p>
+                {% else  %}
+                    <p class="Message-sent">{{ message.message }}<br></p>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>Start your conversation with {{ person }}</p>
+        {%endif %}
+
         <form action="{% url 'messages_conversation' person %}" method="post" id="message_form">
             {% csrf_token %}
             <input type="text" id="userMessage" maxlength="1000" placeholder="New Message" name="userMessage" required>

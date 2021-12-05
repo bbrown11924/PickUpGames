@@ -1,7 +1,7 @@
 {% extends 'pickup/base.html' %}
 
 {% block content %}
-
+<h1>Search for New Message</h1>
 <form action="{% url 'new_message' %}" method="get" id="search_form">
     <p>
         <input type="search" id="search_bar" name="search_text"
@@ -14,7 +14,9 @@
     <ul>
         {% for player in players %}
             <li>
-                {{ player.username }}
+                <a href="{% url 'messages_conversation' player.username %}">
+                    {{player}}
+                </a>
             </li>
             <br>
         {% endfor %}
@@ -26,12 +28,4 @@
                 Error: Username not found
             </p>
     {% endif %}
-
-<form action="{% url 'new_message' %}" method="post" id="new_message_form">
-    {% csrf_token %}
-    <input  type="text" id="receiver" name="receiver" placeholder="Player's Username" required>
-    <input type="text" id="userMessage" maxlength="1000" placeholder="Message" name="userMessage" required>
-    <input type="submit" value="Send">
-</form>
-
 {% endblock %}
