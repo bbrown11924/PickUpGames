@@ -39,6 +39,13 @@ class ParkForm(ModelForm):
     class Meta:
         model = Parks
         fields = ['name', 'street', 'city', 'state', 'zipcode']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control edit-profile-field'}),
+            'street': forms.TextInput(attrs={'class': 'form-control edit-profile-field'}),
+            'city': forms.TextInput(attrs={'class': 'form-control edit-profile-field'}),
+            'state': forms.Select(attrs={'class': 'form-select edit-profile-field'}),
+            'zipcode': forms.TextInput(attrs={'class': 'form-control edit-profile-field'}),
+        }
 
 class DateInput(forms.DateInput):
     input_type = 'date'
@@ -49,11 +56,16 @@ class ScheduleForm(ModelForm):
         model = Schedule
         fields = ['name', 'date', 'time']
         widgets = {
-            'date': DateInput()
+            'date': DateInput(attrs={'class': 'form-control edit-profile-field'}),
+            'name': forms.TextInput(attrs={'class': 'form-control edit-profile-field'}),
+            'time': forms.Select(attrs={'class': 'form-select edit-profile-field'}),
+
         }
 
     def clean_date(self):
         date = self.cleaned_data['date']
+        if not date:
+            raise forms.ValidationError("Must provide a date!")
         if date < datetime.date.today():
             raise forms.ValidationError("The date cannot be in the past!")
         return date
