@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Search for New Message</h1>
 <form action="{% url 'new_message' %}" method="get" id="search_form">
-    <p>
+    <p class="row search-row">
         <input type="search" id="search_bar" name="search_text"
             value="{{ search_input }}" class="form-control search-bar col" placeholder="Player's Username">
         <input type="submit" value="Search" class="btn btn-dark search-btn">
