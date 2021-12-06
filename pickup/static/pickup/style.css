@@ -27,7 +27,6 @@ header h1{
 }
 
 #LoginSignUp{
-
     float: right;
 }
 
@@ -213,21 +212,29 @@ ul.no-bullets {
     width: 30%;
 }
 
-#MessagesLeft ul{
-    list-style: none;
-}
-
-#MessagesLeft li{
-    padding: .5em;
-}
-
 #MessagesLeft a{
     text-decoration: none;
+}
+
+#MessagesLeft .list-group-item{
+    text-align: center;
+    width: 80%;
+
+}
+
+.new-msg{
+    background-color: darkorange;
+    color: navy;
 }
 
 #MessagesRight{
     float: right;
     width: 70%;
+}
+
+#MessagesRight .center-text{
+    color: navy;
+    font-weight: bold;
 }
 
 div.Message-scroll-box{
@@ -236,6 +243,7 @@ div.Message-scroll-box{
     width: 100%;
     height: calc(80vh - 120px);
 }
+
 
 .Message-line{
     width: 90%;
@@ -248,10 +256,12 @@ div.Message-scroll-box{
 }
 
 .Message-received p{
-    background-color: orange;
-
-    border: orange solid .5em;
+    background-color: darkorange;
+    color: navy;
+    border: darkorange solid .5em;
     border-radius: 1em;
+    text-align: center;
+    padding: 0 2px 0 8px;
 }
 
 .Message-sent{
@@ -260,9 +270,12 @@ div.Message-scroll-box{
 }
 
 .Message-sent p{
-    background-color: darkolivegreen;
-    border: darkolivegreen solid .5em;
+    background-color: grey;
+    color: navy;
+    border: grey solid .5em;
     border-radius: 1em;
+    text-align: center;
+    padding: 0 8px 0 2px;
 }
 
 #message_form{

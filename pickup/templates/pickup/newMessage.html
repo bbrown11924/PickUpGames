@@ -5,15 +5,15 @@
 <form action="{% url 'new_message' %}" method="get" id="search_form">
     <p>
         <input type="search" id="search_bar" name="search_text"
-            value="{{ search_input }}" placeholder="Search for Player">
-        <input type="submit" value="Search">
+            value="{{ search_input }}" placeholder="Player's Username">
+        <input type="submit" value="Search" class="search-btn">
     </p>
 </form>
 {% if players %}
         <p>Select user to message:</p>
-    <ul>
+    <ul class="list-unstyled">
         {% for player in players %}
-            <li>
+            <li class="search-list-item">
                 <a href="{% url 'messages_conversation' player.username %}">
                     {{player}}
                 </a>
