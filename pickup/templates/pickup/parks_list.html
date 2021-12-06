@@ -8,9 +8,11 @@ Parks
 
 <h1>Parks List</h1>
 
+{% if message %}<p id="message">{{ message }}</p> {% endif %}
+
 {% if favparks %}
 <p>My Parks:</p>
-<table class="table table-bordered table-striped">
+<table class="table">
     <thead>
     <tr>
         <th>Name</th>
@@ -36,16 +38,17 @@ Parks
 
 <p>Search for New Parks:</p>
 <form action="{% url 'parks' %}" method="get" id="search_form">
-    <p>
+    <p class="row search-row">
         <input type="search" id="search_bar" name="search_text"
-            value="{{ search_input }}" />
-        <input type="submit" value="Search" />
+            value="{{ search_input }}" class="form-control search-bar col" />
+        <input type="submit" value="Search" class="btn btn-dark col search-btn"/>
+        <p><a href="{% url 'Add Park' %}" class="btn btn-dark">Add New Park</a></p>
     </p>
 </form>
 
 {% if favsearchparks or nofavsearchparks %}
     <p>Search results:</p>
-        <table class="table table-bordered table-striped">
+        <table class="table">
             <thead>
             <tr>
                 <th>Name</th>

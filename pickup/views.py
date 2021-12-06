@@ -332,7 +332,7 @@ def add_park(request):
                         "form": form
                     }
     
-                    return render(request, 'pickup/add_park.html', context)
+                    return render(request, reverse('Add Park'), context)
     
                 # if google maps didn't find the exact address user looking for
                 if api_formatted_address != formatted_address:
@@ -362,7 +362,11 @@ def add_park(request):
 
                 return render(request, reverse('Add Park'))
 
-            return HttpResponse("Park has been added!")
+            context = {
+                "error": "Park has been added!",
+                "form": ParkForm(),
+            }
+            return render(request, 'pickup/add_park.html', context)
 
     else:
         form = ParkForm()
