@@ -22,7 +22,7 @@
     {% if person %}
         <h1 class="center-text">{{ person }}</h1>
         {% if messages %}
-            <div class="Message-scroll-box">
+            <div id ="Message-scroll-box" >
                 {% for message in messages %}
                     <div class="Message-line">
                         {% if message.sender == person %}
@@ -38,6 +38,13 @@
                     </div>
                 {% endfor %}
             </div>
+
+            <script>
+                var element = document.getElementById('Message-scroll-box');
+                element.scrollTop = element.scrollHeight;
+            </script>
+
+
         {% else %}
             <p>Start your conversation with {{ person }}</p>
         {%endif %}
@@ -46,7 +53,7 @@
             {% csrf_token %}
             <!--<input type="text" id="userMessage" maxlength="1000" placeholder="New Message" name="userMessage" required>-->
             <textarea name="userMessage" id="userMessage" placeholder="New Message" required></textarea>
-            <input type="submit" id="send-btn" value="Send">
+            <input type="submit" class="btn btn-dark send-btn" value="Send">
         </form>
     {% endif %}
     </div>

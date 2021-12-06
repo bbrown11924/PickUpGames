@@ -222,7 +222,12 @@ ul.no-bullets {
 
 }
 
-.new-msg{
+.list-group-item{
+    background-color: grey;
+    color: navy;
+}
+
+.list-group-item.new-msg{
     background-color: darkorange;
     color: navy;
 }
@@ -237,7 +242,7 @@ ul.no-bullets {
     font-weight: bold;
 }
 
-div.Message-scroll-box{
+#Message-scroll-box{
     overflow-x: hidden;
     overflow-y: auto;
     width: 100%;
@@ -281,6 +286,7 @@ div.Message-scroll-box{
 #message_form{
     position: relative;
     bottom: 0;
+    height: 75px;
 }
 
 #userMessage{
@@ -289,8 +295,13 @@ div.Message-scroll-box{
     resize: none;
 }
 
-#send-btn{
+.send-btn{
     width: 20%;
+    height: 75px;
+    background-color: darkorange;
+    vertical-align: top;
+    font-size: 1.2em;
+
 }
 
 
@@ -298,6 +309,18 @@ div.Message-scroll-box{
 @media only screen and (max-width: 500px) {
     body{
         width: 100%;
+    }
+
+    #MessagesLeft{
+        float: none;
+        width: 100%;
+        margin: auto;
+    }
+
+    #MessagesRight{
+        float: none;
+        width: 100%;
+        margin: auto;
     }
 }
 
