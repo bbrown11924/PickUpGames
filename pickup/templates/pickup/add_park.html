@@ -19,17 +19,19 @@ Add Park
 {% if apiKey %}
 {% if formatted_address %}
 
-<iframe
-  width="600"
-  height="450"
-  style="border:0"
-  loading="lazy"
-  allowfullscreen
-  src="https://www.google.com/maps/embed/v1/place?key={{ apiKey }}&q={{ formatted_address }}">
-</iframe>
+<div class="map-responsive">
+    <iframe
+        width="600"
+        height="450"
+        style="border:0"
+        loading="lazy"
+        allowfullscreen
+        src="https://www.google.com/maps/embed/v1/place?key={{ apiKey }}&q={{ formatted_address }}">
+    </iframe>
+</div>
 
-<p style="color:rgba(255, 0, 0, 0.09);">
-Loaded
+<p style="color:rgba(0, 0, 0, 0.09);" >
+Maps Loaded 
 </p>
 
 {% endif %}
