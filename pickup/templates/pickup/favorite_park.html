@@ -1,5 +1,9 @@
 {% extends 'pickup/base.html' %}
 
+{% block title %}
+Favorite Park
+{% endblock %}
+
 {% block content %}
 
 <h1>Pickup Games: Favorite Park</h1>
@@ -16,8 +20,8 @@
 <form action="{% url 'favorite_park' add park.id %}" method="post">
     {% csrf_token %}
     <p>
-    <input type="submit" value="Confirm" />
-    <a href="{% url 'parks' %}">Cancel</a>
+    <input type="submit" value="Confirm" class="btn btn-dark col search-btn"/>
+    <a href="javascript:history.back()" class="btn btn-light cancel-btn">Cancel</a>
     </p>
 </form>
 

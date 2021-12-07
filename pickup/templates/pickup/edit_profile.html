@@ -1,54 +1,66 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Pickup Games | Edit Profile</title>
-</head>
-<body>
+{% extends 'pickup/base.html' %}
 
-    <h1>Pickup Games</h1>
-    <h2>Your Profile: {{ username }}</h2>
+{% block title %}
+Edit Profile
+{% endblock %}
 
-    <p>Enter your profile information here. No fields are required. Please note
-        that this information will be visible to other players.</p>
+{% block content %}
+<h1>Edit Profile</h1>
+<h2>User name: {{ username }}</h2>
 
-    {% if error %}<p id="error">{{ error }}</p> {% endif %}
+<p>Enter your profile information here. No fields are required. If you set your
+    profile to public, this information will be visible to other players.</p>
 
-    <form action="{% url 'edit_profile' %}" method="post" id="profile_form">
-        {% csrf_token %}
+{% if error %}<p id="error">{{ error }}</p> {% endif %}
 
-        <p>First name: <input type="text" id="first_name" name="first_name"
-            value = "{{ first_name }}" /></p>
+<form action="{% url 'edit_profile' %}" method="post" id="profile_form">
+{% csrf_token %}
 
-        <p>Last name: <input type="text" id="last_name" name="last_name"
-            value = "{{ last_name }}" />
-        </p>
+<p>First name: <input type="text" id="first_name" name="first_name"
+    value = "{{ first_name }}" class="form-control edit-profile-field" />
+</p>
 
-        <p>Date of birth: <input type="date" id="date_of_birth"
-            name="date_of_birth" value = "{{ date_of_birth }}" /></p>
+<p>Last name: <input type="text" id="last_name" name="last_name"
+    value = "{{ last_name }}" class="form-control edit-profile-field"  />
+</p>
 
-        <p>Gender:
-            <select form="profile_form" name="gender"
-                    id="gender">
-                {% for value, text in genders %}
-                    <option value="{{ value }}"
-                    {% ifequal value gender %}
-                        selected
-                    {% endifequal %}
-                    >{{ text }}</option>
-                {% endfor %}
-            </select>
-        </p>
+<p>Date of birth: <input type="date" id="date_of_birth"
+    name="date_of_birth" value = "{{ date_of_birth }}"
+    class="form-control edit-profile-field"  />
+</p>
 
-        <p>Height: <input type="number" id="height" name="height"
-            value = "{{ height }}" /> in</p>
+<p>Gender:
+    <select form="profile_form" name="gender"
+            id="gender" class="form-select edit-profile-field" >
+        {% for value, text in genders %}
+            <option value="{{ value }}"
+            {% ifequal value gender %}
+                selected
+            {% endifequal %}
+            >{{ text }}</option>
+        {% endfor %}
+    </select>
+</p>
 
-        <p>Weight: <input type="number" id="weight" name="weight"
-            value = "{{ weight }}" /> lbs</p>
+<p>Height (in): <input type="number" id="height" name="height"
+    value = "{{ height }}" class="form-control edit-profile-field"  />
+</p>
 
-        <p>Make profile public: <input type="checkbox" id="is_public"
-            name="is_public" {% if is_public %} checked {% endif %} /></p>
+<p>Weight (lbs): <input type="number" id="weight" name="weight"
+    value = "{{ weight }}" class="form-control edit-profile-field"  />
+</p>
 
-        <input type="submit" value="Save" />
-    </form>
-</body>
-</html>
+<p>Make profile public: <input type="checkbox" id="is_public"
+    name="is_public" {% if is_public %} checked {% endif %}
+    class="form-check-input" />
+</p>
+
+<p>
+    <input type="submit" value="Save" class="btn btn-dark" />
+    <a href="{% url 'view_profile' %}" class="btn btn-light cancel-btn">
+        Cancel
+    </a>
+</p>
+</form>
+
+{% endblock %}

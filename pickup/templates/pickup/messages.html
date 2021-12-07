@@ -1,0 +1,61 @@
+{% extends 'pickup/base.html' %}
+
+{% block title %} Messages {% endblock %}
+
+{% block content %}
+
+    <div id="MessagesLeft">
+        <div class="list-group">
+            <a class ="list-group-item new-msg" href="{% url 'new_message' %}">New Conversation</a>
+            {% for people in conversations %}
+                <a class ="list-group-item conversations" href="{% url 'messages_conversation' people.username %}">
+                    {{people}}
+                </a>
+
+            {% empty %}
+                <li>No Conversations</li>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="MessagesRight">
+    {% if person %}
+        <h1 class="center-text">{{ person }}</h1>
+        {% if messages %}
+            <div id ="Message-scroll-box" >
+                {% for message in messages %}
+                    <div class="Message-line">
+                        {% if message.sender == person %}
+                            <div class="Message-received">
+                                <p>{{message.message}}</p>
+                            </div>
+
+                        {% else  %}
+                            <div class="Message-sent">
+                                <p>{{message.message}}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <script>
+                var element = document.getElementById('Message-scroll-box');
+                element.scrollTop = element.scrollHeight;
+            </script>
+
+
+        {% else %}
+            <p>Start your conversation with {{ person }}</p>
+        {%endif %}
+
+        <form action="{% url 'messages_conversation' person %}" method="post" id="message_form">
+            {% csrf_token %}
+            <!--<input type="text" id="userMessage" maxlength="1000" placeholder="New Message" name="userMessage" required>-->
+            <textarea name="userMessage" id="userMessage" placeholder="New Message" required></textarea>
+            <input type="submit" class="btn btn-dark send-btn" value="Send">
+        </form>
+    {% endif %}
+    </div>
+
+{% endblock %}

@@ -190,10 +190,53 @@ class ParkViewTests(TestCase):
             response = self.client.post(reverse('Add Park'), fields)
 
             self.assertEqual(response.status_code, 200)
-            self.assertContains(response, "The google maps api key is missing")
+            self.assertContains(response, "Park has been added!")
         return
       
+        # checking a flawed real address
+    def test_add_park_map(self):
+        try:
+            os.environ['apiKey']
+        except KeyError:
+            return
+    
+    
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Good Park', 'street':'20 Huson Yards', 'city':'New York',
+                             'state':'NY', 'zipcode':'10001'}
+        response = self.client.post(reverse('Add Park'), fields)
+        self.assertContains(response, "Loaded")
+        #Park has been added!
+
+    
+    # checking a real address
+    def test_add_park_real(self):
+        try:
+            os.environ['apiKey']
+        except KeyError:
+            return
         
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Good Park', 'street':'20 Hudson Yards', 'city':'New York',
+                             'state':'NY', 'zipcode':'10001'}
+        response = self.client.post(reverse('Add Park'), fields)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Park has been added!")
+
+        park = Parks.objects.get(name="Good Park")
+        self.assertEqual(park.name, 'Good Park')
+        self.assertContains(response, "Loaded")
         
 # tests for searching for a player's profile
 class SearchParkTests(TestCase):

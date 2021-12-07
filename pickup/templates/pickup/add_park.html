@@ -1,6 +1,11 @@
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'pickup/style.css' %}">
-<html>
+{% extends 'pickup/base.html' %}
+
+{% block title %}
+Add Park
+{% endblock %}
+
+{% block content %}
+
 <h1> Add New Park </h1>
 
 {% if error %}<p id="error">{{ error }}</p> {% endif %}
@@ -8,6 +13,31 @@
 <form action="/add_park/" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Submit">
+
+    <input type="submit" value="Submit" class="btn btn-dark">
+    <a href="javascript:history.back()" class="btn btn-light cancel-btn">Cancel</a>
+
 </form>
-</html>
+
+{% if apiKey %}
+{% if formatted_address %}
+
+<div class="map-responsive">
+    <iframe
+        width="600"
+        height="450"
+        style="border:0"
+        loading="lazy"
+        allowfullscreen
+        src="https://www.google.com/maps/embed/v1/place?key={{ apiKey }}&q={{ formatted_address }}">
+    </iframe>
+</div>
+
+<p style="color:rgba(0, 0, 0, 0.09);" >
+Maps Loaded 
+</p>
+
+{% endif %}
+{% endif %}
+
+{% endblock %}

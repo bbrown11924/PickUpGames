@@ -2,18 +2,56 @@
     In no way an actual css design,
     just wanted to make sure it worked properly
  */
+:root{
+    /* main colors */
+    --mainBg: slategray;
+    --mainBg2: #afafaf;
 
+    /* header colors*/
+    --headerText: darkorange;
+    --headerBg: navy;
+
+    /* login/ signup button colors */
+    --login_signup_Main: darkorange;
+    --login_signup_hover: orange;
+    --login_signup_border: black;
+    --login_signup_contrast: navy;
+
+    /* footer text color*/
+    --footer_text: #f5f5f5;
+
+    /* dark button colors */
+    --dark_button_color: darkorange;
+    --dark_button_text: navy;
+    --dark_button_border: black;
+    --dark_button_hover: orange;
+
+    /* light button colors */
+    --light_button_color: #cccccc;
+    --light_button_text: navy;
+    --light_button_border: white;
+    --light_button_hover: #dddddd;
+
+    /*displays color */
+    --displays_color: #afafaf;
+
+    /* messaging colors */
+    --sent_message: grey;
+    --received_message: darkorange;
+    --send_button: darkorange;
+    --message_text_color: navy;
+}
 body{
-    background-color: slategray;
+    background-color: var(--mainBg);
     width: 80%;
     margin: auto ;
 }
 
 header{
-    color: darkorange;
-    background-color: navy;
+    color: var(--headerText);
+    background-color: var(--headerBg);
     display: inline-block;
-    border-bottom: .2em solid darkorange;
+    border-bottom: .2em solid var(--headerText);
     width: 100%;
 }
 
@@ -22,8 +60,11 @@ header h1{
     padding-left: 1em;
 }
 
-#LoginSignUp{
+.navbar {
+    min-height: 60px;
+}
 
+#LoginSignUp{
     float: right;
 }
 
@@ -36,33 +77,289 @@ header h1{
     font-weight: bold;
 }
 #login{
-    border: .1em solid darkorange;
-    background-color: darkorange;
-    color: navy;
+    border: .1em solid var(--login_signup_Main);
+    background-color: var(--login_signup_Main);
+    color: var(--login_signup_contrast);
     border-radius: 1em;
 }
 #signup{
-    color: darkorange;
+    color: var(--login_signup_Main);
 }
 
 #login:hover{
-    background-color: orange;
-    color: navy;
+    background-color: var(--login_signup_hover);
+    color: var(--login_signup_contrast);
     transition: 500ms;
 }
 
 #signup:hover{
-    color: orange;
+    color: var(--login_signup_hover);
 }
 
 main{
     padding: 1em 3em 2em 3em;
     background-color: #afafaf;
     margin: 0;
-
+    min-height: calc(100vh - 120px);
+    height: 100%;
 }
 
 h2{
-    color: navy;
+    color: var(--login_signup_contrast);
 }
 
+.footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  height: 60px; /* Set the fixed height of the footer here */
+  background-color: var(--footer_text);
+}
+
+ul.no-bullets {
+  list-style-type: none; /* Remove bullets */
+  padding-top: 60px; /* Remove padding */
+  margin: 0; /* Remove margins */
+}
+
+.list-group {
+  max-width: 300px;
+  margin: auto;
+}
+
+.center-text {
+  text-align: center;
+}
+
+.btn-dark {
+    background-color: var(--dark_button_color);
+    border-color: var(--dark_button_border);
+    color: var(--dark_button_text);
+}
+
+.btn-dark:hover, .btn-dark:focus, .btn-signup:hover, .btn-signup:focus,
+.btn-signup:active {
+    background-color: var(--dark_button_hover);
+    border-color: var(--dark_button_border);
+    color: var(--dark_button_text);
+}
+
+.btn-light {
+    background-color: var(--light_button_color);
+    border-color: var(--light_button_border);
+    color: var(--light_button_text);
+}
+
+.btn-light:hover, .btn-light:focus {
+    background-color: var(--light_button_hover);
+    border-color: var(--light_button_border);
+    color: var(--light_button_text);
+}
+
+.cancel-btn {
+    margin-left: 20px;
+}
+
+#signup-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-signup {
+    background-color: var(--login_signup_Main);
+    border-color: var(--login_signup_border);
+    color: var(--login_signup_contrast);
+    border-radius: 1em;
+    text-align: left;
+    margin: 20px;
+}
+
+#login-display {
+    background-color: var(--displays_color);
+    padding: 20px;
+    height: 275px;
+    max-width: 400px;
+    border-radius: 1em;
+    position: relative;
+    top: calc(50vh - 150px);
+}
+
+#register-display {
+    background-color: var(--displays_color);
+    padding: 20px;
+    height: 435px;
+    max-width: 400px;
+    border-radius: 1em;
+    position: relative;
+    top: calc(50vh - 218px);
+}
+
+#login-btn, #register-btn {
+    border-color: var(--login_signup_Main);
+}
+
+.list-group-item {
+    border-radius: 0em;
+}
+
+#login-list-group {
+    max-width: 300px;
+    padding: 20px;
+}
+
+#register-list-group {
+    max-width: 300px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+}
+
+.larger-login {
+    min-height: 325px;
+}
+
+.larger-register {
+    min-height: 470px;
+}
+
+.form-control, .form-select, .form-check-input, .search-btn {
+    margin: 5px;
+}
+
+.change-password-field, .edit-profile-field, .search-bar {
+    max-width: 300px;
+}
+
+.search-btn {
+    max-width: 75px;
+}
+
+.search-list-item:before {
+    content: "\1F3C0";
+    padding-right: 5px;
+}
+
+.search-row {
+    margin-left: -5px;
+}
+
+#MessagesLeft{
+    float:left;
+    width: 30%;
+}
+
+#MessagesLeft a{
+    text-decoration: none;
+}
+
+#MessagesLeft .list-group-item{
+    text-align: center;
+    width: 80%;
+
+}
+
+.list-group-item.conversations{
+
+    background-color: var(--sent_message);
+    color: var(--message_text_color);
+
+}
+
+.list-group-item.new-msg{
+    background-color: var(--received_message);
+    color: var(--message_text_color);
+}
+
+#MessagesRight{
+    float: right;
+    width: 70%;
+}
+
+#MessagesRight .center-text{
+    color: var(--message_text_color);
+    font-weight: bold;
+}
+
+#Message-scroll-box{
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    height: calc(80vh - 195px);
+}
+
+
+.Message-line{
+    width: 90%;
+    display: inline-block;
+}
+
+.Message-received{
+    float: left;
+    max-width: 60%;
+}
+
+.Message-received p{
+    background-color: var(--received_message);
+    color: var(--message_text_color);
+    border: var(--received_message) solid .5em;
+    border-radius: 1em;
+    text-align: center;
+    padding: 0 2px 0 8px;
+}
+
+.Message-sent{
+    float: right;
+    max-width: 60%;
+}
+
+.Message-sent p{
+    background-color: var(--sent_message);
+    color: var(--message_text_color);
+    border: var(--sent_message) solid .5em;
+    border-radius: 1em;
+    text-align: center;
+    padding: 0 8px 0 2px;
+}
+
+#message_form{
+    position: relative;
+    bottom: 0;
+    height: 75px;
+}
+
+#userMessage{
+    width: 70%;
+    height: 75px;
+    resize: none;
+}
+
+.send-btn{
+    width: 20%;
+    height: 75px;
+    background-color: var(--send_button);
+    vertical-align: top;
+    font-size: 1.2em;
+
+}
+
+
+/* Any changes for mobile go here */
+@media only screen and (max-width: 500px) {
+    body{
+        width: 100%;
+    }
+
+    #MessagesLeft{
+        float: none;
+        width: 100%;
+        margin: auto;
+    }
+
+    #MessagesRight{
+        float: none;
+        width: 100%;
+        margin: auto;
+    }
+}

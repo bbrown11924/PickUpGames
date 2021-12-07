@@ -1,8 +1,12 @@
 {% extends 'pickup/base.html' %}
 
+{% block title %}
+Join Event
+{% endblock %}
+
 {% block content %}
 
-<h1>Pickup Games: Join Event</h1>
+<h1>Join Event</h1>
 
 {% if error %}<p id="error">{{ error }}</p> {% endif %}
 
@@ -29,8 +33,8 @@ Current players:
 <form action="{% url 'join_event' park.id add event.id %}" method="post">
     {% csrf_token %}
     <p>
-    <input type="submit" value="Confirm" />
-    <a href="{% url 'event_signup' park.id %}">Cancel</a>
+    <input type="submit" value="Confirm" class="btn btn-dark"/>
+    <a href="javascript:history.back()" class="btn btn-light cancel-btn">Cancel</a>
     </p>
 </form>
 

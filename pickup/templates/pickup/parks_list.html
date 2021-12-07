@@ -1,26 +1,18 @@
 {% extends 'pickup/base.html' %}
 
+{% block title %}
+Parks
+{% endblock %}
+
 {% block content %}
-<h1>Park List</h1>
 
-<head>
-<!-- Font Awesome Icon Library -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-.checked {
-  color: orange;
-}
-.unchecked {
-  color: gray;
-}
-</style>
-</head>
-<body>
+<h1>Parks List</h1>
 
-</body>
-</html>
+{% if message %}<p id="message">{{ message }}</p> {% endif %}
+
+{% if favparks %}
 <p>My Parks:</p>
-<table class="table table-bordered table-striped">
+<table class="table">
     <thead>
     <tr>
         <th>Name</th>
@@ -40,19 +32,23 @@
     </tr>
     {% endfor %}
 </table>
+{% else %}
+ <p>You have not yet favorited any parks! Search below and click the star!</p>
+{% endif%}
 
 <p>Search for New Parks:</p>
 <form action="{% url 'parks' %}" method="get" id="search_form">
-    <p>
+    <p class="row search-row">
         <input type="search" id="search_bar" name="search_text"
-            value="{{ search_input }}" />
-        <input type="submit" value="Search" />
+            value="{{ search_input }}" class="form-control search-bar col" />
+        <input type="submit" value="Search" class="btn btn-dark col search-btn"/>
+        <p><a href="{% url 'Add Park' %}" class="btn btn-dark">Add New Park</a></p>
     </p>
 </form>
 
 {% if favsearchparks or nofavsearchparks %}
     <p>Search results:</p>
-        <table class="table table-bordered table-striped">
+        <table class="table">
             <thead>
             <tr>
                 <th>Name</th>
