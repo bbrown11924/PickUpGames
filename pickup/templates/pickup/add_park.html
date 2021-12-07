@@ -16,4 +16,23 @@ Add Park
     <input type="submit" value="Submit" class="btn btn-dark">
 </form>
 
+{% if apiKey %}
+{% if formatted_address %}
+
+<iframe
+  width="600"
+  height="450"
+  style="border:0"
+  loading="lazy"
+  allowfullscreen
+  src="https://www.google.com/maps/embed/v1/place?key={{ apiKey }}&q={{ formatted_address }}">
+</iframe>
+
+<p style="color:rgba(255, 0, 0, 0.09);">
+Loaded
+</p>
+
+{% endif %}
+{% endif %}
+
 {% endblock %}

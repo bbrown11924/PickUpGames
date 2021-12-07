@@ -193,6 +193,24 @@ class ParkViewTests(TestCase):
             self.assertContains(response, "Park has been added!")
         return
       
+        # checking a flawed real address
+    def test_add_park_map(self):
+        try:
+            os.environ['apiKey']
+        except KeyError:
+            return
+    
+    
+        player = Player.objects.create_user("root", "root@root.com",
+                                            "root")
+        player.save()
+        fields = {"username": "root", "password": "root"}
+        self.client.post(reverse("login"), fields)
+
+        fields = {'name':'Good Park', 'street':'20 Huson Yards', 'city':'New York',
+                             'state':'NY', 'zipcode':'10001'}
+        response = self.client.post(reverse('Add Park'), fields)
+        self.assertContains(response, "Loaded")
         
         
 # tests for searching for a player's profile
