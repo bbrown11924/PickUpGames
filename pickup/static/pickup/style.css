@@ -261,8 +261,10 @@ ul.no-bullets {
 }
 
 .list-group-item.conversations{
+
     background-color: var(--sent_message);
     color: var(--message_text_color);
+
 }
 
 .list-group-item.new-msg{
