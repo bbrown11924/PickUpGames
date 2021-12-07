@@ -5,36 +5,55 @@
 {% block content %}
 
     <div id="MessagesLeft">
-        <form action="{% url 'new_message' %}" method="get" id="send_message_form">
-            <button type="submit" name="newMsgBtn">New Conversation</button>
-        </form>
-    <ul>
+        <div class="list-group">
+            <a class ="list-group-item new-msg" href="{% url 'new_message' %}">New Conversation</a>
             {% for people in conversations %}
-                <li>
-                <a href="{% url 'messages_conversation' people.username %}">
+                <a class ="list-group-item" href="{% url 'messages_conversation' people.username %}">
                     {{people}}
                 </a>
-                </li>
+
             {% empty %}
                 <li>No Conversations</li>
             {% endfor %}
-    </ul>
+        </div>
     </div>
 
     <div id="MessagesRight">
-    {% if messages %}
-        <h1>{{ person }}</h1>
-        {% for message in messages %}
-            {% if message.sender == person %}
-                <p class="Message-received">{{ message.message }} <br></p>
-            {% else  %}
-                <p class="Message-sent">{{ message.message }}<br></p>
-            {% endif %}
-        {% endfor %}
+    {% if person %}
+        <h1 class="center-text">{{ person }}</h1>
+        {% if messages %}
+            <div id ="Message-scroll-box" >
+                {% for message in messages %}
+                    <div class="Message-line">
+                        {% if message.sender == person %}
+                            <div class="Message-received">
+                                <p>{{message.message}}</p>
+                            </div>
+
+                        {% else  %}
+                            <div class="Message-sent">
+                                <p>{{message.message}}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <script>
+                var element = document.getElementById('Message-scroll-box');
+                element.scrollTop = element.scrollHeight;
+            </script>
+
+
+        {% else %}
+            <p>Start your conversation with {{ person }}</p>
+        {%endif %}
+
         <form action="{% url 'messages_conversation' person %}" method="post" id="message_form">
             {% csrf_token %}
-            <input type="text" id="userMessage" maxlength="1000" placeholder="New Message" name="userMessage" required>
-            <input type="submit" value="Send">
+            <!--<input type="text" id="userMessage" maxlength="1000" placeholder="New Message" name="userMessage" required>-->
+            <textarea name="userMessage" id="userMessage" placeholder="New Message" required></textarea>
+            <input type="submit" class="btn btn-dark send-btn" value="Send">
         </form>
     {% endif %}
     </div>

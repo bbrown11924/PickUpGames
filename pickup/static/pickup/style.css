@@ -263,6 +263,7 @@ ul.no-bullets {
 .Message-received{
     float: left;
     max-width: 60%;
+
 }
 
 .Message-received p{
@@ -273,6 +274,7 @@ ul.no-bullets {
     text-align: center;
     padding: 0 2px 0 8px;
 }
+
 
 .Message-sent{
     float: right;
@@ -327,4 +329,5 @@ ul.no-bullets {
         width: 100%;
         margin: auto;
     }
+
 }
