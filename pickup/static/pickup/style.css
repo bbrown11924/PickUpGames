@@ -3,12 +3,11 @@
     just wanted to make sure it worked properly
  */
 :root{
-    c_Gray: #afafaf;
-    c_Creme: #f5f5f5;
-    c_Gray2: #cccccc;
-    c_Gray3: #dddddd;
+    --gray: #afafaf;
+    --creme: #f5f5f5;
+    --gray2: #cccccc;
+    --gray3: #dddddd;
 }
-
 body{
     background-color: slategray;
     width: 80%;
@@ -33,7 +32,6 @@ header h1{
 }
 
 #LoginSignUp{
-
     float: right;
 }
 
@@ -67,7 +65,7 @@ header h1{
 
 main{
     padding: 1em 3em 2em 3em;
-    background-color: c_Gray;
+    background-color: var(--gray);
     margin: 0;
     min-height: calc(100vh - 120px);
     height: 100%;
@@ -82,7 +80,7 @@ h2{
   bottom: 0;
   width: 100%;
   height: 60px; /* Set the fixed height of the footer here */
-  background-color: c_Creme;
+  background-color: var(--creme);
 }
 
 ul.no-bullets {
@@ -114,13 +112,13 @@ ul.no-bullets {
 }
 
 .btn-light {
-    background-color: c_Gray2;
+    background-color: var(--gray2);
     border-color: white;
     color: navy;
 }
 
 .btn-light:hover, .btn-light:focus {
-    background-color: c_Gray3;
+    background-color: var(--gray3);
     border-color: white;
     color: navy;
 }
@@ -146,7 +144,7 @@ ul.no-bullets {
 }
 
 #login-display {
-    background-color: c_Gray;
+    background-color: var(--gray);
     padding: 20px;
     height: 275px;
     max-width: 400px;
@@ -156,7 +154,7 @@ ul.no-bullets {
 }
 
 #register-display {
-    background-color: c_Gray;
+    background-color: var(--gray);
     padding: 20px;
     height: 435px;
     max-width: 400px;
@@ -219,16 +217,24 @@ ul.no-bullets {
     width: 30%;
 }
 
-#MessagesLeft ul{
-    list-style: none;
-}
-
-#MessagesLeft li{
-    padding: .5em;
-}
-
 #MessagesLeft a{
     text-decoration: none;
+}
+
+#MessagesLeft .list-group-item{
+    text-align: center;
+    width: 80%;
+
+}
+
+.list-group-item{
+    background-color: grey;
+    color: navy;
+}
+
+.list-group-item.new-msg{
+    background-color: darkorange;
+    color: navy;
 }
 
 #MessagesRight{
@@ -236,9 +242,89 @@ ul.no-bullets {
     width: 70%;
 }
 
-.Message-received{
-    text-align: left;
+#MessagesRight .center-text{
+    color: navy;
+    font-weight: bold;
 }
+
+#Message-scroll-box{
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    height: calc(80vh - 120px);
+}
+
+
+.Message-line{
+    width: 90%;
+    display: inline-block;
+}
+
+.Message-received{
+    float: left;
+    max-width: 60%;
+}
+
+.Message-received p{
+    background-color: darkorange;
+    color: navy;
+    border: darkorange solid .5em;
+    border-radius: 1em;
+    text-align: center;
+    padding: 0 2px 0 8px;
+}
+
 .Message-sent{
-    text-align: right;
+    float: right;
+    max-width: 60%;
+}
+
+.Message-sent p{
+    background-color: grey;
+    color: navy;
+    border: grey solid .5em;
+    border-radius: 1em;
+    text-align: center;
+    padding: 0 8px 0 2px;
+}
+
+#message_form{
+    position: relative;
+    bottom: 0;
+    height: 75px;
+}
+
+#userMessage{
+    width: 70%;
+    height: 75px;
+    resize: none;
+}
+
+.send-btn{
+    width: 20%;
+    height: 75px;
+    background-color: darkorange;
+    vertical-align: top;
+    font-size: 1.2em;
+
+}
+
+
+/* Any changes for mobile go here */
+@media only screen and (max-width: 500px) {
+    body{
+        width: 100%;
+    }
+
+    #MessagesLeft{
+        float: none;
+        width: 100%;
+        margin: auto;
+    }
+
+    #MessagesRight{
+        float: none;
+        width: 100%;
+        margin: auto;
+    }
 }
