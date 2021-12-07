@@ -12,7 +12,7 @@ import requests
 
 # Import models and forms
 from .forms import ParkForm, RegistrationForm, ProfileForm, ScheduleForm, \
-    ChangePasswordForm, SearchForm, NewMessageForm, SendMessage
+    ChangePasswordForm, SearchForm, SendMessage
 from .models import Profile, Player, Parks, Schedule, FavoriteParks, EventSignup, Messages
 
 
@@ -560,27 +560,7 @@ def message_user(request):
 @login_required(login_url="login")
 def new_message(request):
     user = request.user
-
-    # The user has sent a message
-    if request.method == 'POST':
-        form = NewMessageForm(request.POST)
-        if form.is_valid():
-            form = form.cleaned_data
-            if Player.objects.get(username=form['receiver']):
-                sender = Player.objects.get(username=user.username)
-                receiver = Player.objects.get(username=form['receiver'])
-                msg = form['userMessage']
-                message = Messages.objects.create(sender=sender, receiver=receiver, message=msg)
-                message.save()
-                return HttpResponseRedirect(reverse('messages'))
-            else:
-                # handle player not existing :(
-                return render(request, 'pickup/newMessage.html', form)
-        else:
-            return render(request, 'pickup/newMessage.html', form.errors)
-
-
-    elif request.method == 'GET':
+    if request.method == 'GET':
         if "search_text" not in request.GET.keys():
             return render(request, 'pickup/newMessage.html', {})
         input_form = SearchForm(request.GET)
@@ -596,7 +576,6 @@ def new_message(request):
         return render(request, 'pickup/newMessage.html', context)
 
     else:
-        form = NewMessageForm()
         return render(request, 'pickup/newMessage.html')
 
 
