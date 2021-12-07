@@ -55,6 +55,10 @@ Profile
         Change Password
     </a></p>
 {% else %}
+    <p><a href="{% url 'messages_conversation' username %}" class="btn btn-dark">
+        Send Message
+    </a></p>
+
     <p><a href="javascript:history.back()" class="btn btn-light">
         Back
     </a></p>

@@ -14,6 +14,7 @@ Add Park
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit" class="btn btn-dark">
+    <a href="javascript:history.back()" class="btn btn-light cancel-btn">Cancel</a>
 </form>
 
 {% endblock %}
