@@ -2,18 +2,56 @@
     In no way an actual css design,
     just wanted to make sure it worked properly
  */
+:root{
+    /* main colors */
+    --mainBg: slategray;
+    --mainBg2: #afafaf;
 
+    /* header colors*/
+    --headerText: darkorange;
+    --headerBg: navy;
+
+    /* login/ signup button colors */
+    --login_signup_Main: darkorange;
+    --login_signup_hover: orange;
+    --login_signup_border: black;
+    --login_signup_contrast: navy;
+
+    /* footer text color*/
+    --footer_text: #f5f5f5;
+
+    /* dark button colors */
+    --dark_button_color: darkorange;
+    --dark_button_text: navy;
+    --dark_button_border: black;
+    --dark_button_hover: orange;
+
+    /* light button colors */
+    --light_button_color: #cccccc;
+    --light_button_text: navy;
+    --light_button_border: white;
+    --light_button_hover: #dddddd;
+
+    /*displays color */
+    --displays_color: #afafaf;
+
+    /* messaging colors */
+    --sent_message: grey;
+    --received_message: darkorange;
+    --send_button: darkorange;
+    --message_text_color: navy;
+}
 body{
-    background-color: slategray;
+    background-color: var(--mainBg);
     width: 80%;
     margin: auto ;
 }
 
 header{
-    color: darkorange;
-    background-color: navy;
+    color: var(--headerText);
+    background-color: var(--headerBg);
     display: inline-block;
-    border-bottom: .2em solid darkorange;
+    border-bottom: .2em solid var(--headerText);
     width: 100%;
 }
 
@@ -39,23 +77,23 @@ header h1{
     font-weight: bold;
 }
 #login{
-    border: .1em solid darkorange;
-    background-color: darkorange;
-    color: navy;
+    border: .1em solid var(--login_signup_Main);
+    background-color: var(--login_signup_Main);
+    color: var(--login_signup_contrast);
     border-radius: 1em;
 }
 #signup{
-    color: darkorange;
+    color: var(--login_signup_Main);
 }
 
 #login:hover{
-    background-color: orange;
-    color: navy;
+    background-color: var(--login_signup_hover);
+    color: var(--login_signup_contrast);
     transition: 500ms;
 }
 
 #signup:hover{
-    color: orange;
+    color: var(--login_signup_hover);
 }
 
 main{
@@ -67,7 +105,7 @@ main{
 }
 
 h2{
-    color: navy;
+    color: var(--login_signup_contrast);
 }
 
 .footer {
@@ -75,7 +113,7 @@ h2{
   bottom: 0;
   width: 100%;
   height: 60px; /* Set the fixed height of the footer here */
-  background-color: #f5f5f5;
+  background-color: var(--footer_text);
 }
 
 ul.no-bullets {
@@ -94,28 +132,28 @@ ul.no-bullets {
 }
 
 .btn-dark {
-    background-color: darkorange;
-    border-color: black;
-    color: navy;
+    background-color: var(--dark_button_color);
+    border-color: var(--dark_button_border);
+    color: var(--dark_button_text);
 }
 
 .btn-dark:hover, .btn-dark:focus, .btn-signup:hover, .btn-signup:focus,
 .btn-signup:active {
-    background-color: orange;
-    border-color: black;
-    color: navy;
+    background-color: var(--dark_button_hover);
+    border-color: var(--dark_button_border);
+    color: var(--dark_button_text);
 }
 
 .btn-light {
-    background-color: #cccccc;
-    border-color: white;
-    color: navy;
+    background-color: var(--light_button_color);
+    border-color: var(--light_button_border);
+    color: var(--light_button_text);
 }
 
 .btn-light:hover, .btn-light:focus {
-    background-color: #dddddd;
-    border-color: white;
-    color: navy;
+    background-color: var(--light_button_hover);
+    border-color: var(--light_button_border);
+    color: var(--light_button_text);
 }
 
 .cancel-btn {
@@ -130,16 +168,16 @@ ul.no-bullets {
 }
 
 .btn-signup {
-    background-color: darkorange;
-    border-color: black;
-    color: navy;
+    background-color: var(--login_signup_Main);
+    border-color: var(--login_signup_border);
+    color: var(--login_signup_contrast);
     border-radius: 1em;
     text-align: left;
     margin: 20px;
 }
 
 #login-display {
-    background-color: #afafaf;
+    background-color: var(--displays_color);
     padding: 20px;
     height: 275px;
     max-width: 400px;
@@ -149,7 +187,7 @@ ul.no-bullets {
 }
 
 #register-display {
-    background-color: #afafaf;
+    background-color: var(--displays_color);
     padding: 20px;
     height: 435px;
     max-width: 400px;
@@ -159,7 +197,7 @@ ul.no-bullets {
 }
 
 #login-btn, #register-btn {
-    border-color: darkorange;
+    border-color: var(--login_signup_Main);
 }
 
 .list-group-item {
@@ -223,13 +261,15 @@ ul.no-bullets {
 }
 
 .list-group-item.conversations{
-    background-color: grey;
-    color: navy;
+
+    background-color: var(--sent_message);
+    color: var(--message_text_color);
+
 }
 
 .list-group-item.new-msg{
-    background-color: darkorange;
-    color: navy;
+    background-color: var(--received_message);
+    color: var(--message_text_color);
 }
 
 #MessagesRight{
@@ -238,7 +278,7 @@ ul.no-bullets {
 }
 
 #MessagesRight .center-text{
-    color: navy;
+    color: var(--message_text_color);
     font-weight: bold;
 }
 
@@ -261,9 +301,9 @@ ul.no-bullets {
 }
 
 .Message-received p{
-    background-color: darkorange;
-    color: navy;
-    border: darkorange solid .5em;
+    background-color: var(--received_message);
+    color: var(--message_text_color);
+    border: var(--received_message) solid .5em;
     border-radius: 1em;
     text-align: center;
     padding: 0 2px 0 8px;
@@ -275,9 +315,9 @@ ul.no-bullets {
 }
 
 .Message-sent p{
-    background-color: grey;
-    color: navy;
-    border: grey solid .5em;
+    background-color: var(--sent_message);
+    color: var(--message_text_color);
+    border: var(--sent_message) solid .5em;
     border-radius: 1em;
     text-align: center;
     padding: 0 8px 0 2px;
@@ -298,7 +338,7 @@ ul.no-bullets {
 .send-btn{
     width: 20%;
     height: 75px;
-    background-color: darkorange;
+    background-color: var(--send_button);
     vertical-align: top;
     font-size: 1.2em;
 
@@ -323,4 +363,3 @@ ul.no-bullets {
         margin: auto;
     }
 }
-
