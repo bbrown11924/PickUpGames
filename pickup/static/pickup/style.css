@@ -141,7 +141,7 @@ ul.no-bullets {
 .btn-signup:active {
     background-color: var(--dark_button_hover);
     border-color: var(--dark_button_border);
-    color: var(dark_button_text);
+    color: var(--dark_button_text);
 }
 
 .btn-light {
