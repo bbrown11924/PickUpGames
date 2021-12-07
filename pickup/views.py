@@ -603,7 +603,7 @@ def message_conversation(request, username):
                 msg = form.data['userMessage']
                 message = Messages.objects.create(sender=player, receiver=person, message=msg)
                 message.save()
-
+                conversations = get_user_conversations(player)
                 messages = get_user_messages(player, person)
                 return render(request, 'pickup/messages.html', {'conversations': conversations, 'messages': messages,
                                                                 'person': person})

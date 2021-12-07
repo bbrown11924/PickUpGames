@@ -222,7 +222,7 @@ ul.no-bullets {
 
 }
 
-.list-group-item{
+.list-group-item.conversations{
     background-color: grey;
     color: navy;
 }
