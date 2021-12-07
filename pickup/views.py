@@ -329,7 +329,9 @@ def add_park(request):
                 if len(new_input_data) < 3:
                     context = {
                         "error": "Error: The fields need to belong to a valid address",
-                        "form": form
+                        "form": form,
+                        'apiKey': os.environ.get('apiKey'),
+                        'formatted_address': formatted_address
                     }
     
                     return render(request, reverse('Add Park'), context)
@@ -345,6 +347,8 @@ def add_park(request):
                         "form": form,
                         "error": "Google Maps found the following match for an address! Is this the correct address?: \n {}".format(
                             api_formatted_address),
+                        'apiKey': os.environ.get('apiKey'),
+                        'formatted_address': api_formatted_address
                     }
     
                     return render(request, 'pickup/add_park.html', context)
@@ -365,13 +369,16 @@ def add_park(request):
             context = {
                 "error": "Park has been added!",
                 "form": ParkForm(),
+                'apiKey': os.environ.get('apiKey'),
+                'formatted_address' : formatted_address
+                
             }
             return render(request, 'pickup/add_park.html', context)
 
     else:
         form = ParkForm()
 
-    return render(request, 'pickup/add_park.html', {'form': form})
+    return render(request, 'pickup/add_park.html', {'form': form, 'apiKey': os.environ.get('apiKey')})
 
 
 @login_required(login_url="login")
