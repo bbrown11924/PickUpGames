@@ -568,12 +568,8 @@ def new_message(request):
         search_text = input_form.cleaned_data["search_text"]
 
         # get the list of players
-        players = list(Player.objects.filter(username__contains=search_text))
-
-        for i in range(len(players)):
-            if players[i].username == user.username:
-                del players[i]
-                break
+        players = list(Player.objects.filter(Q(username__contains=search_text) &
+                                             ~Q(username=user.username)))
 
         context = {"players": players,
                    "search_input": search_text,
